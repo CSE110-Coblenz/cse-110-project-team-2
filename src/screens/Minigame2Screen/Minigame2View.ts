@@ -5,12 +5,15 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
  * Minigame 2 View - Renders the game UI using Konva
  */
 export class Minigame2View {
-  private group: Konva.Group;
-  private obstacleText: Konva.Text;
-  private timerText: Konva.Text;
+    private group: Konva.Group;
+    private carImage: Konva.Image | Konva.Circle | null = null;
+    private obstacleText: Konva.Text;
+    private timerText: Konva.Text;
+    private roadDashes: Konva.Group;
+    private roadAnimation: Konva.Animation;
 
 
-  constructor() {
+    constructor() {
     this.group = new Konva.Group({ visible: false });
 
     // road background
@@ -22,6 +25,43 @@ export class Minigame2View {
         fill: "gray",
     })
     this.group.add(road);
+
+    // road dashes
+    const dashCount = 15;        // number of dashes visible at once
+    const dashWidth = 60;
+    const dashHeight = 10;
+    const dashSpacing = 40;
+    const roadCenterY = (STAGE_HEIGHT / 2) - (dashHeight / 2);
+
+    this.roadDashes = new Konva.Group();
+
+    for (let i = 0; i < dashCount; i++) {
+        const dash = new Konva.Rect({
+            x: i * (dashWidth + dashSpacing),
+            y: roadCenterY,
+            width: dashWidth,
+            height: dashHeight,
+            fill: "yellow",
+        });
+        this.roadDashes.add(dash);
+    }
+    this.group.add(this.roadDashes);
+
+    // road dash animation
+    const speed = 5;
+    this.roadAnimation = new Konva.Animation((frame) => {
+    if (!frame) return;
+
+    // Move the whole dash group left
+    this.roadDashes.x(this.roadDashes.x() - speed);
+
+    // Reset when all dashes move past the screen
+    if (this.roadDashes.x() < -(dashWidth + dashSpacing)) {
+        this.roadDashes.x(0);
+    }
+    }, this.group.getLayer());
+
+
 
     // grass sides
     const grassTop = new Konva.Rect({
@@ -61,6 +101,23 @@ export class Minigame2View {
     });
     this.group.add(this.timerText);
 
+    Konva.Image.fromURL("/deliverycar.png", (img) => {
+        img.width(200);
+        img.height(200);
+        img.x(200);
+        img.y(STAGE_HEIGHT / 3 + 15);
+
+        img.rotation(90);
+
+        this.carImage = img;
+        this.group.add(img);
+        this.group.getLayer()?.draw();
+        
+        this.carImage = img;
+        this.group.add(img);
+        this.group.getLayer()?.draw();
+    });
+
   }
 
   updateTimer(timeRemaining: number): void {
@@ -79,11 +136,13 @@ export class Minigame2View {
 
   show(): void {
     this.group.visible(true);
+    this.roadAnimation?.start();
     this.group.getLayer()?.draw();
   }
 
   hide(): void {
     this.group.visible(false);
+    this.roadAnimation?.stop();
     this.group.getLayer()?.draw();
   }
 }

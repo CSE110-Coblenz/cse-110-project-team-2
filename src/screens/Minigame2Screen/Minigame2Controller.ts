@@ -34,9 +34,8 @@ export class Minigame2Controller extends ScreenController {
             timeRemaining--;
             this.view.updateTimer(timeRemaining);
             if (timeRemaining <= 0) {
-                this.endGame();
+                this.endGame(); // can be a different method later !!
             }
-
         }, 1000);
     }   
 
@@ -45,7 +44,6 @@ export class Minigame2Controller extends ScreenController {
             clearInterval(this.gameTimer);
             this.gameTimer = null;
         }
-
     }
 
     getView(): Minigame2View {
@@ -66,6 +64,7 @@ export class Minigame2Controller extends ScreenController {
     endGame(): void {
         this.stopTimer();
         this.view.hide();
+
         // future work: switch screens or show results
         // this.screenSwitcher?.switchToScreen({ type: "minigame2" }); // placeholder
     }
