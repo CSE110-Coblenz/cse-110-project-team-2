@@ -49,7 +49,7 @@ export class MenuScreenView implements View {
         const musicButton = new Konva.Circle({
             x: STAGE_WIDTH - 50,  // Position in bottom-right corner
             y: STAGE_HEIGHT - 50,
-            radius: 25,          // Smaller, more reasonable size
+            radius: 25,
             fill: "#d84315",
             stroke: "#b71c1c",
             strokeWidth: 2
@@ -68,7 +68,6 @@ export class MenuScreenView implements View {
         
         musicButtonGroup.add(musicButton);
         musicButtonGroup.add(musicLabel);
-        musicButtonGroup.on("click", onStartClick);
 
         this.group.add(bg, title, startButtonGroup, musicButtonGroup);
     }
