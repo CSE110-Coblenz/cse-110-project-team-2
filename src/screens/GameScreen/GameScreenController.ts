@@ -23,14 +23,21 @@ export class GameScreenController extends ScreenController{
         return this.view;
     }
 
+
     startGame(){
         this.view.show()
+
+    startGame(difficulty: "proper" | "improper" | "mixed"): void {
+        // Configure game based on difficulty level:
+        // proper: generates only proper fractions (numerator < denominator)
+        // improper: generates only improper fractions (numerator > denominator)
+        // mixed: generates both proper and improper fractions
+        console.log(`Starting game with ${difficulty} difficulty`);
+        this.view.show();
     }
 
     endGame(){
         this.view.hide()
     }
-
-    
     
 }

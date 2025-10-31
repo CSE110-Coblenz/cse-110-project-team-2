@@ -6,6 +6,7 @@ import { GameScreenController } from "./screens/GameScreen/GameScreenController"
 import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScreenController";
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
+import { DifficultyScreenController } from "./screens/DifficultyScreen/DifficultyScreenController";
 
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
@@ -16,6 +17,7 @@ class App implements ScreenSwitcher {
 	private tutorialController: TutorialScreenController;
     private resultsController: ResultScreenController;
     private minigame2Controller: Minigame2Controller;
+	private difficultyController: DifficultyScreenController;
 
 	constructor(container: string) {
 		this.stage = new Konva.Stage({ container, width: STAGE_WIDTH, height: STAGE_HEIGHT });
@@ -33,6 +35,12 @@ class App implements ScreenSwitcher {
 		this.layer.add(this.tutorialController.getView().getGroup());
         this.layer.add(this.resultsController.getView().getGroup());
         this.layer.add(this.minigame2Controller.getView().getGroup());
+		this.difficultyController = new DifficultyScreenController(this);
+
+		this.layer.add(this.menuController.getView().getGroup());
+		this.layer.add(this.gameController.getView().getGroup());
+		this.layer.add(this.difficultyController.getView().getGroup());
+
 
 		// Start on the menu
 		this.switchToScreen({ type: "menu"});
@@ -41,19 +49,23 @@ class App implements ScreenSwitcher {
 	}
 
 	switchToScreen(screen: Screen): void {
-		// hide all
+		// hide all screens
 		this.menuController.hide();
 		this.gameController.hide();
 		this.tutorialController.hide();
         this.resultsController.hide();
         this.minigame2Controller.hide();
+		this.difficultyController.hide();
 
 		switch (screen.type) {
 			case "menu":
 				this.menuController.show();
 				break;
+			case "difficulty":
+				this.difficultyController.show();
+				break;
 			case "game":
-				this.gameController.startGame();
+				this.gameController.startGame(screen.difficulty);
 				break;
 			case "tutorial":
 				this.tutorialController.show();
