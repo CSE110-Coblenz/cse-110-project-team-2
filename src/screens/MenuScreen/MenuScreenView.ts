@@ -26,6 +26,7 @@ export class MenuScreenView implements View {
         });
         title.offsetX(title.width() / 2);
 
+        // Start button  -----
         const startButtonGroup = new Konva.Group();
         const startButton = new Konva.Rect({
             x: STAGE_WIDTH / 2 - 90,
@@ -45,7 +46,34 @@ export class MenuScreenView implements View {
         startButtonGroup.add(startText);
         startButtonGroup.on("click", onStartClick);
 
-        this.group.add(bg, title, startButtonGroup);
+
+        // Instruction Button  -----
+        const instructionButtonGroup = new Konva.Group();
+        const instructionButton = new Konva.Rect({
+            x: STAGE_WIDTH - 200,
+            y: STAGE_HEIGHT - 70,
+            width: 110,
+            height: 56,
+            fill: "#d84315",
+            cornerRadius: 8,
+            stroke: "#b71c1c",
+            strokeWidth: 2,
+        });
+
+        const instructionText = new Konva.Text({
+            x: STAGE_WIDTH - 190,
+            y: STAGE_HEIGHT - 50,
+            text: "INSTRUCTIONS",
+            fontsize: 22, 
+            fill: "white",
+        });
+
+        instructionButtonGroup.add(instructionButton);
+        instructionButtonGroup.add(instructionText);
+
+
+
+        this.group.add(bg, title, startButtonGroup, instructionButtonGroup);
     }
 
     show(): void {
