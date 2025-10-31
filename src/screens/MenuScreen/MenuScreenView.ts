@@ -1,64 +1,65 @@
 import Konva from "konva";
+import type { View } from "../../types";
+import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
 /**
- * The MenuScreenView represents the view for the main game menu
+ * MenuScreenView - Renders the menu screen
  */
-export class MenuScreenView {
+export class MenuScreenView implements View {
+    private group: Konva.Group;
 
-    stage: Konva.Stage;
-    layer: Konva.Layer;
-    // A group for the settings popup window. Null until the popup is created.
-    settingsPopup: Konva.Group | null = null; 
+    constructor(onStartClick: () => void) {
+        this.group = new Konva.Group({ visible: true });
 
-    // ID of the HTMKL container with the canvas
-    constructor(containerId: string){
-        this.stage = new Konva.Stage({
-            container: containerId,
-            width: window.innerWidth,
-            height: window.innerHeight,
+        // Background
+        const bg = new Konva.Rect({ x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "#ffe0b2" });
 
-    });
+        // Title text
+        const title = new Konva.Text({
+            x: STAGE_WIDTH / 2,
+            y: 120,
+            text: "Slice by Slice",
+            fontSize: 48,
+            fontFamily: "Arial",
+            fill: "#6d4c41",
+            align: "center",
+        });
+        title.offsetX(title.width() / 2);
 
-    // Create a drawing layer in the stage 
-    this.layer = new Konva.Layer();
-    this.stage.add(this.layer);
+        const startButtonGroup = new Konva.Group();
+        const startButton = new Konva.Rect({
+            x: STAGE_WIDTH / 2 - 90,
+            y: 260,
+            width: 180,
+            height: 56,
+            fill: "#d84315",
+            cornerRadius: 8,
+            stroke: "#b71c1c",
+            strokeWidth: 2,
+        });
 
-    // Create buttons for the instruction and game settings
-    this.createButtons();
+        const startText = new Konva.Text({ x: STAGE_WIDTH / 2, y: 278, text: "Start", fontSize: 22, fill: "white" });
+        startText.offsetX(startText.width() / 2);
 
+        startButtonGroup.add(startButton);
+        startButtonGroup.add(startText);
+        startButtonGroup.on("click", onStartClick);
+
+        this.group.add(bg, title, startButtonGroup);
     }
 
+    show(): void {
+        this.group.visible(true);
+        this.group.getLayer()?.draw();
+    }
 
+    hide(): void {
+        this.group.visible(false);
+        this.group.getLayer()?.draw();
+    }
 
-    /**
-     * Creates the buttons on the screen
-     */
-
-    private createButtons(){
-        const buttonY = this.stage.height() - 60; //Button near bottom of the screen
-        const buttonX = this.stage.width() - 200; //Button near right of the screen
-        
-        // Instructions Button
-        const instructionBtn = new Konva.Rect({
-            x: buttonX,
-            y: buttonY,
-            width: 90,
-            height: 40,
-            fill: "red",
-            corderRadius: 15,
-        });
-
-        const instructionBtnText = new Konva.Text({
-            x: buttonX + 10,
-            y: buttonY + 10,
-            text: "INSTRUCTIONS",
-            fontSize: 18,
-            fill: "black",
-        });
-
-        
-        
-        
-        
+    getGroup(): Konva.Group {
+        return this.group;
     }
 }
+
