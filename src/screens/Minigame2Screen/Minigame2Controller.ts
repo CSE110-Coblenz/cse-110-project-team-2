@@ -1,37 +1,43 @@
 import { Minigame2Model } from "./Minigame2Model";
 import { Minigame2View } from "./Minigame2View";
-import type { ScreenController, ScreenSwitcher } from "../../types";
+import { ScreenController, ScreenSwitcher } from "../../types";
 
-export class Minigame2Controller implements ScreenController {
+export class Minigame2Controller extends ScreenController {
   private model: Minigame2Model;
   private view: Minigame2View;
-  private switcher: ScreenSwitcher;
+  private switcher?: ScreenSwitcher; // optional if running standalone
 
-  constructor(switcher: ScreenSwitcher) {
+  constructor(switcher?: ScreenSwitcher) {
+    super();
     this.model = new Minigame2Model();
     this.view = new Minigame2View();
     this.switcher = switcher;
+
+    // // Connect UI events
+    // this.view.onAddObstacle(() => this.handleAddObstacle());
   }
 
   private handleAddObstacle(): void {
     this.model.increaseObstacleCount();
     this.view.updateObstacleCount(this.model.getObstacleCount());
 
-    // next steps?
-    // if (this.model.getObstacleCount() >= 10) {
-    //   this.switcher.switchToScreen({ type: "result" });
-    // }
+    // transition to next screen
+    if (this.model.getObstacleCount() >= 10 && this.switcher) {
+      this.switcher.switchToScreen({ type: "minigame2" }); // placeholder
+    }
   }
 
   getView(): Minigame2View {
     return this.view;
   }
 
-  show(): void {
+  startGame(): void {
+    this.model.reset();
+    this.view.updateObstacleCount(0);
     this.view.show();
   }
 
-  hide(): void {
+  endGame(): void {
     this.view.hide();
   }
 }
