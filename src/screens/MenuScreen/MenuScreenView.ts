@@ -47,6 +47,16 @@ export class MenuScreenView {
             fill: "red",
             corderRadius: 15,
         });
+
+        const instructionBtnText = new Konva.Text({
+            x: buttonX + 10,
+            y: buttonY + 10,
+            text: "INSTRUCTIONS",
+            fontSize: 18,
+            fill: "black",
+        });
+
+        
         
         
         
