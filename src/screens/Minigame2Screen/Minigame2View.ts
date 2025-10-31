@@ -128,7 +128,7 @@ export class Minigame2View {
     Konva.Image.fromURL("/deliverycar.png", (img) => {
         img.width(200);
         img.height(200);
-        img.x(200);
+        img.x(250);
         img.y(STAGE_HEIGHT / 3 + 15);
 
         img.rotation(90);

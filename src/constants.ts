@@ -1,6 +1,6 @@
 // Shared constants for the pizza game
-export const STAGE_WIDTH = 1135;
-export const STAGE_HEIGHT = 700;
+export const STAGE_WIDTH = 1300;
+export const STAGE_HEIGHT = 650;
 
 export const DIFFICULTY_LEVELS = ["easy", "medium", "hard"] as const;
 export type DifficultyLevel = typeof DIFFICULTY_LEVELS[number];

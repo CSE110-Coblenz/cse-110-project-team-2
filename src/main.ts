@@ -28,6 +28,7 @@ class App implements ScreenSwitcher {
 
 		// Start on the menu
 		this.switchToScreen({ type: "menu" });
+		// this.switchToScreen({ type: "minigame2" });
 	}
 
 	switchToScreen(screen: Screen): void {
