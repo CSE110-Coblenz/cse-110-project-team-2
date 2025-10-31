@@ -96,11 +96,11 @@ export class MenuScreenView implements View {
             fill: "white",
         });
 
-        settingButtonGroup.add(settingButton);
-        settingButtonGroup.add(settingText);
+        settingButtonGroup.add(settingButton, settingText);
+    
 
         // event handler to open teh setting popup
-        settingButtonGroup.on("click", () => {
+        /*settingButtonGroup.on("click", () => {
             this.showSettingsPopup(this.musicOn, 
                 () => (this.settingsPopup = null), // closes callback
                 () => {
@@ -109,7 +109,18 @@ export class MenuScreenView implements View {
                 }
 
             );
+        });*/
+        /*settingButtonGroup.on("click", () => {
+            if(!this.settingsPopup) {
+                this.showSettingsPopup(
+                    () => (this.settingsPopup = null)
+                );
+            }
+        });*/
+        settingButtonGroup.on("click", () =>{
+            this.showSettingsPopup(this.musicOn, () => (this.settingsPopup = null), () => {});
         });
+
 
         this.group.add(bg, title, startButtonGroup, instructionButtonGroup, settingButtonGroup);
     }
@@ -123,6 +134,9 @@ export class MenuScreenView implements View {
         // If popup already exists, destroy it
         if(this.settingsPopup){
             this.settingsPopup.destroy();
+            this.settingsPopup = null;
+            this.group.getLayer()?.draw();
+            return;
         }
 
         const popup = new Konva.Group({
@@ -158,6 +172,8 @@ export class MenuScreenView implements View {
             //fontStyle: "bold",
         })
 
+        const musicGroup = new Konva.Group({x:100, y:100});
+
         // Toggle button to turn on/off the music
         const musicToggle = new Konva.Rect({
             x: 100,
@@ -173,6 +189,16 @@ export class MenuScreenView implements View {
             text: musicOn ? "Music ON" : "Music OFF",
             fontSize: 16,
             fill: "white",
+            listening: false,
+        });
+
+        
+
+        musicToggle.on("click", () => {
+            this.musicOn = !this.musicOn;
+            musicToggle.fill(this.musicOn ? "green" : "red");
+            musicToggleText.text(this.musicOn ? "Music ON" : "Music OFF");
+            this.group.getLayer()?.draw();
         });
 
         // Event handler to close the settings popup
@@ -182,9 +208,9 @@ export class MenuScreenView implements View {
             onClose();
         });
 
-        musicToggle.on("click", () => {
+        /*musicToggle.on("click", () => {
             onToggle();
-        });
+        });*/
 
 
         popup.add(popupBackground, closePopup, popupTitle, musicToggle, musicToggleText);
