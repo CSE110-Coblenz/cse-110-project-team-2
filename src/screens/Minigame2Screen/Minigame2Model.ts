@@ -1,20 +1,15 @@
-// /**
-//  * Minigame2Model - Manages minigame 2 state
-//  */
-
-
 export class Minigame2Model {
-  private score = 0;
+  private obstacleCount = 0;
 
-  getScore(): number {
-    return this.score;
+  getObstacleCount(): number {
+    return this.obstacleCount;
   }
 
-  incrementScore(): void {
-    this.score++;
+  increaseObstacleCount(amount = 1): void {
+    this.obstacleCount += amount;
   }
 
   reset(): void {
-    this.score = 0;
+    this.obstacleCount = 0;
   }
 }
