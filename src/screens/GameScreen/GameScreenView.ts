@@ -46,6 +46,10 @@ export class GameScreenView implements View {
         this.drawToppingsButton(20,550,20,300,"pepperoni","red",15)
         this.drawToppingsButton(20,480,60,300,"peppers","green",15)
 
+		this.drawRemoveTopping(150,20,"mushrooms")
+		this.drawRemoveTopping(150,100,"peppers")
+		this.drawRemoveTopping(150,180,"pepperoni")
+
         this.status = new Konva.Text({ x: 520, y: 20, text: '', fontSize: 16, fill: 'black' });
         this.group.add(this.pizzaGroup)
         this.group.add(this.status);
@@ -167,6 +171,51 @@ export class GameScreenView implements View {
         this.pizzaGroup.getLayer()?.batchDraw();
 
     }
+
+	//remove specific topping on pizza
+	private drawRemoveTopping(cx:number,cy:number,topping:string):void{
+		//button group
+		const button=new Konva.Group({
+			x:cx,
+			y:cy,
+		});
+
+		//button shape
+		const rect = new Konva.Rect({
+			width: 200,
+			height: 50,
+			fill: 'green',
+			stroke: 'black',
+			strokeWidth: 4,
+		});
+
+		//button text
+		const text = new Konva.Text({
+			text: `Remove ${topping}`,
+			fontSize: 20,
+			fill: 'white',
+			x: rect.width() / 2-80, 
+			y: rect.height() / 2-10,
+		});
+
+		button.add(rect);
+		button.add(text);
+		this.group.add(button);
+
+		//remove specific topping
+		button.on("click", ()=>{
+			if(this.toppingsOnPizza.has(topping)){
+				for(let node of this.toppingsOnPizza.get(topping)!){
+					node.destroy();
+				}
+				this.toppingsOnPizza.delete(topping);
+				this.filled.get(topping)!.clear();
+			}
+			this.updateFilledDisplay();
+			this.group.getLayer()?.batchDraw();
+
+		})
+	}
 
     //initialize values for every type of topping
     private typeCheck(type:string){
