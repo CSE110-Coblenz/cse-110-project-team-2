@@ -1,6 +1,6 @@
-import Konva from "konva"
+import Konva from "konva";
 
-export class ResultsScrrenView {
+export class ResultsScreenView {
   private STAGE_HEIGHT = 600;
   private STAGE_WIDTH = 800;
   private group: Konva.Group;
