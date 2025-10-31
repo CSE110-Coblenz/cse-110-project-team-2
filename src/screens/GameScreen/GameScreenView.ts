@@ -9,6 +9,7 @@ export class GameScreenView implements View {
 	private group: Konva.Group;
 	private pizzaGroup = new Konva.Group();
 	private base: Konva.Circle | undefined;
+	private sliceArcs: Konva.Arc[] = [];
 	private sliceNum: number = 0;
 
 	constructor() {
@@ -112,6 +113,45 @@ export class GameScreenView implements View {
 				listening:false
 			})
 			);
+		}
+		for (let i=0;i<slices;i++) {
+			const arc= new Konva.Arc({
+			x:this.pizzaX,
+			y:this.pizzaY,
+			innerRadius:0,
+			outerRadius:this.rOuter,
+			angle:degPer,
+			rotation:i*degPer,
+			stroke:'black',
+			fill:'yellow',
+
+			strokeWidth: 4,
+			id:`slice-${i}`,
+			name:'slice',
+			});
+			this.pizzaGroup.add(arc);
+			this.sliceArcs.push(arc);
+		}
+
+		let sliceID=new Konva.Text({
+  					text: '',
+  					fontSize: 20,
+  					fill: 'black',
+  					x: 150,
+  					y: 20,
+				});
+		this.group.add(sliceID)
+		for(let i:number=0;i<this.sliceArcs.length;i++){
+			this.sliceArcs.at(i)?.on("mouseover",()=>{
+				this.sliceArcs.at(i)?.scale({x:1.2,y:1.2})
+				sliceID.text(this.sliceArcs.at(i)?.id())
+
+			})
+			this.sliceArcs.at(i)?.on("mouseout",()=>{
+				this.sliceArcs.at(i)?.scale({x:1,y:1})
+				sliceID.text('')
+
+			})
 		}
 	}
 
