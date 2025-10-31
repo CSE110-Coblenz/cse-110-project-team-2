@@ -11,7 +11,36 @@ export class Minigame2View {
   constructor() {
     this.group = new Konva.Group({ visible: false });
 
-    // Display for obstacle count
+
+    // road background
+    const road = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: STAGE_WIDTH,
+        height: STAGE_HEIGHT,
+        fill: "gray",
+    })
+    this.group.add(road);
+
+    // grass sides
+    const grassTop = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: STAGE_WIDTH,
+        height: STAGE_HEIGHT / 5,
+        fill: "green",
+    })
+    const grassBottom = new Konva.Rect({
+        x: 0,
+        y: STAGE_HEIGHT - (STAGE_HEIGHT / 5),
+        width: STAGE_WIDTH,
+        height: STAGE_HEIGHT / 5,
+        fill: "green",
+    })
+    this.group.add(grassTop);
+    this.group.add(grassBottom);
+
+    // obstacle count
     this.obstacleText = new Konva.Text({
       x: 20,
       y: 20,
@@ -19,8 +48,18 @@ export class Minigame2View {
       fontSize: 24,
       fill: "black",
     });
-
     this.group.add(this.obstacleText);
+
+    // timer display that counts down from 30 seconds
+    const timerText = new Konva.Text({
+        x: STAGE_WIDTH - 150,
+        y: 20,
+        text: "Time left: 30",
+        fontSize: 24,
+        fill: "black",
+    });
+    this.group.add(timerText);
+
 
   }
 
@@ -34,9 +73,11 @@ export class Minigame2View {
 
   show(): void {
     this.group.visible(true);
+    this.group.getLayer()?.draw();
   }
 
   hide(): void {
     this.group.visible(false);
+    this.group.getLayer()?.draw();
   }
 }
