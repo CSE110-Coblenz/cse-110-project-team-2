@@ -1,15 +1,15 @@
 import Konva from "konva";
+import type { View } from "../../types";
+import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
-export class GameScreenView{
-	private STAGE_HEIGHT=600;
-	private STAGE_WIDTH=800;
-	private pizzaX=this.STAGE_WIDTH-250;
-	private pizzaY=this.STAGE_HEIGHT-250;
-	private rOuter=200;
-	private group:Konva.Group;
+export class GameScreenView implements View {
+	private pizzaX = STAGE_WIDTH - 250;
+	private pizzaY = STAGE_HEIGHT - 250;
+	private rOuter = 200;
+	private group: Konva.Group;
 	private pizzaGroup = new Konva.Group();
-	private base:Konva.Circle
-	private sliceNum:number=0;
+	private base: Konva.Circle | undefined;
+	private sliceNum: number = 0;
 
 	constructor() {
 		this.group = new Konva.Group({ visible: false });
@@ -18,12 +18,12 @@ export class GameScreenView{
 		const bg = new Konva.Rect({
 			x: 0,
 			y: 0,
-			width: this.STAGE_WIDTH,
-			height: this.STAGE_HEIGHT,
+			width: STAGE_WIDTH,
+			height: STAGE_HEIGHT,
 			fill: "#87CEEB", // Sky blue
 		});
 		this.group.add(bg);
-		
+        
 
 		this.base=new Konva.Circle({
 			stroke:"black",
@@ -44,14 +44,13 @@ export class GameScreenView{
 
 		this.group.add(this.pizzaGroup)
 
-
 	}
 
-	drawSlicesButton(cx:number,cy:number,slices:number):void{
+	drawSlicesButton(cx: number, cy: number, slices: number): void {
 		//button group
-		const button=new Konva.Group({
-			x:cx,
-			y:cy,
+		const button = new Konva.Group({
+			x: cx,
+			y: cy,
 		});
 
 		//button shape
@@ -65,11 +64,11 @@ export class GameScreenView{
 
 		//button text
 		var text = new Konva.Text({
-  			text: slices+' slices',
-  			fontSize: 20,
-  			fill: 'white',
-  			x: rect.width() / 2-30, 
-  			y: rect.height() / 2-10,
+			text: slices+' slices',
+			fontSize: 20,
+			fill: 'white',
+			x: rect.width() / 2-30, 
+			y: rect.height() / 2-10,
 		});
 		button.add(rect);
 		button.add(text);
@@ -81,7 +80,7 @@ export class GameScreenView{
 			this.base?.remove()
 		})
 	}
-	
+    
 
 	drawPizza(slices: number): void {
 		//reset pizza
@@ -95,7 +94,7 @@ export class GameScreenView{
 			strokeWidth:4,
 			fill:"yellow",
 			listening:false
-	
+    
 		});
 		this.pizzaGroup.add(pizzaBase);
 		const degPer = 360 / slices;
@@ -114,10 +113,7 @@ export class GameScreenView{
 			})
 			);
 		}
-
 	}
-
-
 
 	getGroup(): Konva.Group {
 		return this.group;
@@ -125,23 +121,11 @@ export class GameScreenView{
 
 	show(): void {
 		this.group.visible(true);
+		this.group.getLayer()?.draw();
 	}
 
 	hide(): void {
 		this.group.visible(false);
+		this.group.getLayer()?.draw();
 	}
-    
 }
-const stage = new Konva.Stage({
-  container: 'Pizza Project',       
-  width: 800,            
-  height: 600,           
-});
-
-const layer = new Konva.Layer();
-stage.add(layer);
-
-const game = new GameScreenView();
-layer.add(game.getGroup());
-game.show();             // make it visible
-layer.draw();
