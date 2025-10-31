@@ -7,10 +7,11 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 export class Minigame2View {
   private group: Konva.Group;
   private obstacleText: Konva.Text;
+  private timerText: Konva.Text;
+
 
   constructor() {
     this.group = new Konva.Group({ visible: false });
-
 
     // road background
     const road = new Konva.Rect({
@@ -51,18 +52,23 @@ export class Minigame2View {
     this.group.add(this.obstacleText);
 
     // timer display that counts down from 30 seconds
-    const timerText = new Konva.Text({
+    this.timerText = new Konva.Text({
         x: STAGE_WIDTH - 150,
         y: 20,
         text: "Time left: 30",
         fontSize: 24,
         fill: "black",
     });
-    this.group.add(timerText);
-
+    this.group.add(this.timerText);
 
   }
 
+  updateTimer(timeRemaining: number): void {
+    // Update the timer display
+    this.timerText.text(`Time left: ${timeRemaining}`);
+    this.group.getLayer()?.draw();
+  }
+  
   getGroup(): Konva.Group {
     return this.group;
   }
