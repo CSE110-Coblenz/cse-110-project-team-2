@@ -12,7 +12,7 @@ export class MenuScreenView implements View {
     private settingsPopup: Konva.Group | null = null; 
     private musicOn: boolean = true;
 
-    constructor(onStartClick: () => void) {
+    constructor(onStartClick: () => void, private onToggleMusic: (on: boolean) => void) {
         this.group = new Konva.Group({ visible: true });
 
         // Background
@@ -68,7 +68,7 @@ export class MenuScreenView implements View {
             x: STAGE_WIDTH - 190,
             y: STAGE_HEIGHT - 50,
             text: "INSTRUCTIONS",
-            fontsize: 22, 
+            fontSize: 13, 
             fill: "white",
         });
 
@@ -92,7 +92,7 @@ export class MenuScreenView implements View {
             x: STAGE_WIDTH - 325,
             y: STAGE_HEIGHT - 50,
             text: "SETTINGS",
-            fontsize: 22, 
+            fontSize: 13, 
             fill: "white",
         });
 
@@ -110,16 +110,18 @@ export class MenuScreenView implements View {
 
             );
         });*/
-        /*settingButtonGroup.on("click", () => {
-            if(!this.settingsPopup) {
-                this.showSettingsPopup(
-                    () => (this.settingsPopup = null)
-                );
+        settingButtonGroup.on("click", () => {
+            if (this.settingsPopup) {
+              this.settingsPopup.destroy();
+              this.settingsPopup = null;
+              this.group.getLayer()?.draw();
+            } else {
+              this.showSettingsPopup(this.musicOn, () => (this.settingsPopup = null));
             }
-        });*/
-        settingButtonGroup.on("click", () =>{
+          });
+        /*settingButtonGroup.on("click", () =>{
             this.showSettingsPopup(this.musicOn, () => (this.settingsPopup = null), () => {});
-        });
+        });*/
 
 
         this.group.add(bg, title, startButtonGroup, instructionButtonGroup, settingButtonGroup);
@@ -129,8 +131,8 @@ export class MenuScreenView implements View {
     /**
      * Settings popup window
      */
-    showSettingsPopup(musicOn: boolean, onClose: () => void, onToggle: () => void) {
-
+    //showSettingsPopup(musicOn: boolean, onClose: () => void, onToggle: () => void) {
+    showSettingsPopup(musicOn: boolean, onClose: () => void) {
         // If popup already exists, destroy it
         if(this.settingsPopup){
             this.settingsPopup.destroy();
@@ -172,32 +174,56 @@ export class MenuScreenView implements View {
             //fontStyle: "bold",
         })
 
-        const musicGroup = new Konva.Group({x:100, y:100});
+        const musicGroup = new Konva.Group({ x: 90, y: 70, width: 120, height: 40 });
 
         // Toggle button to turn on/off the music
         const musicToggle = new Konva.Rect({
-            x: 100,
-            y: 100,
-            width: 100,
+            x: 90,
+            y: 70,
+            width: 120,
             height: 40,
             fill: musicOn ? "green" : "red",
             cornerRadius: 8,
         });
         const musicToggleText = new Konva.Text({
             x: 120,
-            y: 110,
+            y: 80,
             text: musicOn ? "Music ON" : "Music OFF",
             fontSize: 16,
             fill: "white",
             listening: false,
         });
 
-        
+        musicGroup.add(musicToggle, musicToggleText);
 
+        //Toggle button to turn on/off the sound effects
+        /*const soundEffectToggle = new Konva.Rect({
+            x: 120,
+            y: 100,
+            width: 120,
+            height: 40,
+            fill: musicOn ? "green" : "red",
+            cornerRadius: 8,
+            
+        });
+        const soundEffectText = new Konva.Text({
+            x: 120,
+            y: 80,
+            // may replace with image later
+            text: musicOn ? "Sound Effects ON" : "Sound Effects OFF",
+            fontSize: 16,
+            fill: "white",
+            listening: false,
+        });*/
+
+        // event handler to change the color of the music button
         musicToggle.on("click", () => {
             this.musicOn = !this.musicOn;
             musicToggle.fill(this.musicOn ? "green" : "red");
             musicToggleText.text(this.musicOn ? "Music ON" : "Music OFF");
+
+            this.onToggleMusic(this.musicOn);
+
             this.group.getLayer()?.draw();
         });
 
