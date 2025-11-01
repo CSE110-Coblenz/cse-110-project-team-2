@@ -11,7 +11,7 @@ class App implements ScreenSwitcher {
 
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
-    private minigame2Controller: Minigame2Controller;
+  private minigame2Controller: Minigame2Controller;
 
 	constructor(container: string) {
 		this.stage = new Konva.Stage({ container, width: STAGE_WIDTH, height: STAGE_HEIGHT });
@@ -20,7 +20,7 @@ class App implements ScreenSwitcher {
 
 		this.menuController = new MenuScreenController(this);
 		this.gameController = new GameScreenController(this);
-        this.minigame2Controller = new Minigame2Controller(this);
+    this.minigame2Controller = new Minigame2Controller(this);
 
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
@@ -35,7 +35,7 @@ class App implements ScreenSwitcher {
 		// hide all
 		this.menuController.hide();
 		this.gameController.hide();
-        this.minigame2Controller.hide();
+    this.minigame2Controller.hide();
 
 		switch (screen.type) {
 			case "menu":
@@ -44,9 +44,9 @@ class App implements ScreenSwitcher {
 			case "game":
 				this.gameController.startGame();
 				break;
-            case "minigame2":
-                this.minigame2Controller.startGame();
-                break;
+      case "minigame2":
+        this.minigame2Controller.startGame();
+        break;
 			default:
 				this.menuController.show();
 				break;
