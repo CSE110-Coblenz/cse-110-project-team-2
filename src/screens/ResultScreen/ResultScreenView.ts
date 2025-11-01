@@ -23,7 +23,7 @@ export class ResultsScreenView {
     y: 0,
     width: this.STAGE_WIDTH,
     height: this.STAGE_HEIGHT,
-    fill: "87CEEB",
+    fill: "black",
     });
     this.group.add(background);
 
@@ -32,7 +32,7 @@ export class ResultsScreenView {
       y: 40,
       width: this.STAGE_WIDTH - 80,
       height: this.STAGE_HEIGHT - 140,
-      fill: "fde68a",
+      fill: "#fde68a",
       stroke: "black",
       strokewidth: 3,
       cornerRadius: 16,
@@ -54,18 +54,18 @@ export class ResultsScreenView {
 
     this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Ordered received:");
     this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Orders correct:");
-    this.percentCorrect = this.makeRow(card.x() + 26, startY + rowGap * 2,"% correct");
-    this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received");
-    this.totalTips = this.makeRow(card.x() + 26, startY + rowGap * 4, "Total tips");
+    this.percentCorrect = this.makeRow(card.x() + 26, startY + rowGap * 2,"% correct:");
+    this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received:");
+    this.totalTips = this.makeRow(card.x() + 26, startY + rowGap * 4, "Total tips:");
 
     const buttonsY = card.y() + card.height() - 80;
     const btnW = 200;
     const gap = 20;
-    const fristX = card.x() + 26;
+    const firstX = card.x() + 26;
 
-    const btnWrong = this.makeButton(fristX + (btnW + gap) * 0, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
-    const btnEnd = this.makeButton(fristX + (btnW + gap) * 1, buttonsY, "End game", () => this.onEndGame());
-    const btnNext = this.makeButton(fristX + (btnW + gap) * 2, buttonsY, "Next day", () => this.onNextDay());
+    const btnWrong = this.makeButton(firstX + (btnW + gap) * 0, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
+    const btnEnd = this.makeButton(firstX + (btnW + gap) * 1, buttonsY, "End game", () => this.onEndGame());
+    const btnNext = this.makeButton(firstX + (btnW + gap) * 2, buttonsY, "Next day", () => this.onNextDay());
 
     this.group.add(btnWrong, btnEnd, btnNext);
   }
@@ -79,11 +79,15 @@ export class ResultsScreenView {
   }
 
   private makeButton(x: number, y: number, text: string, onClick: () => void): Konva.Group {
-    const g  = new Konva.Group({x, y});
+    const g  = new Konva.Group({x, y, listening: true});
     const rect = new Konva.Rect({width: 200, height: 48, fill: "red", stroke: "black", strokeWidth: 3, cornerRadius: 10});
     const label = new Konva.Text({text, fontSize: 18, fill: "white", x: 12, y: 12});
+    const hit = new Konva.Rect({width: 200, height: 48, opacity: 0});
     g.add(rect);
     g.add(label);
+    g.add(hit);
+    g.on("mouseenter", () => (document.body.style.cursor = "pointer"));
+    g.on("mouseleave", () => (document.body.style.cursor = "default"));
     g.on("click", onClick);
     return g;
   }
@@ -98,6 +102,8 @@ export class ResultsScreenView {
     this.percentCorrect.text(pct.toFixed(1) + "%");
     this.tipsReceived.text(String(Math.max(0, stats.tipsReceived | 0)));
     this.totalTips.text("$" + Math.abs(stats.totalTips || 0).toFixed(2));
+
+    this.group.draw();
   }
 
   getGroup(): Konva.Group {
