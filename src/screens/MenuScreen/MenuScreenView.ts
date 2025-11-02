@@ -12,9 +12,12 @@ export class MenuScreenView implements View {
     private settingsPopup: Konva.Group | null = null; 
     private musicOn: boolean = true;
 
-    constructor(onStartClick: () => void, private onToggleMusic: (on: boolean) => void) {
+    constructor(onStartClick: () => void, 
+                private onToggleMusic: (on: boolean) => void,
+                private onTutorialClick: () => void) {
         this.group = new Konva.Group({ visible: true });
 
+        
         // Background
         const bg = new Konva.Rect({ x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "#ffe0b2" });
 
@@ -70,10 +73,17 @@ export class MenuScreenView implements View {
             text: "INSTRUCTIONS",
             fontSize: 13, 
             fill: "white",
+            listening: false,
         });
 
-        instructionButtonGroup.add(instructionButton);
-        instructionButtonGroup.add(instructionText);
+        instructionText.listening(false);
+
+        instructionButtonGroup.add(instructionButton, instructionText);
+
+        instructionButtonGroup.on("click tap", () => {
+            console.log("tutorial button clicked");
+            this.onTutorialClick();            
+          });
 
         // Settings Button ----
         const settingButtonGroup = new Konva.Group();
@@ -99,17 +109,6 @@ export class MenuScreenView implements View {
         settingButtonGroup.add(settingButton, settingText);
     
 
-        // event handler to open teh setting popup
-        /*settingButtonGroup.on("click", () => {
-            this.showSettingsPopup(this.musicOn, 
-                () => (this.settingsPopup = null), // closes callback
-                () => {
-                    this.musicOn = !this.musicOn; // music toggle
-                    this.showSettingsPopup(this.musicOn, () => {}, () => {});
-                }
-
-            );
-        });*/
         settingButtonGroup.on("click", () => {
             if (this.settingsPopup) {
               this.settingsPopup.destroy();
@@ -119,9 +118,6 @@ export class MenuScreenView implements View {
               this.showSettingsPopup(this.musicOn, () => (this.settingsPopup = null));
             }
           });
-        /*settingButtonGroup.on("click", () =>{
-            this.showSettingsPopup(this.musicOn, () => (this.settingsPopup = null), () => {});
-        });*/
 
 
         this.group.add(bg, title, startButtonGroup, instructionButtonGroup, settingButtonGroup);
@@ -233,11 +229,6 @@ export class MenuScreenView implements View {
             this.group.getLayer()?.draw();
             onClose();
         });
-
-        /*musicToggle.on("click", () => {
-            onToggle();
-        });*/
-
 
         popup.add(popupBackground, closePopup, popupTitle, musicToggle, musicToggleText);
         this.group.add(popup);
