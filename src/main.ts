@@ -4,6 +4,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants";
 import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController";
 import { GameScreenController } from "./screens/GameScreen/GameScreenController";
 import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScreenController";
+import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
 
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
@@ -12,6 +13,7 @@ class App implements ScreenSwitcher {
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
 	private tutorialController: TutorialScreenController;
+  private minigame2Controller: Minigame2Controller;
 
 	constructor(container: string) {
 		this.stage = new Konva.Stage({ container, width: STAGE_WIDTH, height: STAGE_HEIGHT });
@@ -25,9 +27,15 @@ class App implements ScreenSwitcher {
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
 		this.layer.add(this.tutorialController.getView().getGroup());
+    this.minigame2Controller = new Minigame2Controller(this);
+
+		this.layer.add(this.menuController.getView().getGroup());
+		this.layer.add(this.gameController.getView().getGroup());
+        this.layer.add(this.minigame2Controller.getView().getGroup());
 
 		// Start on the menu
 		this.switchToScreen({ type: "menu" });
+		// this.switchToScreen({ type: "minigame2" });
 	}
 
 	switchToScreen(screen: Screen): void {
@@ -35,6 +43,7 @@ class App implements ScreenSwitcher {
 		this.menuController.hide();
 		this.gameController.hide();
 		this.tutorialController.hide();
+    this.minigame2Controller.hide();
 
 		switch (screen.type) {
 			case "menu":
@@ -46,6 +55,9 @@ class App implements ScreenSwitcher {
 			case "tutorial":
 				this.tutorialController.show();
 				break;
+      case "minigame2":
+        this.minigame2Controller.startGame();
+        break;
 			default:
 				this.menuController.show();
 				break;
