@@ -3,6 +3,7 @@ import { ScreenSwitcher, Screen, ScreenController, View } from "./types";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants";
 import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController";
 import { GameScreenController } from "./screens/GameScreen/GameScreenController";
+import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
 
 class App implements ScreenSwitcher {
@@ -11,6 +12,7 @@ class App implements ScreenSwitcher {
 
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
+	private tutorialController: TutorialScreenController;
   private minigame2Controller: Minigame2Controller;
 
 	constructor(container: string) {
@@ -20,6 +22,11 @@ class App implements ScreenSwitcher {
 
 		this.menuController = new MenuScreenController(this);
 		this.gameController = new GameScreenController(this);
+		this.tutorialController = new TutorialScreenController(this);
+
+		this.layer.add(this.menuController.getView().getGroup());
+		this.layer.add(this.gameController.getView().getGroup());
+		this.layer.add(this.tutorialController.getView().getGroup());
     this.minigame2Controller = new Minigame2Controller(this);
 
 		this.layer.add(this.menuController.getView().getGroup());
@@ -35,6 +42,7 @@ class App implements ScreenSwitcher {
 		// hide all
 		this.menuController.hide();
 		this.gameController.hide();
+		this.tutorialController.hide();
     this.minigame2Controller.hide();
 
 		switch (screen.type) {
@@ -43,6 +51,9 @@ class App implements ScreenSwitcher {
 				break;
 			case "game":
 				this.gameController.startGame();
+				break;
+			case "tutorial":
+				this.tutorialController.show();
 				break;
       case "minigame2":
         this.minigame2Controller.startGame();
