@@ -1,8 +1,9 @@
 import Konva from "konva";
+import {STAGE_WIDTH, STAGE_HEIGHT} from "../../constants";
+import {View} from "../../types"; 
+import {Group} from "konva/lib/Group";
 
-export class ResultsScreenView {
-  private STAGE_HEIGHT = 600;
-  private STAGE_WIDTH = 800;
+export class ResultsScreenView implements View {
   private group: Konva.Group;
 
   private ordersReceived: Konva.Text;
@@ -11,27 +12,26 @@ export class ResultsScreenView {
   private tipsReceived: Konva.Text;
   private totalTips: Konva.Text;
 
-  public onViewWrongOrders: () => void = () => alert("View wrong orders");
-  public onEndGame: () => void = () => alert("End game");
-  public onNextDay: () => void = () => alert("Next day");
+  public onViewWrongOrders: () => void = () => {};
+  public onEndGame: () => void = () => {};
+  public onNextDay: () => void = () => {};
 
   constructor () {
-    this.group = new Konva.Group({visible: false});
+    this.group = new Konva.Group({visible: false, listening: true});
     
-    const background = new Konva.Rect({
-    x: 0,
-    y: 0,
-    width: this.STAGE_WIDTH,
-    height: this.STAGE_HEIGHT,
-    fill: "black",
-    });
-    this.group.add(background);
+    this.group.add(new Konva.Rect({
+      x: 0,
+      y: 0,
+      width: STAGE_WIDTH,
+      height: STAGE_HEIGHT,
+      fill: "#fde68a",
+    }));
 
     const card = new Konva.Rect({
       x: 40,
       y: 40,
-      width: this.STAGE_WIDTH - 80,
-      height: this.STAGE_HEIGHT - 140,
+      width: STAGE_WIDTH - 80,
+      height: STAGE_HEIGHT - 140,
       fill: "#fde68a",
       stroke: "black",
       strokewidth: 3,
@@ -49,8 +49,8 @@ export class ResultsScreenView {
     });
     this.group.add(title);
 
-    const startY = title.y() + 48;
-    const rowGap = 36;
+    const startY = title.y() + 60;
+    const rowGap = 40;
 
     this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Ordered received:");
     this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Orders correct:");
@@ -58,14 +58,11 @@ export class ResultsScreenView {
     this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received:");
     this.totalTips = this.makeRow(card.x() + 26, startY + rowGap * 4, "Total tips:");
 
-    const buttonsY = card.y() + card.height() - 80;
-    const btnW = 200;
-    const gap = 20;
-    const firstX = card.x() + 26;
+    const buttonsY = card.y() + card.height() - 90;
 
-    const btnWrong = this.makeButton(firstX + (btnW + gap) * 0, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
-    const btnEnd = this.makeButton(firstX + (btnW + gap) * 1, buttonsY, "End game", () => this.onEndGame());
-    const btnNext = this.makeButton(firstX + (btnW + gap) * 2, buttonsY, "Next day", () => this.onNextDay());
+    const btnWrong = this.makeButton(card.x() + 40, buttonsY, "View wrong orders", this.onViewWrongOrders);
+    const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "End game", this.onEndGame);
+    const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Next day", this.onNextDay);
 
     this.group.add(btnWrong, btnEnd, btnNext);
   }
@@ -82,13 +79,17 @@ export class ResultsScreenView {
     const g  = new Konva.Group({x, y, listening: true});
     const rect = new Konva.Rect({width: 200, height: 48, fill: "red", stroke: "black", strokeWidth: 3, cornerRadius: 10});
     const label = new Konva.Text({text, fontSize: 18, fill: "white", x: 12, y: 12});
-    const hit = new Konva.Rect({width: 200, height: 48, opacity: 0});
+    const hit = new Konva.Rect({width: 200, height: 48, fill: "rgba(0, 0 ,0,  0.01)", listening: true});
     g.add(rect);
     g.add(label);
     g.add(hit);
     g.on("mouseenter", () => (document.body.style.cursor = "pointer"));
     g.on("mouseleave", () => (document.body.style.cursor = "default"));
-    g.on("click", onClick);
+    const handler = (e: Konva.KonvaEventObject<MouseEvent>) => {
+      e.cancelBubble = true;
+    };
+    g.on("click", handler);
+    rect.on("click", handler);
     return g;
   }
 
@@ -118,5 +119,3 @@ export class ResultsScreenView {
     this.group.visible(false);
   }
 }
-
-
