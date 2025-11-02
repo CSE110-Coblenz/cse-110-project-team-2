@@ -1,3 +1,4 @@
+import "./screens/ResultScreen/ResultScreenController";
 import Konva from "konva";
 import { ScreenSwitcher, Screen, ScreenController, View } from "./types";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants";
