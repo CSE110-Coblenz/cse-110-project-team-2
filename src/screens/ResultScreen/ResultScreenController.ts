@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { ResultsScreenView } from "./ResultScreenView"; 
+import {STAGE_WIDTH, STAGE_HEIGHT} from "../../constants";
 
 const stage = new Konva.Stage ({
     container: "container",
