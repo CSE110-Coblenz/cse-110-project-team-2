@@ -53,7 +53,7 @@ export class MenuScreenView implements View {
             align: "center",
             shadowColor: "rgba(0,0,0,0.25)",
             shadowBlur: 6,
-            shadowOffSetY: 4,
+            shadowOffsetY: 5,
         });
     
         const titleOutline = new Konva.Text({

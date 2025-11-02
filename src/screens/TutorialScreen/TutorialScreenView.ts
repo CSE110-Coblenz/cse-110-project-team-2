@@ -6,7 +6,7 @@ export class TutorialScreenView implements View {
   private group: Konva.Group;
 
   constructor(onPlayClick: () => void, onWatchTutorialClick: () => void) {
-    this.group = new Konva.Group({ visible: true });
+    this.group = new Konva.Group({ visible: false });
 
     // background
     const bgImage = new Image();
@@ -42,7 +42,7 @@ export class TutorialScreenView implements View {
       align: "center",
       shadowColor: "rgba(0,0,0,0.25)",
       shadowBlur: 6,
-      shadowOffSetY: 4,
+      shadowOffsetY: 5,
     });
 
     const titleOutline = new Konva.Text({
