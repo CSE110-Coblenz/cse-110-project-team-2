@@ -34,7 +34,7 @@ export class ResultsScreenView implements View {
       height: STAGE_HEIGHT - 140,
       fill: "#fde68a",
       stroke: "black",
-      strokewidth: 3,
+      strokeWidth: 3,
       cornerRadius: 16,
     });
     this.group.add(card);
@@ -60,9 +60,9 @@ export class ResultsScreenView implements View {
 
     const buttonsY = card.y() + card.height() - 90;
 
-    const btnWrong = this.makeButton(card.x() + 40, buttonsY, "View wrong orders", this.onViewWrongOrders);
-    const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "End game", this.onEndGame);
-    const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Next day", this.onNextDay);
+    const btnWrong = this.makeButton(card.x() + 40, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
+    const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "End game", () =>  this.onEndGame());
+    const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Next day", () => this.onNextDay());
 
     this.group.add(btnWrong, btnEnd, btnNext);
   }
@@ -79,14 +79,13 @@ export class ResultsScreenView implements View {
     const g  = new Konva.Group({x, y, listening: true});
     const rect = new Konva.Rect({width: 200, height: 48, fill: "red", stroke: "black", strokeWidth: 3, cornerRadius: 10});
     const label = new Konva.Text({text, fontSize: 18, fill: "white", x: 12, y: 12});
-    const hit = new Konva.Rect({width: 200, height: 48, fill: "rgba(0, 0 ,0,  0.01)", listening: true});
-    g.add(rect);
-    g.add(label);
-    g.add(hit);
+    const hit = new Konva.Rect({width: 200, height: 48, fill: "rgba(0, 0, 0, 0.001)", listening: true});
+    g.add(rect, label, hit);
     g.on("mouseenter", () => (document.body.style.cursor = "pointer"));
     g.on("mouseleave", () => (document.body.style.cursor = "default"));
     const handler = (e: Konva.KonvaEventObject<MouseEvent>) => {
       e.cancelBubble = true;
+      if(onClick) onClick();
     };
     g.on("click", handler);
     rect.on("click", handler);
