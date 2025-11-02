@@ -18,20 +18,57 @@ export class MenuScreenView implements View {
         this.group = new Konva.Group({ visible: true });
 
         
-        // Background
-        const bg = new Konva.Rect({ x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "#ffe0b2" });
+        // background
+        const bgImage = new Image();
+        bgImage.src = "/background-checkers.jpg";
+        
+        const bg = new Konva.Image();
+        bg.x(0);
+        bg.y(0);
+        bg.width(STAGE_WIDTH);
+        bg.height(STAGE_HEIGHT);
+        bg.listening(false);
+
+        bgImage.onload = () => {
+            bg.image(bgImage);
+            bg.moveToBottom()
+            this.group.getLayer()?.batchDraw();
+        }
+        // Make the background softer
+        const overlay = new Konva.Rect({
+            x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT,
+            fill: "rgba(228,202,192,0.50)",
+            listening: false,
+        });
 
         // Title text
+
         const title = new Konva.Text({
             x: STAGE_WIDTH / 2,
-            y: 120,
+            y: 90,
             text: "Slice by Slice",
-            fontSize: 48,
-            fontFamily: "Arial",
-            fill: "#6d4c41",
+            fontSize: 80,
+            fontFamily: "Arial Black",
+            fill: "#AB321B",
             align: "center",
+            shadowColor: "rgba(0,0,0,0.25)",
+            shadowBlur: 6,
+            shadowOffSetY: 4,
         });
+    
+        const titleOutline = new Konva.Text({
+            x: STAGE_WIDTH / 2,
+            y: 90,
+            text: "Slice by Slice",
+            fontSize: 80,
+            fontFamily: "Arial Black",
+            fill: "transparent",
+            stroke: "#4B1F0E",           
+            strokeWidth: 3,              
+            align: "center",
+        })
         title.offsetX(title.width() / 2);
+        titleOutline.offsetX(titleOutline.width() / 2);
 
         // Start button  -----
         const startButtonGroup = new Konva.Group();
@@ -120,7 +157,7 @@ export class MenuScreenView implements View {
           });
 
 
-        this.group.add(bg, title, startButtonGroup, instructionButtonGroup, settingButtonGroup);
+        this.group.add(bg, overlay, title, titleOutline, startButtonGroup, instructionButtonGroup, settingButtonGroup);
     }
 
 
