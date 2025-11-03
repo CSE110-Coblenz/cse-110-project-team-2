@@ -113,11 +113,11 @@ export class Minigame2View {
     });
     this.group.add(this.obstacleText);
 
-    // timer display that counts down from 30 seconds
+    // timer display that counts down from game duration
     this.timerText = new Konva.Text({
         x: STAGE_WIDTH - 150,
         y: 20,
-        text: "Time left: 30",
+        text: "Time left: ${MINIGAME2_DURATION}",
         fontSize: 24,
         fill: "black",
     });

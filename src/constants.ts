@@ -12,3 +12,5 @@ export const FRACTION_TYPES = [
 ] as const;
 
 export type FractionType = typeof FRACTION_TYPES[number];
+
+export const MINIGAME2_DURATION = 30;
