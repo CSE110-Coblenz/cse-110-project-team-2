@@ -80,7 +80,7 @@ export class Minigame2View {
         this.lastPuddleTime = now;
     }
 
-    // this.checkCollisions();
+    this.checkCollisions();
 
     }, this.group.getLayer());
 
@@ -138,30 +138,30 @@ export class Minigame2View {
     });
 }
 
-    // setOnPuddleHit(callback: () => void): void {
-    //     this.onPuddleHit = callback;
-    // }
+    setOnPuddleHit(callback: () => void): void {
+        this.onPuddleHit = callback;
+    }
 
-    // private checkCollisions(): void {
-    //     if (!this.carImage) return;
+    private checkCollisions(): void {
+        if (!this.carImage) return;
 
-    //     const carBox = this.carImage.getClientRect(); // get bounding box of car
+        const carBox = this.carImage.getClientRect(); // get bounding box of car
 
-    //     for (const puddle of this.puddles) {
-    //         const puddleBox = puddle.getClientRect(); // get bounding box of the puddle
+        for (const puddle of this.puddles) {
+            const puddleBox = puddle.getClientRect(); // get bounding box of the puddle
 
-    //         const isColliding =
-    //             carBox.x < puddleBox.x + puddleBox.width &&
-    //             carBox.x + carBox.width > puddleBox.x &&
-    //             carBox.y < puddleBox.y + puddleBox.height &&
-    //             carBox.y + carBox.height > puddleBox.y;
+            const isColliding =
+                carBox.x < puddleBox.x + puddleBox.width &&
+                carBox.x + carBox.width > puddleBox.x &&
+                carBox.y < puddleBox.y + puddleBox.height &&
+                carBox.y + carBox.height > puddleBox.y;
 
-    //         if (isColliding && !(puddle as any)._alreadyHit) {
-    //             (puddle as any)._alreadyHit = true; // mark puddle as hit
-    //             this.onPuddleHit?.(); // notify controller
-    //         }
-    //     }
-    // }
+            if (isColliding && !(puddle as any)._alreadyHit) {
+                (puddle as any)._alreadyHit = true; // mark puddle as hit
+                this.onPuddleHit?.(); // notify controller
+            }
+        }
+    }
 
     private spawnPuddle(): void {
         const roadTop = STAGE_HEIGHT / 5;

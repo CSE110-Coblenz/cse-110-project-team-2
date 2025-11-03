@@ -14,7 +14,7 @@ export class Minigame2Controller extends ScreenController {
         this.view = new Minigame2View();
         this.switcher = switcher;
 
-        // this.view.setOnPuddleHit(() => this.handleAddObstacle());
+        this.view.setOnPuddleHit(() => this.handleAddObstacle());
     }
 
     private handleAddObstacle(): void {
@@ -31,7 +31,7 @@ export class Minigame2Controller extends ScreenController {
         }
         });
     }
-    
+
     private startTimer(): void {
         let timeRemaining = 30;
         this.gameTimer = window.setInterval(() => {
@@ -63,7 +63,7 @@ export class Minigame2Controller extends ScreenController {
 
         this.view.show();
         this.startTimer();
-        // this.setupInput();
+        this.setupInput();
     }
 
     endGame(): void {
