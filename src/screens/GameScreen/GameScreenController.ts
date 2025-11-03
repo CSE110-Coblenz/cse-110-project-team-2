@@ -1,28 +1,36 @@
-import { ScreenController } from "../../types";
-import type { ScreenSwitcher } from "../../types";
+import Konva from "konva";
+import { GameScreenModel } from "./GameScreenModel";
 import { GameScreenView } from "./GameScreenView";
+import { ToppingType } from "../../constants";
+import { ScreenController } from "../../types";
+import { ScreenSwitcher } from "../../types";
 
-export class GameScreenController extends ScreenController {
-    private view: GameScreenView;
+export class GameScreenController extends ScreenController{
+    private model:GameScreenModel;
+    private view:GameScreenView;
+    private screen?: ScreenSwitcher;
 
-    constructor(_screenSwitcher: ScreenSwitcher) {
-        super();
-        this.view = new GameScreenView();
-    }
+    constructor(screenSwitcher?: ScreenSwitcher){
+        super()
+        this.view=new GameScreenView()
+        this.model=this.view.model
+        this.screen=screenSwitcher;
 
-    show(): void {
-        this.view.show();
-    }
-
-    hide(): void {
-        this.view.hide();
+        this.view.show()
     }
 
     getView(): GameScreenView {
         return this.view;
     }
 
-    startGame(): void {
-        this.view.show();
+    startGame(){
+        this.view.show()
     }
+
+    endGame(){
+        this.view.hide()
+    }
+
+    
+    
 }
