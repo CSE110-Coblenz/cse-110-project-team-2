@@ -17,8 +17,8 @@ export class TutorialScreenController extends ScreenController {
     }
 
     private handlePlayClick() {
-        //goes to game menu
-        this.screenSwitcher.switchToScreen({ type: "game" });
+        // go to order screen
+        this.screenSwitcher.switchToScreen({ type: "order" });
     }
 
     private handleWatchTutorialClick() {

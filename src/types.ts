@@ -8,9 +8,15 @@ export interface View {
 
 export type Difficulty = "proper" | "improper" | "mixed";
 
+export type Order = {
+    fraction: string;
+    topping: string;
+};
+
 export type Screen =
     | { type: "menu" }
     | { type: "game"; difficulty: Difficulty }
+    | { type: "order" }
     | { type: "result"; score: number }
     | { type: "tutorial" }
     | { type: "settings" }
