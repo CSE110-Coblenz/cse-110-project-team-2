@@ -22,15 +22,16 @@ export class Minigame2Controller extends ScreenController {
         this.view.updateObstacleCount(this.model.getObstacleCount());
     }
 
-    // private setupInput(): void {
-    //     window.addEventListener("keydown", (e) => {
-    //     if (e.key === "ArrowUp") {
-    //         this.view.moveCarUp();
-    //     } else if (e.key === "ArrowDown") {
-    //         this.view.moveCarDown();
-    //     }
-    //     });
-    // }
+    private setupInput(): void {
+        window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp") {
+            this.view.moveCarUp();
+        } else if (e.key === "ArrowDown") {
+            this.view.moveCarDown();
+        }
+        });
+    }
+    
     private startTimer(): void {
         let timeRemaining = 30;
         this.gameTimer = window.setInterval(() => {

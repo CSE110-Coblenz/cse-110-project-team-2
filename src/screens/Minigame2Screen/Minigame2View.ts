@@ -204,26 +204,26 @@ export class Minigame2View {
         this.group.getLayer()?.draw();
         }
 
-    // moveCarUp(): void {
-    //     if (this.carImage) {
-    //         const newY = Math.max(
-    //         STAGE_HEIGHT / 5 - 50,  // don’t go onto grass
-    //         this.carImage.y() - 20
-    //         );
+    moveCarUp(): void {
+        if (this.carImage) {
+            const newY = Math.max(
+            STAGE_HEIGHT / 5 - 50,  // don’t go onto grass
+            this.carImage.y() - 20
+            );
 
-    //         this.carImage.y(newY);
-    //         this.group.getLayer()?.draw();
-    //     }
-    //     }
+            this.carImage.y(newY);
+            this.group.getLayer()?.draw();
+        }
+        }
 
-    // moveCarDown(): void {
-    //     if (this.carImage) {
-    //         const maxY = STAGE_HEIGHT - STAGE_HEIGHT / 5 - 150; // don’t go onto grass
-    //         const newY = Math.min(maxY, this.carImage.y() + 20);
-    //         this.carImage.y(newY);
-    //         this.group.getLayer()?.draw();
-    //     }
-    // }
+    moveCarDown(): void {
+        if (this.carImage) {
+            const maxY = STAGE_HEIGHT - STAGE_HEIGHT / 5 - 150; // don’t go onto grass
+            const newY = Math.min(maxY, this.carImage.y() + 20);
+            this.carImage.y(newY);
+            this.group.getLayer()?.draw();
+        }
+    }
 
     updateTimer(timeRemaining: number): void {
         this.timerText.text(`Time left: ${timeRemaining}`);
