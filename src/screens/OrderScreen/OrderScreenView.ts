@@ -36,16 +36,57 @@ export class OrderScreenView implements View {
 
         const order = this.model.getOrder();
 
+        const phoneImg = new Image();
+        phoneImg.src = "/telephone.png";
+        const phoneX = 20;
+        const phone = new Konva.Image({ x: phoneX, y: 0, image: undefined, listening: false });
+        phoneImg.onload = () => {
+            phone.image(phoneImg);
+
+            const naturalW = phoneImg.naturalWidth;
+            const naturalH = phoneImg.naturalHeight;
+            const maxH = STAGE_HEIGHT - 80;
+
+            phone.width(naturalW);
+            phone.height(naturalH);
+
+            let scale = 1;
+            if (naturalH > maxH) {
+                scale = maxH / naturalH;
+                phone.scale({ x: scale, y: scale });
+            }
+
+            const finalW = Math.round(naturalW * scale);
+            const finalH = Math.round(naturalH * scale);
+            phone.y(Math.floor((STAGE_HEIGHT - finalH) / 2));
+
+            const orderAreaX = phone.x() + finalW + 40;
+            const orderAreaWidth = STAGE_WIDTH - orderAreaX - 40;
+            const orderLines = [`Order:`, `${order.fraction} ${order.topping}`];
+            if (this.orderText) {
+                this.orderText.width(orderAreaWidth);
+                this.orderText.x(orderAreaX);
+                this.orderText.y(phone.y() + 20);
+                this.orderText.text(orderLines.join("\n"));
+            }
+
+            this.group.getLayer()?.batchDraw();
+        };
+
+        const placeholderOrderX = phoneX + 240;
+        const placeholderOrderWidth = STAGE_WIDTH - placeholderOrderX - 40;
+        const orderLines = [`Order:`, `${order.fraction} ${order.topping}`];
         this.orderText = new Konva.Text({
-            x: STAGE_WIDTH / 2,
-            y: 160,
-            text: `${order.fraction} ${order.topping}`,
-            fontSize: 34,
+            x: placeholderOrderX,
+            y: 140,
+            width: placeholderOrderWidth,
+            text: orderLines.join("\n"),
+            fontSize: 32,
             fontFamily: "Arial",
             fill: "#333",
-            align: "center",
+            align: "left",
+            lineHeight: 1.4,
         });
-        this.orderText.offsetX(this.orderText.width() / 2);
         this.orderText.name("orderText");
 
         const acceptGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 90, y: STAGE_HEIGHT - 120 });
@@ -56,7 +97,7 @@ export class OrderScreenView implements View {
         acceptGroup.add(acceptBtn, acceptText);
         acceptGroup.on("click", onAccept);
 
-        this.group.add(bg, title, this.orderText, acceptGroup);
+        this.group.add(bg, title, phone, this.orderText, acceptGroup);
     }
 
     invalidate(): void {
