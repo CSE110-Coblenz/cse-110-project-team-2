@@ -197,10 +197,10 @@ export class Minigame2View {
         this.group.add(puddle);
         this.puddles.push(puddle);
 
-        // // ensure puddle renders below the car
-        // if (this.carImage) {
-        //     this.carImage.moveToTop();
-        // }
+        // ensure puddle renders below the car
+        if (this.carImage) {
+            this.carImage.moveToTop();
+        }
         this.group.getLayer()?.draw();
         }
 
