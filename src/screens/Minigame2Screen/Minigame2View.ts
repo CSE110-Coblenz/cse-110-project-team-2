@@ -146,15 +146,26 @@ export class Minigame2View {
         if (!this.carImage) return;
 
         const carBox = this.carImage.getClientRect(); // get bounding box of car
+        const carPadding = 30; // tighten collision area a bit
+        const carX = carBox.x + carPadding;
+        const carY = carBox.y + carPadding;
+        const carW = carBox.width - carPadding * 2;
+        const carH = carBox.height - carPadding * 2;
 
         for (const puddle of this.puddles) {
             const puddleBox = puddle.getClientRect(); // get bounding box of the puddle
+            const puddlePadding = 30; // shrink puddle hitbox a little
+            const puddleX = puddleBox.x + puddlePadding;
+            const puddleY = puddleBox.y + puddlePadding;
+            const puddleW = puddleBox.width - puddlePadding * 2;
+            const puddleH = puddleBox.height - puddlePadding * 2;
 
+            // const isColliding = Konva.Util.haveIntersection(carBox, puddleBox);
             const isColliding =
-                carBox.x < puddleBox.x + puddleBox.width &&
-                carBox.x + carBox.width > puddleBox.x &&
-                carBox.y < puddleBox.y + puddleBox.height &&
-                carBox.y + carBox.height > puddleBox.y;
+                carX < puddleX + puddleW &&
+                carX + carW > puddleX &&
+                carY < puddleY + puddleH &&
+                carY + carH > puddleY;
 
             if (isColliding && !(puddle as any)._alreadyHit) {
                 (puddle as any)._alreadyHit = true; // mark puddle as hit
