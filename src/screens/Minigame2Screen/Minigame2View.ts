@@ -1,9 +1,6 @@
 import Konva from "konva";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
-/**
- * Minigame 2 View - Renders the game UI using Konva
- */
 export class Minigame2View {
     private group: Konva.Group;
     private carImage: Konva.Image | Konva.Circle | null = null;
@@ -12,8 +9,9 @@ export class Minigame2View {
     private roadDashes: Konva.Group;
     private roadAnimation: Konva.Animation;
     private puddles: Konva.Shape[] = [];
-    private puddleSpawnInterval = 3500; // new puddle every 2 seconds
+    private puddleSpawnInterval = 3500; // new puddle every 3.5 seconds
     private lastPuddleTime = 0;
+    private onPuddleHit?: () => void;
 
 
     constructor() {
@@ -81,8 +79,10 @@ export class Minigame2View {
         this.spawnPuddle();
         this.lastPuddleTime = now;
     }
-    }, this.group.getLayer());
 
+    // this.checkCollisions();
+
+    }, this.group.getLayer());
 
     // ========================= GREEN GRASS STRIPS ========================
     const grassTop = new Konva.Rect({
@@ -101,7 +101,6 @@ export class Minigame2View {
     })
     this.group.add(grassTop);
     this.group.add(grassBottom);
-
 
     // ========================= TEXT ELEMENTS ==========================
     // obstacle count
@@ -139,12 +138,37 @@ export class Minigame2View {
     });
 }
 
+    // setOnPuddleHit(callback: () => void): void {
+    //     this.onPuddleHit = callback;
+    // }
+
+    // private checkCollisions(): void {
+    //     if (!this.carImage) return;
+
+    //     const carBox = this.carImage.getClientRect(); // get bounding box of car
+
+    //     for (const puddle of this.puddles) {
+    //         const puddleBox = puddle.getClientRect(); // get bounding box of the puddle
+
+    //         const isColliding =
+    //             carBox.x < puddleBox.x + puddleBox.width &&
+    //             carBox.x + carBox.width > puddleBox.x &&
+    //             carBox.y < puddleBox.y + puddleBox.height &&
+    //             carBox.y + carBox.height > puddleBox.y;
+
+    //         if (isColliding && !(puddle as any)._alreadyHit) {
+    //             (puddle as any)._alreadyHit = true; // mark puddle as hit
+    //             this.onPuddleHit?.(); // notify controller
+    //         }
+    //     }
+    // }
+
     private spawnPuddle(): void {
         const roadTop = STAGE_HEIGHT / 5;
         const roadBottom = STAGE_HEIGHT - STAGE_HEIGHT / 5;
 
-        const puddleWidth = 80 + Math.random() * 60;
-        const puddleHeight = 30 + Math.random() * 40;
+        const puddleWidth = 100 + Math.random() * 60;
+        const puddleHeight = 60 + Math.random() * 40;
         const puddleX = STAGE_WIDTH + puddleWidth;
         const puddleY = roadTop + Math.random() * (roadBottom - roadTop);
 
@@ -172,7 +196,34 @@ export class Minigame2View {
 
         this.group.add(puddle);
         this.puddles.push(puddle);
+
+        // // ensure puddle renders below the car
+        // if (this.carImage) {
+        //     this.carImage.moveToTop();
+        // }
+        this.group.getLayer()?.draw();
         }
+
+    // moveCarUp(): void {
+    //     if (this.carImage) {
+    //         const newY = Math.max(
+    //         STAGE_HEIGHT / 5 - 50,  // don’t go onto grass
+    //         this.carImage.y() - 20
+    //         );
+
+    //         this.carImage.y(newY);
+    //         this.group.getLayer()?.draw();
+    //     }
+    //     }
+
+    // moveCarDown(): void {
+    //     if (this.carImage) {
+    //         const maxY = STAGE_HEIGHT - STAGE_HEIGHT / 5 - 150; // don’t go onto grass
+    //         const newY = Math.min(maxY, this.carImage.y() + 20);
+    //         this.carImage.y(newY);
+    //         this.group.getLayer()?.draw();
+    //     }
+    // }
 
     updateTimer(timeRemaining: number): void {
         this.timerText.text(`Time left: ${timeRemaining}`);
@@ -185,6 +236,10 @@ export class Minigame2View {
 
     updateObstacleCount(count: number): void {
         this.obstacleText.text(`Obstacles: ${count}`);
+    }
+
+    stopAnimation(): void {
+        this.roadAnimation?.stop();
     }
 
     show(): void {
