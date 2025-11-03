@@ -14,20 +14,23 @@ export class Minigame2Controller extends ScreenController {
         this.view = new Minigame2View();
         this.switcher = switcher;
 
-        // // Connect UI events
-        // this.view.onAddObstacle(() => this.handleAddObstacle());
+        // this.view.setOnPuddleHit(() => this.handleAddObstacle());
     }
 
     private handleAddObstacle(): void {
         this.model.increaseObstacleCount();
         this.view.updateObstacleCount(this.model.getObstacleCount());
-
-        // transition to next screen
-        if (this.model.getObstacleCount() >= 10 && this.switcher) {
-        this.switcher.switchToScreen({ type: "minigame2" }); // placeholder
-        }
     }
 
+    // private setupInput(): void {
+    //     window.addEventListener("keydown", (e) => {
+    //     if (e.key === "ArrowUp") {
+    //         this.view.moveCarUp();
+    //     } else if (e.key === "ArrowDown") {
+    //         this.view.moveCarDown();
+    //     }
+    //     });
+    // }
     private startTimer(): void {
         let timeRemaining = 30;
         this.gameTimer = window.setInterval(() => {
@@ -59,11 +62,13 @@ export class Minigame2Controller extends ScreenController {
 
         this.view.show();
         this.startTimer();
+        // this.setupInput();
     }
 
     endGame(): void {
         this.stopTimer();
-        this.view.hide();
+        this.view.stopAnimation();
+        // this.view.hide();
 
         // future work: switch screens or show results
         // this.screenSwitcher?.switchToScreen({ type: "minigame2" }); // placeholder
