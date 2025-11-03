@@ -6,19 +6,23 @@ import {Group} from "konva/lib/Group";
 export class ResultsScreenView implements View {
   private group: Konva.Group;
 
+  //Text Fields to be updated
   private ordersReceived: Konva.Text;
   private ordersCorrect: Konva.Text;
   private percentCorrect: Konva.Text;
   private tipsReceived: Konva.Text;
   private totalTips: Konva.Text;
 
+  //Callbacks to be assigned by controller
   public onViewWrongOrders: () => void = () => {};
   public onEndGame: () => void = () => {};
   public onNextDay: () => void = () => {};
 
   constructor () {
+    //Main container group for screen
     this.group = new Konva.Group({visible: false, listening: true});
     
+    //Background of the screen
     this.group.add(new Konva.Rect({
       x: 0,
       y: 0,
@@ -27,6 +31,7 @@ export class ResultsScreenView implements View {
       fill: "#fde68a",
     }));
 
+    //Center card
     const card = new Konva.Rect({
       x: 40,
       y: 40,
@@ -38,7 +43,8 @@ export class ResultsScreenView implements View {
       cornerRadius: 16,
     });
     this.group.add(card);
-
+    
+    //Title text
     const title = new Konva.Text({
       x: card.x() + 20,
       y: card.y() + 16,
@@ -49,17 +55,21 @@ export class ResultsScreenView implements View {
     });
     this.group.add(title);
 
+    //Layout for rows
     const startY = title.y() + 60;
     const rowGap = 40;
 
+    //Rows of stats
     this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Ordered received:");
     this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Orders correct:");
     this.percentCorrect = this.makeRow(card.x() + 26, startY + rowGap * 2,"% correct:");
     this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received:");
     this.totalTips = this.makeRow(card.x() + 26, startY + rowGap * 4, "Total tips:");
 
+    //Row for bottons
     const buttonsY = card.y() + card.height() - 90;
 
+    //Wraps callbacks so the latest assigned function is used
     const btnWrong = this.makeButton(card.x() + 40, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
     const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "End game", () =>  this.onEndGame());
     const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Next day", () => this.onNextDay());
@@ -67,6 +77,7 @@ export class ResultsScreenView implements View {
     this.group.add(btnWrong, btnEnd, btnNext);
   }
 
+  //Creates a data row label and value
   private makeRow(x: number, y: number, label: string): Konva.Text { 
     const lbl = new Konva.Text({x, y, text: label, fontSize: 22, fill: "black"});
     const val = new Konva.Text({x: x + 260, y, text: "-", fontSize: 22, fill: "black"});
@@ -75,6 +86,7 @@ export class ResultsScreenView implements View {
     return val;
   }
 
+  //Creates clickable buttons
   private makeButton(x: number, y: number, text: string, onClick: () => void): Konva.Group {
     const g  = new Konva.Group({x, y, listening: true});
     const rect = new Konva.Rect({width: 200, height: 48, fill: "red", stroke: "black", strokeWidth: 3, cornerRadius: 10});
@@ -92,6 +104,7 @@ export class ResultsScreenView implements View {
     return g;
   }
 
+  //Will update displayed stats, not currently used
   updateStats(stats: {ordersReceived: number; ordersCorrect: number; tipsReceived: number; totalTips: number;}) : void {
     const received = Math.max(0, stats.ordersReceived | 0);
     const correct = Math.max(0, Math.min(received, stats.ordersCorrect | 0));

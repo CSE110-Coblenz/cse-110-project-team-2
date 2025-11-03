@@ -10,6 +10,7 @@ export class ResultScreenController extends ScreenController{
         super();
         this.view = new ResultsScreenView();
 
+        //Helper function that creates screens to test for button functionality
         const placeHolderScreen = (label: string, fill: string = "#1f2937") => {
             const g = new Konva.Group({visible: false, listening: true});
             g.add(new Konva.Rect({x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill}));
@@ -21,7 +22,8 @@ export class ResultScreenController extends ScreenController{
         const wrongOrders = placeHolderScreen("Wrong Orders", "red");
         const endGame = placeHolderScreen("End Game", "red");
         const nextDay = placeHolderScreen("Next Day", "red");
-
+        
+        //Hides all locally-owned groups and shows one
         const show = (g: Konva.Group) => {
             this.view.getGroup().visible(false);
             wrongOrders.visible(false);
@@ -55,6 +57,7 @@ export class ResultScreenController extends ScreenController{
         return this.view
     }
 
+    //Updates the numbers displayed on the screen
     setStats(stats: {
         ordersReceived: number;
         ordersCorrect: number;
