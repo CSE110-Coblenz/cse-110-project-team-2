@@ -1,5 +1,5 @@
 /**
- * Audio anager to handle the usic for the game
+ * Audio manager to handle the music for the game
  */
 
 export class AudioManager{
@@ -13,7 +13,7 @@ export class AudioManager{
      */
     constructor(src:string, volume = 0.5){
         this.audio = new Audio(src);
-        this.audio.loop = true; //music keeps repeating
+        this.audio.loop = true; // music keeps repeating
         this.audio.volume = volume; 
     }
 
