@@ -23,10 +23,6 @@ export class GameScreenController extends ScreenController{
         return this.view;
     }
 
-
-    startGame(){
-        this.view.show()
-
     startGame(difficulty: "proper" | "improper" | "mixed"): void {
         // Configure game based on difficulty level:
         // proper: generates only proper fractions (numerator < denominator)

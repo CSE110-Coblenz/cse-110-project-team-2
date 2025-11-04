@@ -3,6 +3,7 @@ import { ScreenSwitcher, Screen, ScreenController, View } from "./types";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants";
 import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController";
 import { GameScreenController } from "./screens/GameScreen/GameScreenController";
+import { DifficultyScreenController } from "./screens/DifficultyScreen/DifficultyScreenController";
 import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScreenController";
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
@@ -14,6 +15,7 @@ class App implements ScreenSwitcher {
 
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
+	private difficultyController: DifficultyScreenController;
 	private tutorialController: TutorialScreenController;
     private resultsController: ResultScreenController;
     private minigame2Controller: Minigame2Controller;
@@ -26,6 +28,11 @@ class App implements ScreenSwitcher {
 
 		this.menuController = new MenuScreenController(this);
 		this.gameController = new GameScreenController(this);
+		this.difficultyController = new DifficultyScreenController(this);
+
+		this.layer.add(this.menuController.getView().getGroup());
+		this.layer.add(this.gameController.getView().getGroup());
+		this.layer.add(this.difficultyController.getView().getGroup());
 		this.tutorialController = new TutorialScreenController(this);
         this.resultsController = new ResultScreenController(this.layer, this);
         this.minigame2Controller = new Minigame2Controller(this);
@@ -52,6 +59,7 @@ class App implements ScreenSwitcher {
 		// hide all screens
 		this.menuController.hide();
 		this.gameController.hide();
+		this.difficultyController.hide();
 		this.tutorialController.hide();
         this.resultsController.hide();
         this.minigame2Controller.hide();
