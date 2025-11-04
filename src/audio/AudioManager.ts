@@ -11,10 +11,24 @@ export class AudioManager{
      * @param src path to the audio file
      * @param volume volue level 0 - 1
      */
-    constructor(src:string, volume = 0.5){
+    constructor(src:string, volume = 0.5, loop = true){
         this.audio = new Audio(src);
-        this.audio.loop = true; // music keeps repeating
+        this.audio.loop = loop; // can be set to false for sound effects
         this.audio.volume = volume; 
+    }
+
+    /**
+     * 
+     * Plays the audio from the start
+     */
+    async play() {
+        if (!this.musicEnabled) return;
+        try {
+            this.audio.currentTime = 0; // restart from start
+            await this.audio.play();
+        } catch (e) {
+            console.warn("Audio play failed:", e);
+        }
     }
 
     /**
