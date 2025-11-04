@@ -1,3 +1,4 @@
+import Konva from "konva";
 import { Minigame2Model } from "./Minigame2Model";
 import { Minigame2View } from "./Minigame2View";
 import { ScreenController, ScreenSwitcher } from "../../types";
@@ -8,6 +9,9 @@ export class Minigame2Controller extends ScreenController {
     private view: Minigame2View;
     private switcher?: ScreenSwitcher; // optional if running standalone
     private gameTimer: number | null = null;
+    private movementDirection: "up" | "down" | null = null;
+    private movementSpeed = 2; // pixels per frame
+    private movementAnimation: Konva.Animation | null = null;
 
     constructor(switcher?: ScreenSwitcher) {
         super();
@@ -25,12 +29,29 @@ export class Minigame2Controller extends ScreenController {
 
     private setupInput(): void {
         window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowUp") {
-            this.view.moveCarUp();
-        } else if (e.key === "ArrowDown") {
-            this.view.moveCarDown();
-        }
+            if (e.key === "ArrowUp") {
+                this.movementDirection = "up";
+            } else if (e.key === "ArrowDown") {
+                this.movementDirection = "down";
+            }
         });
+
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                // stop movement if needed
+                this.movementDirection = null;
+            }
+        });
+
+        this.movementAnimation = new Konva.Animation(() => {
+            if (this.movementDirection === "up") {
+                this.view.moveCarUp();
+            } else if (this.movementDirection === "down") {
+                this.view.moveCarDown();
+            }
+        }, this.view.getGroup().getLayer());
+
+        this.movementAnimation.start();
     }
 
     private startTimer(): void {
@@ -70,6 +91,7 @@ export class Minigame2Controller extends ScreenController {
     endGame(): void {
         this.stopTimer();
         this.view.stopAnimation();
+        this.movementAnimation?.stop();
         // this.view.hide();
 
         // future work: switch screens or show results
