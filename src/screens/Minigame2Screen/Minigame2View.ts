@@ -219,7 +219,7 @@ export class Minigame2View {
         if (this.carImage) {
             const newY = Math.max(
             STAGE_HEIGHT / 5 - 50,  // don’t go onto grass
-            this.carImage.y() - 20
+            this.carImage.y() - 5
             );
 
             this.carImage.y(newY);
@@ -230,7 +230,7 @@ export class Minigame2View {
     moveCarDown(): void {
         if (this.carImage) {
             const maxY = STAGE_HEIGHT - STAGE_HEIGHT / 5 - 150; // don’t go onto grass
-            const newY = Math.min(maxY, this.carImage.y() + 20);
+            const newY = Math.min(maxY, this.carImage.y() + 5);
             this.carImage.y(newY);
             this.group.getLayer()?.draw();
         }
