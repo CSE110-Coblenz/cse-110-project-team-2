@@ -3,6 +3,7 @@ import { Minigame2Model } from "./Minigame2Model";
 import { Minigame2View } from "./Minigame2View";
 import { ScreenController, ScreenSwitcher } from "../../types";
 import { MINIGAME2_DURATION } from "../../constants";
+import { AudioManager } from "../../audio/AudioManager";
 
 export class Minigame2Controller extends ScreenController {
     private model: Minigame2Model;
@@ -12,14 +13,18 @@ export class Minigame2Controller extends ScreenController {
     private movementDirection: "up" | "down" | null = null;
     private movementSpeed = 2; // pixels per frame
     private movementAnimation: Konva.Animation | null = null;
+    private splashSound: AudioManager;
 
     constructor(switcher?: ScreenSwitcher) {
         super();
         this.model = new Minigame2Model();
         this.view = new Minigame2View();
         this.switcher = switcher;
-
-        this.view.setOnPuddleHit(() => this.handleAddObstacle());
+        this.splashSound = new AudioManager("/audio/water-splash.mp3", 0.3, false);
+        this.view.setOnPuddleHit(() => {
+            this.handleAddObstacle();
+            this.splashSound.play();
+        });
     }
 
     private handleAddObstacle(): void {
