@@ -9,7 +9,7 @@ export class Minigame2View {
     private roadDashes: Konva.Group;
     private roadAnimation: Konva.Animation;
     private puddles: Konva.Shape[] = [];
-    private puddleSpawnInterval = 3500; // new puddle every 3.5 seconds
+    private puddleSpawnInterval = 2000; // new puddle every 3 seconds
     private lastPuddleTime = 0;
     private onPuddleHit?: () => void;
 
