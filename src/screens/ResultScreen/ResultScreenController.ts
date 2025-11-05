@@ -22,6 +22,28 @@ export class ResultScreenController extends ScreenController{
         const wrongOrders = placeHolderScreen("Wrong Orders", "red");
         const endGame = placeHolderScreen("End Game", "red");
         const nextDay = placeHolderScreen("Next Day", "red");
+
+        const makeBackButton = (onClick: () => void): Konva.Group => {
+            const width = 120;
+            const height = 40;
+            const g = new Konva.Group({x: STAGE_WIDTH - width - 40, y: STAGE_HEIGHT - height - 40, listening: true });
+            const rect  = new Konva.Rect({
+                fill: "#e5e7eb",
+                stroke: "black",
+                strokeWidth: 2,
+                cornerRadius: 10
+            });
+            const label = new Konva.Text({text: "Back", x: 12, y: 10, fontSize: 18, fill: "black"});
+            g.add(rect, label);
+            g.on("mouseenter", () => document.body.style.cursor = "pointer")
+            g.on("mouseleave", () => document.body.style.cursor = "default")
+            g.on("click", onClick);
+            return g;
+        }
+
+        wrongOrders.add(makeBackButton(() => show(this.view.getGroup())));
+        endGame.add(makeBackButton(() => show(this.view.getGroup())));
+        nextDay.add(makeBackButton(() => show(this.view.getGroup())));
         
         //Hides all locally-owned groups and shows one
         const show = (g: Konva.Group) => {

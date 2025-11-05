@@ -42,9 +42,9 @@ class App implements ScreenSwitcher {
         this.layer.add(this.minigame2Controller.getView().getGroup());
 
 		// Start on the menu
-		this.switchToScreen({ type: "menu"});
+		//this.switchToScreen({ type: "menu"});
 		// this.switchToScreen({ type: "minigame2" });
-        //this.switchToScreen({type: "result", score: 21}); 
+        this.switchToScreen({type: "result", score: 21}); 
 	}
 
 	switchToScreen(screen: Screen): void {
