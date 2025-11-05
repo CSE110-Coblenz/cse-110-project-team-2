@@ -1,6 +1,7 @@
 import { Minigame2Model } from "./Minigame2Model";
 import { Minigame2View } from "./Minigame2View";
 import { ScreenController, ScreenSwitcher } from "../../types";
+import { MINIGAME2_DURATION } from "../../constants";
 
 export class Minigame2Controller extends ScreenController {
     private model: Minigame2Model;
@@ -33,7 +34,7 @@ export class Minigame2Controller extends ScreenController {
     }
 
     private startTimer(): void {
-        let timeRemaining = 30;
+        let timeRemaining = MINIGAME2_DURATION;
         this.gameTimer = window.setInterval(() => {
             timeRemaining--;
             this.view.updateTimer(timeRemaining);
@@ -59,7 +60,7 @@ export class Minigame2Controller extends ScreenController {
 
         // set up initial view state
         this.view.updateObstacleCount(0);
-        this.view.updateTimer(30);
+        this.view.updateTimer(MINIGAME2_DURATION);
 
         this.view.show();
         this.startTimer();
