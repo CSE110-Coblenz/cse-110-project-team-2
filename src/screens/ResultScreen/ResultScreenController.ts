@@ -19,9 +19,9 @@ export class ResultScreenController extends ScreenController{
             return g;
         }
 
-        const wrongOrders = placeHolderScreen("Wrong Orders", "red");
-        const endGame = placeHolderScreen("End Game", "red");
-        const nextDay = placeHolderScreen("Next Day", "red");
+        const wrongOrders = placeHolderScreen("Wrong Orders", "#fde68a");
+        const endGame = placeHolderScreen("End Game", "#fde68a");
+        const nextDay = placeHolderScreen("Next Day", "#fde68a");
 
         const makeBackButton = (onClick: () => void): Konva.Group => {
             const width = 120;
