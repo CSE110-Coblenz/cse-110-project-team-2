@@ -1,0 +1,28 @@
+10/23/2025 (Virtual meeting)
+
+Attendees: Michelle, Randy, Johnny, Jolene, Woojin, Teddy
+
+Agenda:
+  1. Start the sprint (in terms of discussion and planning) 
+  2. Divide out tasks 
+  3. Discuss the goals of every sprint 
+
+Notes:
+  - There are three sprints, so we should aim to get a third of the tasks done in every sprint.
+  - In this sprint (sprint 1), the goal is to get the framework down. 
+  - Includes things such as UI, buttons, and basic logic for the slices and fractions.
+  - We also have to have some tests written during this stage, but they can be pushed off to a later sprint (sprint 3).
+  - Try to have the automated tester on GitHub set up.
+  - The goal of sprint 2 will be to have a nearly completed and working game.
+  - The hope for sprint 3 is to be mainly about testing and ironing out any bugs with the current game.
+
+  - Sprint 1 Tasks/Objectives: 
+      1. Woojin: Implementing a way to divide the pizza graphic based on user choice, ensuring visual slices update whenever the numeric fraction value changes, adding game logic for adding toppings, and testing calculations for slice boundaries.
+      2. Johnny: Implementing logic to compute fractions, in addition to the random ordering of pizzas to ensure game variety, write tests for fraction simplification. 
+      3. Michelle: Adding game difficulty level selection and link to gameplay parameters, adding UI for mini-game 2, and adding game physics to mini-game 2. Write tests ensuring correct game physics in the mini-game 2. 
+      4. Jolene: Implementing game settings such as the audio toggle, writing, and integrating game instructions. Design the pizza UI, showing the fraction division for different pizzas.
+      5. Teddy: Implementing logic for navigating the home screen, write tests for settings and navigating.
+      6. Randy: Design the UI for the end-of-day summary for each game day, implement the needed buttons for the end-of-day summary, and test correct functionality.
+
+Next meeting objective: Work meeting 
+

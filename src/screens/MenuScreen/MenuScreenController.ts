@@ -27,8 +27,8 @@ export class MenuScreenController extends ScreenController {
     
 
     private handleStartClick(): void {
-        //johnny: go to game screen for now (should go to difficulty/tutorial)
-        this.screenSwitcher.switchToScreen({ type: "game" });
+        // Go to difficulty selection screen
+        this.screenSwitcher.switchToScreen({ type: "difficulty" });
     }
 
     private handleTutorialClick() {

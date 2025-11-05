@@ -6,9 +6,11 @@ export interface View {
     hide(): void;
 }
 
+export type Difficulty = "proper" | "improper" | "mixed";
+
 export type Screen =
     | { type: "menu" }
-    | { type: "game" }
+    | { type: "game"; difficulty: Difficulty }
     | { type: "result"; score: number }
     | { type: "tutorial" }
     | { type: "settings" }

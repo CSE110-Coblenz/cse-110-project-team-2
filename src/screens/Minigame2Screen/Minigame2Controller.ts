@@ -1,35 +1,66 @@
+import Konva from "konva";
 import { Minigame2Model } from "./Minigame2Model";
 import { Minigame2View } from "./Minigame2View";
 import { ScreenController, ScreenSwitcher } from "../../types";
+import { MINIGAME2_DURATION } from "../../constants";
+import { AudioManager } from "../../audio/AudioManager";
 
 export class Minigame2Controller extends ScreenController {
     private model: Minigame2Model;
     private view: Minigame2View;
     private switcher?: ScreenSwitcher; // optional if running standalone
     private gameTimer: number | null = null;
+    private movementDirection: "up" | "down" | null = null;
+    private movementSpeed = 2; // pixels per frame
+    private movementAnimation: Konva.Animation | null = null;
+    private splashSound: AudioManager;
 
     constructor(switcher?: ScreenSwitcher) {
         super();
         this.model = new Minigame2Model();
         this.view = new Minigame2View();
         this.switcher = switcher;
-
-        // // Connect UI events
-        // this.view.onAddObstacle(() => this.handleAddObstacle());
+        this.splashSound = new AudioManager("/audio/water-splash.mp3", 0.3, false);
+        this.view.setOnPuddleHit(() => {
+            this.handleAddObstacle();
+            this.splashSound.play();
+        });
     }
 
     private handleAddObstacle(): void {
         this.model.increaseObstacleCount();
         this.view.updateObstacleCount(this.model.getObstacleCount());
+    }
 
-        // transition to next screen
-        if (this.model.getObstacleCount() >= 10 && this.switcher) {
-        this.switcher.switchToScreen({ type: "minigame2" }); // placeholder
-        }
+    private setupInput(): void {
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp") {
+                this.movementDirection = "up";
+            } else if (e.key === "ArrowDown") {
+                this.movementDirection = "down";
+            }
+        });
+
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                // stop movement if needed
+                this.movementDirection = null;
+            }
+        });
+
+        this.movementAnimation = new Konva.Animation(() => {
+            if (this.movementDirection === "up") {
+                this.view.moveCarUp();
+            } else if (this.movementDirection === "down") {
+                this.view.moveCarDown();
+            }
+        }, this.view.getGroup().getLayer());
+
+        this.movementAnimation.start();
     }
 
     private startTimer(): void {
-        let timeRemaining = 30;
+        let timeRemaining = MINIGAME2_DURATION;
         this.gameTimer = window.setInterval(() => {
             timeRemaining--;
             this.view.updateTimer(timeRemaining);
@@ -55,15 +86,18 @@ export class Minigame2Controller extends ScreenController {
 
         // set up initial view state
         this.view.updateObstacleCount(0);
-        this.view.updateTimer(30);
+        this.view.updateTimer(MINIGAME2_DURATION);
 
         this.view.show();
         this.startTimer();
+        this.setupInput();
     }
 
     endGame(): void {
         this.stopTimer();
-        this.view.hide();
+        this.view.stopAnimation();
+        this.movementAnimation?.stop();
+        // this.view.hide();
 
         // future work: switch screens or show results
         // this.screenSwitcher?.switchToScreen({ type: "minigame2" }); // placeholder
