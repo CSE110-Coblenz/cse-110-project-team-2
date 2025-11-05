@@ -7,7 +7,6 @@ import { DifficultyScreenController } from "./screens/DifficultyScreen/Difficult
 import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScreenController";
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
-import { DifficultyScreenController } from "./screens/DifficultyScreen/DifficultyScreenController";
 
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
@@ -19,7 +18,6 @@ class App implements ScreenSwitcher {
 	private tutorialController: TutorialScreenController;
     private resultsController: ResultScreenController;
     private minigame2Controller: Minigame2Controller;
-	private difficultyController: DifficultyScreenController;
 
 	constructor(container: string) {
 		this.stage = new Konva.Stage({ container, width: STAGE_WIDTH, height: STAGE_HEIGHT });
