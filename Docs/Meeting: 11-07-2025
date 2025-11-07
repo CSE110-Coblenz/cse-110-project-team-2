@@ -22,5 +22,33 @@
 
     3. Discuss more details about the flow of the game (should we set a limit on orders per day?)
 
+  Main game
+    - Don’t let players move forward until they get fractions correct
+    - When incorrect, display current proportions and allow them to correct
+    - One topping per slice
+  Minigame 1
+  -  Pull information/pizza from order
+  - Display 2 pizzas → “Which pizza has more pepperoni?”
+  - Popup for summary + tip should handle instructions and button to minigame 2
+
+- Michelle booked Geisel reservation for meeting 2 weeks from now
+General workflow of the game
+  - Start (can move to tutorial)
+  - Select Difficulty
+  - Take orders and place toppings
+  - 5 orders per day (We only have one day for now)
+  - Minigame 1
+  - Minigame 2
+  - Results
+
+  4. Action items
+    - Woojin: Update implementation so player can only put one topping per slice
+    - Michelle: Implement pop up for performance summary and tips based on obstacles hit for Minigame 2,  includes comments, obstacles hit, and tip amount, help out with main game components
+    - Jolene: Implement sound effects setting button, constant settings button on each page, font standardizing, help out with main game components
+    - Randy: 
+    - Teddy: 
+    - Johnny: 
+
+
 
 
