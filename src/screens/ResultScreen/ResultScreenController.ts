@@ -2,9 +2,11 @@ import Konva from "konva";
 import { ResultsScreenView } from "./ResultScreenView"; 
 import { ScreenController, ScreenSwitcher } from "../../types";
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../../constants";
+import { Difficulty } from "../../types";
 
 export class ResultScreenController extends ScreenController{
     private view: ResultsScreenView;
+    private nextDayDifficulty: Difficulty = "proper";
 
     constructor(private layer: Konva.Layer, private switcher: ScreenSwitcher) {
         super();
@@ -14,13 +16,12 @@ export class ResultScreenController extends ScreenController{
         const placeHolderScreen = (label: string, fill: string = "#1f2937") => {
             const g = new Konva.Group({visible: false, listening: true});
             g.add(new Konva.Rect({x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill}));
-            g.add(new Konva.Text({x: 20, y: 20, text: label, fontSize: 28, fill: "white"}));
+            g.add(new Konva.Text({x: 20, y: 20, text: label, fontSize: 28, fontStyle: "bold", fill: "black"}));
             this.layer.add(g);
             return g;
         }
 
         const wrongOrders = placeHolderScreen("Wrong Orders", "#fde68a");
-        const endGame = placeHolderScreen("End Game", "#fde68a");
         const nextDay = placeHolderScreen("Next Day", "#fde68a");
 
         const makeBackButton = (onClick: () => void): Konva.Group => {
@@ -28,6 +29,10 @@ export class ResultScreenController extends ScreenController{
             const height = 40;
             const g = new Konva.Group({x: STAGE_WIDTH - width - 40, y: STAGE_HEIGHT - height - 40, listening: true });
             const rect  = new Konva.Rect({
+                x: 0,
+                y: 0,
+                width,
+                height,    
                 fill: "#e5e7eb",
                 stroke: "black",
                 strokeWidth: 2,
@@ -42,37 +47,28 @@ export class ResultScreenController extends ScreenController{
         }
 
         wrongOrders.add(makeBackButton(() => show(this.view.getGroup())));
-        endGame.add(makeBackButton(() => show(this.view.getGroup())));
-        nextDay.add(makeBackButton(() => show(this.view.getGroup())));
         
         //Hides all locally-owned groups and shows one
         const show = (g: Konva.Group) => {
             this.view.getGroup().visible(false);
             wrongOrders.visible(false);
-            endGame.visible(false);
             nextDay.visible(false);
             g.visible(true);
             this.layer.draw()
         };
 
         this.view.onViewWrongOrders = () => show(wrongOrders);
-        this.view.onEndGame = () => show(endGame);
-        this.view.onNextDay = () => show(nextDay);
+        this.view.onEndGame = () => this.switcher.switchToScreen({type: "menu"});
+        this.view.onNextDay = () => this.switcher.switchToScreen({
+            type: "game",
+            difficulty: this.nextDayDifficulty
+        });
         
         show(this.view.getGroup());
+    }
 
-        //this.view.onViewWrongOrders = () => 
-            //this.switcher.switchToScreen({type: "game"});
-        
-
-        //this.view.onEndGame = () => 
-            //this.switcher.switchToScreen({type: "menu"});
-
-        //this.view.onNextDay = () => 
-            //this.switcher.switchToScreen({type: "game"});
-        
-
-        //this.layer.add(this.view.getGroup());
+    setNextDayDifficulty(d: Difficulty) {
+        this.nextDayDifficulty = d;
     }
 
     getView() {

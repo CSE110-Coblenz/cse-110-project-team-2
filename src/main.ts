@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { ScreenSwitcher, Screen, ScreenController, View } from "./types";
+import { ScreenSwitcher, Screen, ScreenController, View, Difficulty } from "./types";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants";
 import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController";
 import { GameScreenController } from "./screens/GameScreen/GameScreenController";
@@ -11,6 +11,12 @@ import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controll
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
 	private layer: Konva.Layer;
+
+	private currentDifficulty: Difficulty = "proper"
+	getCurrentDifficulty() {
+		return this.currentDifficulty;
+	}
+	
 
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
@@ -64,6 +70,7 @@ class App implements ScreenSwitcher {
 				this.difficultyController.show();
 				break;
 			case "game":
+				this.currentDifficulty = screen.difficulty;
 				this.gameController.startGame(screen.difficulty);
 				break;
 			case "tutorial":
@@ -76,6 +83,7 @@ class App implements ScreenSwitcher {
                     tipsReceived: 12,
                     totalTips: 42
                 });
+				this.resultsController.setNextDayDifficulty(this.currentDifficulty);
                 this.resultsController.show();
                 break;
             case "minigame2":
