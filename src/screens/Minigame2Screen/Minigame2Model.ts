@@ -5,8 +5,8 @@ export class Minigame2Model {
     return this.obstacleCount;
   }
 
-  increaseObstacleCount(amount = 1): void {
-    this.obstacleCount += amount;
+  increaseObstacleCount(): void {
+    this.obstacleCount += 1;
   }
 
   reset(): void {
