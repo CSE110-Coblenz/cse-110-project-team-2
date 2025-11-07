@@ -9,8 +9,8 @@
 
   Notes:
     1. Standardized fonts for buttons and title 
-        - Button Font:
-        - Title Font: 
+        - Button Font: Arial Black for now (low priority) 
+        - Title Font: Arial Black for now (low priority)
     2. Discussed Mini-Game 2 Logic
         - What happens when the time hits zero: A pop-up will appear with relevant information based on game results 
             1. Display obstacles hit,
