@@ -62,8 +62,25 @@ export class OrderScreenView implements View {
 
             const orderAreaX = phone.x() + finalW + 40;
             const orderAreaWidth = STAGE_WIDTH - orderAreaX - 40;
-            const orderLines = [`Order:`, `${order.fraction} ${order.topping}`];
-            if (this.orderText) {
+
+            const orderLines = this.buildOrderLines(this.model.getOrder());
+
+            if (!this.orderText) {
+                this.orderText = new Konva.Text({
+                    x: orderAreaX,
+                    y: phone.y() + 20,
+                    width: orderAreaWidth,
+                    text: orderLines.join("\n"),
+                    fontSize: 32,
+                    fontFamily: "Arial",
+                    fill: "#333",
+                    align: "left",
+                    lineHeight: 1.4,
+                });
+                this.orderText.name("orderText");
+                this.group.add(this.orderText);
+            } else {
+                // update existing
                 this.orderText.width(orderAreaWidth);
                 this.orderText.x(orderAreaX);
                 this.orderText.y(phone.y() + 20);
@@ -73,22 +90,6 @@ export class OrderScreenView implements View {
             this.group.getLayer()?.batchDraw();
         };
 
-        const placeholderOrderX = phoneX + 240;
-        const placeholderOrderWidth = STAGE_WIDTH - placeholderOrderX - 40;
-        const orderLines = [`Order:`, `${order.fraction} ${order.topping}`];
-        this.orderText = new Konva.Text({
-            x: placeholderOrderX,
-            y: 140,
-            width: placeholderOrderWidth,
-            text: orderLines.join("\n"),
-            fontSize: 32,
-            fontFamily: "Arial",
-            fill: "#333",
-            align: "left",
-            lineHeight: 1.4,
-        });
-        this.orderText.name("orderText");
-
         const acceptGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 90, y: STAGE_HEIGHT - 120 });
         const acceptBtn = new Konva.Rect({ width: 180, height: 56, fill: ORDER_BUTTON_FILL, cornerRadius: 8, stroke: ORDER_BUTTON_STROKE, strokeWidth: 2 });
         const acceptText = new Konva.Text({ x: 90, y: 18, text: "Sounds good", fontSize: 20, fill: "white" });
@@ -97,16 +98,19 @@ export class OrderScreenView implements View {
         acceptGroup.add(acceptBtn, acceptText);
         acceptGroup.on("click", onAccept);
 
-        this.group.add(bg, title, phone, this.orderText, acceptGroup);
+        this.group.add(bg, title, phone, acceptGroup);
     }
 
-    invalidate(): void {
-        const order = this.model.getOrder();
-        if (this.orderText) {
-            this.orderText.text(`${order.fraction} ${order.topping}`);
-            this.orderText.offsetX(this.orderText.width() / 2);
+    private buildOrderLines(order: Order): string[] {
+        const lines: string[] = [];
+        const denom = order.fractionStruct?.denominator ?? (order.fraction ? parseInt(order.fraction.split('/')[1]) : 1);
+        if (!order.toppingsCounts) return [`${order.fraction}`];
+        for (const [t, c] of Object.entries(order.toppingsCounts)) {
+            if ((c as number) > 0) {
+                lines.push(`${c}/${denom} ${t}`);
+            }
         }
-        this.group.getLayer()?.draw();
+        return lines.length ? lines : [`${order.fraction}`];
     }
 
     show(): void {

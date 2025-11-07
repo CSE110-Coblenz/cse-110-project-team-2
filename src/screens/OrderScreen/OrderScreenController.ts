@@ -17,7 +17,7 @@ export class OrderScreenController extends ScreenController {
 
     private handleAccept(): void {
         // we don't forward the order to the game screen yet
-        this.screenSwitcher.switchToScreen({ type: "game" });
+        this.screenSwitcher.switchToScreen({ type: "game" } as any);
     }
 
     getView(): OrderScreenView {
