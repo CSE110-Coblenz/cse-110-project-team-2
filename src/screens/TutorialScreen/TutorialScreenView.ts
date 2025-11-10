@@ -5,7 +5,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 export class TutorialScreenView implements View {
   private group: Konva.Group;
 
-  constructor(onPlayClick: () => void, onWatchTutorialClick: () => void) {
+  constructor(onBackToMenuClick: () => void, onWatchTutorialClick: () => void) {
     this.group = new Konva.Group({ visible: false });
 
     // background
@@ -108,10 +108,10 @@ export class TutorialScreenView implements View {
     });
 
     // buttons at bottom
-    const btnY = STAGE_HEIGHT - 90;
+    const btnY = STAGE_HEIGHT - 120;
 
     // Watch Tutorial (no-op for now)
-    const tutorialGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 200, y: btnY+15 });
+    const tutorialGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 100, y: btnY+15 });
     const tutorialBtn = new Konva.Rect({
       width: 180,
       height: 56,
@@ -131,31 +131,31 @@ export class TutorialScreenView implements View {
     tutorialText.offsetY(tutorialText.height() / 2);
     tutorialGroup.add(tutorialBtn, tutorialText);
     // no demo yet
-    tutorialGroup.on("click", onWatchTutorialClick); 
+    tutorialGroup.on("click", onWatchTutorialClick);
 
-    // Play (go to game or menu—see controller below)
-    const playGroup = new Konva.Group({ x: STAGE_WIDTH / 2 + 20, y: btnY + 15 });
-    const playBtn = new Konva.Rect({
-      width: 180,
-      height: 56,
+    // Back to main menu
+    const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
+    const backBtn = new Konva.Rect({
+      width: 160,
+      height: 50,
       fill: "#d84315",
       cornerRadius: 8,
       stroke: "#b71c1c",
       strokeWidth: 2,
     });
-    const playText = new Konva.Text({
-      x: 90,
-      y: 28,
-      text: "Play",
-      fontSize: 20,
+    const backText = new Konva.Text({
+      x: 80,
+      y: 25,
+      text: "Back to Menu",
+      fontSize: 16,
       fill: "white",
     });
-    playText.offsetX(playText.width() / 2);
-    playText.offsetY(playText.height() / 2);
-    playGroup.add(playBtn, playText);
-    playGroup.on("click", onPlayClick);
+    backText.offsetX(backText.width() / 2);
+    backText.offsetY(backText.height() / 2);
+    backGroup.add(backBtn, backText);
+    backGroup.on("click", onBackToMenuClick);
 
-    this.group.add(bg, overlay, title, titleOutline, block, blockText, tutorialGroup, playGroup);
+    this.group.add(bg, overlay, title, titleOutline, block, blockText, tutorialGroup, backGroup);
   }
 
 
