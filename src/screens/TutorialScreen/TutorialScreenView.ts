@@ -133,7 +133,7 @@ export class TutorialScreenView implements View {
     // no demo yet
     tutorialGroup.on("click", onWatchTutorialClick);
 
-    // Back to main menu
+    // Back to main menu button (top-right corner)
     const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
     const backBtn = new Konva.Rect({
       width: 160,
@@ -150,6 +150,7 @@ export class TutorialScreenView implements View {
       fontSize: 16,
       fill: "white",
     });
+
     backText.offsetX(backText.width() / 2);
     backText.offsetY(backText.height() / 2);
     backGroup.add(backBtn, backText);

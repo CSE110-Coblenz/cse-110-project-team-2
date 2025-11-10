@@ -11,7 +11,7 @@ export class GameScreenView implements View{
 
     model=new GameScreenModel()
 
-    constructor() {
+    constructor(onBackToMenuClick: () => void) {
         this.group = new Konva.Group({ visible: false });
         const bg = new Konva.Rect({
             x: 0,
@@ -39,6 +39,34 @@ export class GameScreenView implements View{
         this.drawRemoveTopping(150,20,"Mushroom")
         this.drawRemoveTopping(150,100,"Pepper")
         this.drawRemoveTopping(150,180,"Pepperoni")
+
+        // Back to main menu button (top-right corner)
+        const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
+
+        const backBtn = new Konva.Rect({
+        width: 160,
+        height: 50,
+        fill: "#d84315",
+        cornerRadius: 8,
+        stroke: "#b71c1c",
+        strokeWidth: 2,
+        });
+
+        const backText = new Konva.Text({
+        x: 80,
+        y: 25,
+        text: "Back to Menu",
+        fontSize: 16,
+        fill: "white",
+        });
+        backText.offsetX(backText.width() / 2);
+        backText.offsetY(backText.height() / 2);
+
+        backGroup.add(backBtn, backText);
+
+        // click event → goes back to menu
+        backGroup.on("click", onBackToMenuClick);
+        this.group.add(backGroup);
 
         this.show()
     }
