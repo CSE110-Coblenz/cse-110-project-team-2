@@ -13,7 +13,7 @@ export type Difficulty = "proper" | "improper" | "mixed";
 export class DifficultyScreenView implements View {
     private group: Konva.Group;
 
-    constructor(onDifficultySelect: (difficulty: Difficulty) => void) {
+    constructor(onDifficultySelect: (difficulty: Difficulty) => void, onBackToMenuClick: () => void) {
         this.group = new Konva.Group({ visible: true });
 
         // Background
@@ -126,8 +126,36 @@ export class DifficultyScreenView implements View {
             return buttonGroup;
         });
 
+        // Back to main menu button (top-right corner)
+        const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
+
+        const backBtn = new Konva.Rect({
+        width: 160,
+        height: 50,
+        fill: "#d84315",
+        cornerRadius: 8,
+        stroke: "#b71c1c",
+        strokeWidth: 2,
+        });
+
+        const backText = new Konva.Text({
+        x: 80,
+        y: 25,
+        text: "Back to Menu",
+        fontSize: 16,
+        fill: "white",
+        });
+        backText.offsetX(backText.width() / 2);
+        backText.offsetY(backText.height() / 2);
+
+        backGroup.add(backBtn, backText);
+
+        // click event → goes back to menu
+        backGroup.on("click", onBackToMenuClick);
+
+
         // Add all elements to the main group
-        this.group.add(bg, title, ...buttons);
+        this.group.add(bg, title, ...buttons, backGroup);
     }
 
     show(): void {

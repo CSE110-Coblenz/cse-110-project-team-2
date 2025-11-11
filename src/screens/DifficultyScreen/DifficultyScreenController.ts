@@ -9,7 +9,9 @@ export class DifficultyScreenController extends ScreenController {
     constructor(screenSwitcher: ScreenSwitcher) {
         super();
         this.screenSwitcher = screenSwitcher;
-        this.view = new DifficultyScreenView((difficulty) => this.handleDifficultySelect(difficulty));
+        this.view = new DifficultyScreenView(
+            (difficulty) => this.handleDifficultySelect(difficulty),
+            () => this.handleBackToMenuClick());
     }
 
     private handleDifficultySelect(difficulty: Difficulty): void {
@@ -19,6 +21,10 @@ export class DifficultyScreenController extends ScreenController {
             difficulty: difficulty
         });
     }
+
+    private handleBackToMenuClick() {
+        this.screenSwitcher.switchToScreen({ type: "menu" });
+    }   
 
     getView(): DifficultyScreenView {
         return this.view;

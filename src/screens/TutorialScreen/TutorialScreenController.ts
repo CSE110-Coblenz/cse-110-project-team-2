@@ -11,14 +11,14 @@ export class TutorialScreenController extends ScreenController {
         this.screenSwitcher = screenSwitcher;
 
         this.view = new TutorialScreenView(
-        () => this.handlePlayClick(),
+        () => this.handleBackToMenuClick(),
         () => this.handleWatchTutorialClick()
         );
     }
 
-    private handlePlayClick() {
+    private handleBackToMenuClick() {
         //goes to difficulty selection first
-        this.screenSwitcher.switchToScreen({ type: "difficulty" });
+        this.screenSwitcher.switchToScreen({ type: "menu" });
     }
 
     private handleWatchTutorialClick() {
