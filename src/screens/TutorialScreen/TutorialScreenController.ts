@@ -16,6 +16,10 @@ export class TutorialScreenController extends ScreenController {
         );
     }
 
+    private handlePlayClick() {
+        // go to order screen
+        this.screenSwitcher.switchToScreen({ type: "order" });
+    }
     private handleBackToMenuClick() {
         //goes to difficulty selection first
         this.screenSwitcher.switchToScreen({ type: "menu" });
