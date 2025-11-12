@@ -25,7 +25,6 @@ export class Minigame2View {
         height: STAGE_HEIGHT,
         fill: "gray",
     })
-    this.group.add(road);
 
     // road dashes
     const dashCount = 15;        // number of dashes visible at once
@@ -46,7 +45,7 @@ export class Minigame2View {
         });
         this.roadDashes.add(dash);
     }
-    this.group.add(this.roadDashes);
+    this.group.add(road, this.roadDashes);
 
     // ====================== ANIMATION FOR ROAD MOVEMENT =======================
     const speed = 5;
@@ -99,29 +98,27 @@ export class Minigame2View {
         height: STAGE_HEIGHT / 5,
         fill: "green",
     })
-    this.group.add(grassTop);
-    this.group.add(grassBottom);
+    this.group.add(grassTop, grassBottom);
 
     // ========================= TEXT ELEMENTS ==========================
     // obstacle count
     this.obstacleText = new Konva.Text({
-      x: 20,
-      y: 20,
+      x: 30,
+      y: 30,
       text: "Obstacles hit: 0",
-      fontSize: 24,
+      fontSize: 30,
       fill: "black",
     });
-    this.group.add(this.obstacleText);
 
     // timer display that counts down from 30 seconds
     this.timerText = new Konva.Text({
-        x: STAGE_WIDTH - 150,
-        y: 20,
+        x: STAGE_WIDTH - 200,
+        y: 30,
         text: "Time left: 30",
-        fontSize: 24,
+        fontSize: 30,
         fill: "black",
     });
-    this.group.add(this.timerText);
+    this.group.add(this.timerText, this.obstacleText);
 
     // ========================= DELIVERY CAR IMAGE ==========================
     Konva.Image.fromURL("/deliverycar.png", (img) => {
@@ -160,7 +157,6 @@ export class Minigame2View {
             const puddleW = puddleBox.width - puddlePadding * 2;
             const puddleH = puddleBox.height - puddlePadding * 2;
 
-            // const isColliding = Konva.Util.haveIntersection(carBox, puddleBox);
             const isColliding =
                 carX < puddleX + puddleW &&
                 carX + carW > puddleX &&
@@ -241,47 +237,8 @@ export class Minigame2View {
         this.group.getLayer()?.draw();
     }
 
-    private calculateTip(obstaclesHit: number): { tip: number; review: string } {
-        if (obstaclesHit <= 0) {
-            return {
-                tip: 9.00,
-                review: "DELICIOUS! My pizza was fresh and hot 🍕🔥",
-            };
-        } else if (obstaclesHit <= 2) {
-            return {
-                tip: 7.50,
-                review: "Tasted great, but sauce leaked a bit.",
-            };
-        } else if (obstaclesHit <= 4) {
-            return {
-                tip: 6.00,
-                review: "Good pizza, but toppings were slightly off.",
-            };
-        } else if (obstaclesHit <= 6) {
-            return {
-                tip: 4.50,
-                review: "My pizza arrived tilted and a bit messy.",
-            };
-        } else if (obstaclesHit <= 8) {
-            return {
-                tip: 3.00,
-                review: "Why was my pizza upside down? 😕",
-            };
-        } else if (obstaclesHit <= 10) {
-            return {
-                tip: 1.50,
-                review: "Pizza was all crushed up...",
-            };
-        } else {
-            return {
-                tip: 0.00,
-                review: "Never ordering again 💀",
-            };
-        }
-    }
+    showSummary(obstaclesHit: number, tip: number, review: string): void {
 
-    showSummary(obstaclesHit: number): void {
-        const {tip, review} = this.calculateTip(obstaclesHit);
         // background overlay
         const overlay = new Konva.Rect({
             x: 0,
@@ -307,44 +264,53 @@ export class Minigame2View {
             shadowBlur: 10,
         });
 
-        // summary text
-        const summaryText = new Konva.Text({
-            x: (STAGE_WIDTH - boxWidth) / 2 + 20,
-            y: (STAGE_HEIGHT - boxHeight) / 2 + 60,
-            width: boxWidth - 40,
+        // title
+        const titleText = new Konva.Text({
+            x: (STAGE_WIDTH - boxWidth) / 2,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 40,
+            width: boxWidth,
             align: "center",
-            text: `Time’s up!\n\nObstacles hit: ${obstaclesHit}`,
-            fontSize: 24,
-            fill: "black",
+            text: "🍕 Delivery Complete! 🍕",
+            fontSize: 30,
+            fontStyle: "bold",
+            fill: "#333",
         });
 
-        const tipText = new Konva.Text({
-            x: (STAGE_WIDTH - boxWidth) / 2 + 20,
-            y: (STAGE_HEIGHT - boxHeight) / 2 + 160,
-            width: boxWidth - 40,
+        // obstacles text
+        const summaryText = new Konva.Text({
+            x: (STAGE_WIDTH - boxWidth) / 2,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 100,
+            width: boxWidth,
             align: "center",
-            text: tip > 0 ? `Tip earned: $${tip.toFixed(2)}` : `No tip earned 💸`, // rounds 2 decimal places
+            text: `Obstacles hit: ${obstaclesHit}`,
+            fontSize: 22,
+            fill: "#555",
+        });
+
+        // tip text
+        const tipText = new Konva.Text({
+            x: (STAGE_WIDTH - boxWidth) / 2,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 160,
+            width: boxWidth,
+            align: "center",
+            text: tip > 0 ? `💰 Tip earned: $${tip.toFixed(2)}` : `💸 No tip earned`,
             fontSize: 26,
             fontStyle: "bold",
-            fill: tip > 0 ? "green" : "red",
+            fill: tip > 0 ? "#2e7d32" : "#c62828",
         });
 
-        // customer review text
+        // review text
         const reviewText = new Konva.Text({
-            x: (STAGE_WIDTH - boxWidth) / 2 + 30,
+            x: (STAGE_WIDTH - boxWidth) / 2 + 40,
             y: (STAGE_HEIGHT - boxHeight) / 2 + 220,
-            width: boxWidth - 60,
+            width: boxWidth - 80,
             align: "center",
-            text: `Customer Review: ${review}`,
+            text: `Customer Review: "${review}"`,
             fontSize: 18,
             fill: "#333",
         });
 
-        this.group.add(overlay);
-        this.group.add(popup);
-        this.group.add(summaryText);
-        this.group.add(tipText);
-        this.group.add(reviewText);
+        this.group.add(overlay, popup, titleText, summaryText, tipText, reviewText);
         this.group.getLayer()?.draw();
     }
 

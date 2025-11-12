@@ -98,8 +98,8 @@ export class Minigame2Controller extends ScreenController {
         this.view.stopAnimation();
         this.movementAnimation?.stop();
         
-        const obstaclesHit = this.model.getObstacleCount();
-        this.view.showSummary(obstaclesHit);
+        this.model.calculateTip();
+        this.view.showSummary(this.model.getObstacleCount(), this.model.tip, this.model.review);
 
         // this.view.hide();
 
