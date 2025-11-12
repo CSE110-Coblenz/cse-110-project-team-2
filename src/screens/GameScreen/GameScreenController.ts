@@ -12,7 +12,7 @@ export class GameScreenController extends ScreenController{
 
     constructor(screenSwitcher?: ScreenSwitcher){
         super()
-        this.view=new GameScreenView()
+        this.view = new GameScreenView(() => this.handleBackToMenuClick());
         this.model=this.view.model
         this.screen=screenSwitcher;
 
@@ -22,7 +22,10 @@ export class GameScreenController extends ScreenController{
     getView(): GameScreenView {
         return this.view;
     }
-
+    
+    private handleBackToMenuClick(){
+        this.screen?.switchToScreen({type:"menu"});
+    }
     startGame(difficulty: "proper" | "improper" | "mixed"): void {
         // Configure game based on difficulty level:
         // proper: generates only proper fractions (numerator < denominator)

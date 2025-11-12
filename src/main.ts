@@ -5,6 +5,7 @@ import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController"
 import { GameScreenController } from "./screens/GameScreen/GameScreenController";
 import { DifficultyScreenController } from "./screens/DifficultyScreen/DifficultyScreenController";
 import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScreenController";
+import { OrderScreenController } from "./screens/OrderScreen/OrderScreenController";
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
 
@@ -22,6 +23,7 @@ class App implements ScreenSwitcher {
 	private gameController: GameScreenController;
 	private difficultyController: DifficultyScreenController;
 	private tutorialController: TutorialScreenController;
+    private orderController: OrderScreenController;
     private resultsController: ResultScreenController;
     private minigame2Controller: Minigame2Controller;
 
@@ -38,12 +40,14 @@ class App implements ScreenSwitcher {
 		this.layer.add(this.gameController.getView().getGroup());
 		this.layer.add(this.difficultyController.getView().getGroup());
 		this.tutorialController = new TutorialScreenController(this);
+        this.orderController = new OrderScreenController(this);
         this.resultsController = new ResultScreenController(this.layer, this);
         this.minigame2Controller = new Minigame2Controller(this);
 
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
 		this.layer.add(this.tutorialController.getView().getGroup());
+        this.layer.add(this.orderController.getView().getGroup());
         this.layer.add(this.resultsController.getView().getGroup());
         this.layer.add(this.minigame2Controller.getView().getGroup());
 
@@ -61,6 +65,7 @@ class App implements ScreenSwitcher {
 		this.tutorialController.hide();
         this.resultsController.hide();
         this.minigame2Controller.hide();
+        this.orderController.hide();
 
 		switch (screen.type) {
 			case "menu":
@@ -76,6 +81,9 @@ class App implements ScreenSwitcher {
 			case "tutorial":
 				this.tutorialController.show();
 				break;
+            case "order":
+                this.orderController.show();
+                break;
             case "result":
                 this.resultsController.setStats({
                     ordersReceived: 25, //Dummy Values, will replaced later on

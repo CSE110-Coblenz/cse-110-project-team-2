@@ -1,4 +1,5 @@
 import type { Group } from "konva/lib/Group";
+import type { ToppingType } from "./constants";
 
 export interface View {
     getGroup(): Group;
@@ -8,9 +9,22 @@ export interface View {
 
 export type Difficulty = "proper" | "improper" | "mixed";
 
+export type FractionStruct = {
+    numerator: number;
+    denominator: number;
+};
+
+export type Order = {
+    fraction: string;
+    fractionStruct?: FractionStruct;
+    toppingsPerSlice?: ToppingType[];
+    toppingsCounts?: Record<ToppingType, number>;
+};
+
 export type Screen =
     | { type: "menu" }
     | { type: "game"; difficulty: Difficulty }
+    | { type: "order" }
     | { type: "result"; score: number }
     | { type: "tutorial" }
     | { type: "settings" }
