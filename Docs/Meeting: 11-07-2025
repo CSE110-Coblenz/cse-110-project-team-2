@@ -1,9 +1,54 @@
-11/07/2025
+11/07/2025 (In-Person)
 
-  Attendees:
+  Attendees: Michelle, Woojin, Johnny, Jolene (In-person)
+             Randy, Teddy (virtual due to personal reasons)
 
   Agenda:
     1. Progress Updates
     2. Continue working on implementations
 
   Notes:
+    1. Standardized fonts for buttons and title 
+        - Button Font: Arial Black for now (low priority) 
+        - Title Font: Arial Black for now (low priority)
+    2. Discussed Mini-Game 2 Logic
+        - What happens when the time hits zero: A pop-up will appear with relevant information based on game results 
+            1. Display obstacles hit,
+            2. Display positive, neutral, or negative comment correlating to amount of obstacles hit
+            3. Display amount of tips based on amount of 
+        - Tips:     
+            1. Use local storage → refer to Lab 3
+            2. Max: $5
+
+    3. Discuss more details about the flow of the game (should we set a limit on orders per day?)
+
+  Main game
+    - Don’t let players move forward until they get fractions correct
+    - When incorrect, display current proportions and allow them to correct
+    - One topping per slice
+  Minigame 1
+  -  Pull information/pizza from order
+  - Display 2 pizzas → “Which pizza has more pepperoni?”
+  - Popup for summary + tip should handle instructions and button to minigame 2
+
+- Michelle booked Geisel reservation for meeting 2 weeks from now
+General workflow of the game
+  - Start (can move to tutorial)
+  - Select Difficulty
+  - Take orders and place toppings
+  - 5 orders per day (We only have one day for now)
+  - Minigame 1
+  - Minigame 2
+  - Results
+
+  4. Action items
+    - Woojin: Update implementation so player can only put one topping per slice
+    - Michelle: Implement pop up for performance summary and tips based on obstacles hit for Minigame 2,  includes comments, obstacles hit, and tip amount, help out with main game components
+    - Jolene: Implement sound effects setting button, constant settings button on each page, font standardizing, help out with main game components
+    - Randy: 
+    - Teddy: 
+    - Johnny: 
+
+
+
+
