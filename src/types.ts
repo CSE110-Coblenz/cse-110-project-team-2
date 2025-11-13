@@ -23,7 +23,8 @@ export type Order = {
 
 export type Screen =
     | { type: "menu" }
-    | { type: "game"; difficulty: Difficulty }
+    // 'game' screen may optionally include a difficulty and/or an Order to start with
+    | { type: "game"; difficulty?: Difficulty; order?: Order }
     | { type: "order" }
     | { type: "result"; score: number }
     | { type: "tutorial" }
