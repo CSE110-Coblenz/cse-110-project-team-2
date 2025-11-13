@@ -12,6 +12,7 @@ export class Minigame2View {
     private puddleSpawnInterval = 2000; // new puddle every 2 seconds
     private lastPuddleTime = 0;
     private onPuddleHit?: () => void;
+    private onResultsButtonClick?: () => void;
 
 
     constructor() {
@@ -139,6 +140,10 @@ export class Minigame2View {
         this.onPuddleHit = callback;
     }
 
+    setOnResultsButtonClick(callback: () => void): void {
+        this.onResultsButtonClick = callback;
+    }
+
     private checkCollisions(): void {
         if (!this.carImage) return;
 
@@ -238,7 +243,6 @@ export class Minigame2View {
     }
 
     showSummary(obstaclesHit: number, tip: number, review: string): void {
-
         // background overlay
         const overlay = new Konva.Rect({
             x: 0,
@@ -250,7 +254,7 @@ export class Minigame2View {
 
         // summary box
         const boxWidth = 500;
-        const boxHeight = 300;
+        const boxHeight = 275;
         const popup = new Konva.Rect({
             x: (STAGE_WIDTH - boxWidth) / 2,
             y: (STAGE_HEIGHT - boxHeight) / 2,
@@ -267,7 +271,7 @@ export class Minigame2View {
         // title
         const titleText = new Konva.Text({
             x: (STAGE_WIDTH - boxWidth) / 2,
-            y: (STAGE_HEIGHT - boxHeight) / 2 + 40,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 20,
             width: boxWidth,
             align: "center",
             text: "🍕 Delivery Complete! 🍕",
@@ -290,7 +294,7 @@ export class Minigame2View {
         // tip text
         const tipText = new Konva.Text({
             x: (STAGE_WIDTH - boxWidth) / 2,
-            y: (STAGE_HEIGHT - boxHeight) / 2 + 160,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 170,
             width: boxWidth,
             align: "center",
             text: tip > 0 ? `💰 Tip earned: $${tip.toFixed(2)}` : `💸 No tip earned`,
@@ -311,7 +315,47 @@ export class Minigame2View {
         });
 
         this.group.add(overlay, popup, titleText, summaryText, tipText, reviewText);
-        this.group.getLayer()?.draw();
+
+        // ==================== RESULTS BUTTON ====================
+        const buttonWidth = 150;
+        const buttonHeight = 50;
+        const buttonX = (STAGE_WIDTH - buttonWidth) / 2;
+        const buttonY = (STAGE_HEIGHT - boxHeight) / 2 + boxHeight + 20;
+
+        const buttonGroup = new Konva.Group({
+            x: buttonX,
+            y: buttonY,
+            listening: true,
+        });
+
+        const resultsButton = new Konva.Rect({
+            width: buttonWidth,
+            height: buttonHeight,
+            fill: "#e57467ff",
+            cornerRadius: 10,
+            shadowColor: "black",
+            shadowBlur: 5,
+        });
+
+        const buttonLabel = new Konva.Text({
+            y: 13,
+            width: buttonWidth,
+            align: "center",
+            text: "Results",
+            fontSize: 22,
+            fontStyle: "bold",
+            fill: "white",
+        });
+
+        // single click handler
+        buttonGroup.on("click", () => {
+            this.onResultsButtonClick?.();
+        });
+
+        buttonGroup.add(resultsButton, buttonLabel);
+        this.group.add(buttonGroup);
+
+        // Michelle next steps: add hover effect?
     }
 
     getGroup(): Konva.Group {
