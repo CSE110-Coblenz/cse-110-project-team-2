@@ -25,11 +25,16 @@ export class Minigame2Controller extends ScreenController {
             this.handleAddObstacle();
             this.splashSound.play();
         });
+        this.view.setOnResultsButtonClick(() => this.handleResultsButtonClick());
     }
 
     private handleAddObstacle(): void {
         this.model.increaseObstacleCount();
         this.view.updateObstacleCount(this.model.getObstacleCount());
+    }
+
+    private handleResultsButtonClick(): void {
+        this.switcher?.switchToScreen({ type: "result", score: this.model.tip });
     }
 
     private setupInput(): void {
@@ -97,9 +102,8 @@ export class Minigame2Controller extends ScreenController {
         this.stopTimer();
         this.view.stopAnimation();
         this.movementAnimation?.stop();
-        // this.view.hide();
-
-        // future work: switch screens or show results
-        // this.screenSwitcher?.switchToScreen({ type: "minigame2" }); // placeholder
+        
+        this.model.calculateTip();
+        this.view.showSummary(this.model.getObstacleCount(), this.model.tip, this.model.review);
     }
 }

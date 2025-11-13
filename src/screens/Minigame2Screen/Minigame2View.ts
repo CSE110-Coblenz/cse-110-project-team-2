@@ -12,6 +12,7 @@ export class Minigame2View {
     private puddleSpawnInterval = 2000; // new puddle every 2 seconds
     private lastPuddleTime = 0;
     private onPuddleHit?: () => void;
+    private onResultsButtonClick?: () => void;
 
 
     constructor() {
@@ -25,7 +26,6 @@ export class Minigame2View {
         height: STAGE_HEIGHT,
         fill: "gray",
     })
-    this.group.add(road);
 
     // road dashes
     const dashCount = 15;        // number of dashes visible at once
@@ -46,7 +46,7 @@ export class Minigame2View {
         });
         this.roadDashes.add(dash);
     }
-    this.group.add(this.roadDashes);
+    this.group.add(road, this.roadDashes);
 
     // ====================== ANIMATION FOR ROAD MOVEMENT =======================
     const speed = 5;
@@ -99,29 +99,27 @@ export class Minigame2View {
         height: STAGE_HEIGHT / 5,
         fill: "green",
     })
-    this.group.add(grassTop);
-    this.group.add(grassBottom);
+    this.group.add(grassTop, grassBottom);
 
     // ========================= TEXT ELEMENTS ==========================
     // obstacle count
     this.obstacleText = new Konva.Text({
-      x: 20,
-      y: 20,
+      x: 30,
+      y: 30,
       text: "Obstacles hit: 0",
-      fontSize: 24,
+      fontSize: 30,
       fill: "black",
     });
-    this.group.add(this.obstacleText);
 
     // timer display that counts down from 30 seconds
     this.timerText = new Konva.Text({
-        x: STAGE_WIDTH - 150,
-        y: 20,
+        x: STAGE_WIDTH - 200,
+        y: 30,
         text: "Time left: 30",
-        fontSize: 24,
+        fontSize: 30,
         fill: "black",
     });
-    this.group.add(this.timerText);
+    this.group.add(this.timerText, this.obstacleText);
 
     // ========================= DELIVERY CAR IMAGE ==========================
     Konva.Image.fromURL("/deliverycar.png", (img) => {
@@ -142,6 +140,10 @@ export class Minigame2View {
         this.onPuddleHit = callback;
     }
 
+    setOnResultsButtonClick(callback: () => void): void {
+        this.onResultsButtonClick = callback;
+    }
+
     private checkCollisions(): void {
         if (!this.carImage) return;
 
@@ -160,7 +162,6 @@ export class Minigame2View {
             const puddleW = puddleBox.width - puddlePadding * 2;
             const puddleH = puddleBox.height - puddlePadding * 2;
 
-            // const isColliding = Konva.Util.haveIntersection(carBox, puddleBox);
             const isColliding =
                 carX < puddleX + puddleW &&
                 carX + carW > puddleX &&
@@ -240,7 +241,123 @@ export class Minigame2View {
         this.timerText.text(`Time left: ${timeRemaining}`);
         this.group.getLayer()?.draw();
     }
-  
+
+    showSummary(obstaclesHit: number, tip: number, review: string): void {
+        // background overlay
+        const overlay = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "rgba(0, 0, 0, 0.5)",
+        });
+
+        // summary box
+        const boxWidth = 500;
+        const boxHeight = 275;
+        const popup = new Konva.Rect({
+            x: (STAGE_WIDTH - boxWidth) / 2,
+            y: (STAGE_HEIGHT - boxHeight) / 2,
+            width: boxWidth,
+            height: boxHeight,
+            fill: "#bdbdbd",
+            stroke: "#9e9e9e",
+            strokeWidth: 3,
+            cornerRadius: 20,
+            shadowColor: "gray",
+            shadowBlur: 10,
+        });
+
+        // title
+        const titleText = new Konva.Text({
+            x: (STAGE_WIDTH - boxWidth) / 2,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 20,
+            width: boxWidth,
+            align: "center",
+            text: "🍕 Delivery Complete! 🍕",
+            fontSize: 30,
+            fontStyle: "bold",
+            fill: "#333",
+        });
+
+        // obstacles text
+        const summaryText = new Konva.Text({
+            x: (STAGE_WIDTH - boxWidth) / 2,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 100,
+            width: boxWidth,
+            align: "center",
+            text: `Obstacles hit: ${obstaclesHit}`,
+            fontSize: 22,
+            fill: "#555",
+        });
+
+        // tip text
+        const tipText = new Konva.Text({
+            x: (STAGE_WIDTH - boxWidth) / 2,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 170,
+            width: boxWidth,
+            align: "center",
+            text: tip > 0 ? `💰 Tip earned: $${tip.toFixed(2)}` : `💸 No tip earned`,
+            fontSize: 26,
+            fontStyle: "bold",
+            fill: tip > 0 ? "#2e7d32" : "#c62828",
+        });
+
+        // review text
+        const reviewText = new Konva.Text({
+            x: (STAGE_WIDTH - boxWidth) / 2 + 40,
+            y: (STAGE_HEIGHT - boxHeight) / 2 + 220,
+            width: boxWidth - 80,
+            align: "center",
+            text: `Customer Review: "${review}"`,
+            fontSize: 18,
+            fill: "#333",
+        });
+
+        this.group.add(overlay, popup, titleText, summaryText, tipText, reviewText);
+
+        // ==================== RESULTS BUTTON ====================
+        const buttonWidth = 150;
+        const buttonHeight = 50;
+        const buttonX = (STAGE_WIDTH - buttonWidth) / 2;
+        const buttonY = (STAGE_HEIGHT - boxHeight) / 2 + boxHeight + 20;
+
+        const buttonGroup = new Konva.Group({
+            x: buttonX,
+            y: buttonY,
+            listening: true,
+        });
+
+        const resultsButton = new Konva.Rect({
+            width: buttonWidth,
+            height: buttonHeight,
+            fill: "#e57467ff",
+            cornerRadius: 10,
+            shadowColor: "black",
+            shadowBlur: 5,
+        });
+
+        const buttonLabel = new Konva.Text({
+            y: 13,
+            width: buttonWidth,
+            align: "center",
+            text: "Results",
+            fontSize: 22,
+            fontStyle: "bold",
+            fill: "white",
+        });
+
+        // single click handler
+        buttonGroup.on("click", () => {
+            this.onResultsButtonClick?.();
+        });
+
+        buttonGroup.add(resultsButton, buttonLabel);
+        this.group.add(buttonGroup);
+
+        // Michelle next steps: add hover effect?
+    }
+
     getGroup(): Konva.Group {
         return this.group;
     }
