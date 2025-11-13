@@ -4,37 +4,9 @@ export class Minigame2Model {
   review: string = "";
 
   calculateTip(): void {
-    let result: { tip: number; review: string };
-
-    if (this.obstacleCount <= 0) {
-      this.tip = 9.00;
-      this.review = "DELICIOUS! My pizza was fresh and hot 🔥";
-    }
-    else if (this.obstacleCount <= 2) {
-      this.tip = 7.50;
-      this.review = "Tasted great, but sauce leaked a bit.";
-    }
-    else if (this.obstacleCount <= 4) {
-      this.tip = 6.00;
-      this.review = "Good pizza, but toppings were slightly off." ;
-    }
-    else if (this.obstacleCount <= 6) {
-      this.tip = 4.50;
-      this.review = "My pizza arrived tilted and a bit messy.";
-    }
-    else if (this.obstacleCount <= 8) {
-      this.tip = 3.00;
-      this.review = "Why was my pizza upside down? 😕";
-    }
-
-    else if (this.obstacleCount <= 10) {
-      this.tip = 1.50;
-      this.review = "Pizza was all crushed up...";
-    }
-    else {
-      this.tip = 0.00;
-      this.review = "Never ordering again 💀";
-    }
+    const result = calculateTipFromObstacles(this.obstacleCount);
+    this.tip = result.tip;
+    this.review = result.review;
   }
 
   getObstacleCount(): number {
@@ -50,4 +22,22 @@ export class Minigame2Model {
     this.tip = 0;
     this.review = "";
   }
+}
+
+// helper (logic is extracted for easier testing)
+export function calculateTipFromObstacles(obstacleCount: number): { tip: number; review: string } {
+  if (obstacleCount <= 0)
+    return { tip: 9.0, review: "DELICIOUS! My pizza was fresh and hot 🔥" };
+  else if (obstacleCount <= 2)
+    return { tip: 7.5, review: "Tasted great, but sauce leaked a bit." };
+  else if (obstacleCount <= 4)
+    return { tip: 6.0, review: "Good pizza, but toppings were slightly off." };
+  else if (obstacleCount <= 6)
+    return { tip: 4.5, review: "My pizza arrived tilted and a bit messy." };
+  else if (obstacleCount <= 8)
+    return { tip: 3.0, review: "Why was my pizza upside down? 😕" };
+  else if (obstacleCount <= 10)
+    return { tip: 1.5, review: "Pizza was all crushed up..." };
+  else
+    return { tip: 0.0, review: "Never ordering again 💀" };
 }
