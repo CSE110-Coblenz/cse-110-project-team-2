@@ -537,7 +537,9 @@ export class GameScreenView implements View{
             
     }
 
-    createTopping(toppingX:number,toppingY:number, toppingType:ToppingType, toppingColor:string, toppingRadius:number):void{
+    createTopping(toppingX:number,toppingY:number, toppingType:ToppingType, toppingURL:string, toppingScale:number):void{
+        const toppingIm=new Image()
+        
         const topping=new Konva.Circle({
                 stroke:"black",
                 strokeWidth:4,
