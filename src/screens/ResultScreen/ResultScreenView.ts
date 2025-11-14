@@ -43,6 +43,25 @@ export class ResultsScreenView implements View {
       cornerRadius: 16,
     });
     this.group.add(card);
+
+    const image = new window.Image();
+    image.src = "pizza.png";
+    image.onload = () => {
+      const targetW = 240;
+      const scale = targetW / image.width;
+      const targetH = image.height * scale;
+
+      const pizzaImage = new Konva.Image({
+        x: card.x() + card.width() - targetW - 60,
+        y: card.y() + 60,
+        image: image,
+        width: targetW,
+        height: targetH,
+        listening: false,
+      });
+      this.group.add(pizzaImage);
+      this.group.draw();
+    };
     
     //Title text
     const title = new Konva.Text({
