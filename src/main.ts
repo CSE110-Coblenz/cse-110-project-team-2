@@ -35,21 +35,18 @@ class App implements ScreenSwitcher {
 		this.menuController = new MenuScreenController(this);
 		this.gameController = new GameScreenController(this);
 		this.difficultyController = new DifficultyScreenController(this);
+		this.tutorialController = new TutorialScreenController(this);
+		this.orderController = new OrderScreenController(this);
+		this.resultsController = new ResultScreenController(this.layer, this);
+		this.minigame2Controller = new Minigame2Controller(this);
 
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
 		this.layer.add(this.difficultyController.getView().getGroup());
-		this.tutorialController = new TutorialScreenController(this);
-        this.orderController = new OrderScreenController(this);
-        this.resultsController = new ResultScreenController(this.layer, this);
-        this.minigame2Controller = new Minigame2Controller(this);
-
-		this.layer.add(this.menuController.getView().getGroup());
-		this.layer.add(this.gameController.getView().getGroup());
 		this.layer.add(this.tutorialController.getView().getGroup());
-        this.layer.add(this.orderController.getView().getGroup());
-        this.layer.add(this.resultsController.getView().getGroup());
-        this.layer.add(this.minigame2Controller.getView().getGroup());
+		this.layer.add(this.orderController.getView().getGroup());
+		this.layer.add(this.resultsController.getView().getGroup());
+		this.layer.add(this.minigame2Controller.getView().getGroup());
 
 		// Start on the menu
 		//this.switchToScreen({ type: "menu"});
@@ -75,8 +72,14 @@ class App implements ScreenSwitcher {
 				this.difficultyController.show();
 				break;
 			case "game":
+<<<<<<< HEAD
 				this.currentDifficulty = screen.difficulty;
 				this.gameController.startGame(screen.difficulty);
+=======
+				// pass optional difficulty and order through to game controller
+				// default to "proper" if no difficulty provided
+				this.gameController.startGame(screen.difficulty??"proper", (screen as any).order);
+>>>>>>> 015982062ecc9da7bcd39cbbf5a3b4f1d2cc2eb6
 				break;
 			case "tutorial":
 				this.tutorialController.show();
