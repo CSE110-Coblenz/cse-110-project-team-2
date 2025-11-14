@@ -12,7 +12,7 @@ export const FRACTION_TYPES = [
 ] as const;
 
 export type FractionType = typeof FRACTION_TYPES[number];
-export const TOPPINGS = ["Mushroom", "Pepper", "Pepperoni"] as const;
+export const TOPPINGS = ["Mushroom", "Basil", "Pepperoni"] as const;
 export type ToppingType = typeof TOPPINGS[number];
 export const PIZZA ={pizzaX:STAGE_WIDTH/2+75, pizzaY:STAGE_HEIGHT-205, pizzaX1:STAGE_WIDTH/3+75, pizzaX2:STAGE_WIDTH*2/3+75};
 export const SLICE_OPTIONS=[4,8,12,16] as const;
