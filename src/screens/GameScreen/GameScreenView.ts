@@ -719,7 +719,7 @@ export class GameScreenView implements View{
     // check if its right and then generate new order after clicking submit button
     private handleSubmit(): void {
         const order=this.currentOrder;
-        if(this.model.pizzaNum===0) return;
+        if(this.model.pizzaNum===0||this.model.sliceNum===0) return;
         if (!order) return;
         const denom=order.fractionStruct?.denominator;
         if(!denom) return;
@@ -750,27 +750,30 @@ export class GameScreenView implements View{
         const success= allMatch&&expectedTotal===currentTotal&&expectedPizzaNum===this.model.pizzaNum;
         if(success){
             this.orderNum+=1
-            this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)
             //TEMPORARY DAY PROGRESSION, CHANGE OR REMOVE LATER TODO IMPORTANT DONT FORGET
             if(this.orderNum>ORDERS_PER_DAY){
                 this.day+=1
                 this.dayDisplay.text(`Day: ${this.day}`)
                 this.orderNum=1
             }
-            for(let i=0;i<this.sliceArcs.length;i++){
-                this.sliceArcs[i].destroy()
-            }
-            this.sliceArcs=[]
+            this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)
+        
             for (let toppingList of this.model.toppingsOnPizza.values()){
                 for (let i = 0; i < toppingList.length; i++){
                     toppingList[i].destroy();
                 }
             }
-            this.model.sliceNum=0;
-            this.model.pizzaNum=0
             this.model.filled.clear();
             this.model.toppingsOnPizza.clear();
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
+            //get rid of on screen pizza, comment out if unwanted
+            this.sliceArcs=[]
+            this.model.sliceNum=0;
+            this.model.pizzaNum=0
             this.pizzaGroup.destroyChildren()
+            
             this.group.getLayer()?.batchDraw();
         }
 
