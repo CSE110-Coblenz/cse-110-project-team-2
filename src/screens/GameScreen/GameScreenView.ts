@@ -13,9 +13,9 @@ export class GameScreenView implements View{
     private currentOrder?: Order;
     private orderNum=1;
     private orderNumber:Konva.Text
-    private tips:number=0
-    private tipNumber:Konva.Text
-    
+    private day:number=1
+    private dayDisplay:Konva.Text
+
 
     model=new GameScreenModel()
     private rOuter=0;
@@ -81,18 +81,40 @@ export class GameScreenView implements View{
 
             })
             this.group.add(tongsIm);
-            tongsIm.on("dragend", ()=>{
-                const hitbox=tongsIm.getClientRect();
-                const hitPoint={x:hitbox.x+hitbox.width/2-3, y:hitbox.y+hitbox.height/2+3};
-                const hitShape = this.group.getLayer()?.getIntersection(hitPoint)
-                tongsIm.setPosition({x:1090, y:STAGE_HEIGHT*1/3-60})
+            tongsIm.on("dragend", () => {
+                this.group.getLayer();
+
+                const box=tongsIm.getClientRect();
+                const tongX=box.x+box.width/2;
+                const tongY=box.y+box.height/2;
+                const radius=40;
+                const toppings= this.group.find("Circle");
+                let minDist=radius*radius
+                let closestNode;
+                let closestType;
+                toppings.forEach((node: Konva.Node)=>{
+                    const rect=node.getClientRect();
+                    const x=rect.x+rect.width/2-tongX;
+                    const y=rect.y+rect.height/2-tongY;
+                    const dist=x*x+y*y
+
+                    if (dist<=minDist) {
+                        minDist=dist;
+                        closestNode=node;
+                        closestType=node.getAttr("toppingType") as ToppingType;
+                    }
+                });
+
+                tongsIm.setPosition({ x:1090, y:STAGE_HEIGHT*1/3-60});
+
+                if (!closestNode||!closestType) {
+                    this.group.getLayer()?.batchDraw();
+                    return;
+                }
+                this.removeTopping(closestType);
                 this.group.getLayer()?.batchDraw();
+            });
 
-                if (!hitShape||!hitShape.getAttr("isTopping")) return;
-                const toppingType = hitShape.getAttr("toppingType") as ToppingType;
-                this.removeTopping(toppingType)
-
-            })
 
 
         }
@@ -161,7 +183,7 @@ export class GameScreenView implements View{
         this.group.add(submitGroup);
 
 
-        const orderCount = new Konva.Group({ x: STAGE_WIDTH - 900, y: 20 });
+        const orderCount = new Konva.Group({ x: STAGE_WIDTH - 550, y: 20 });
 
         const orderRect = new Konva.Rect({
         width: 160,
@@ -186,9 +208,9 @@ export class GameScreenView implements View{
         this.group.add(orderCount)
 
 
-        const tipCount = new Konva.Group({ x: STAGE_WIDTH - 550, y: 20 });
+        const dayCount = new Konva.Group({ x: STAGE_WIDTH - 850, y: 20 });
 
-        const tipRect = new Konva.Rect({
+        const dayRect = new Konva.Rect({
         width: 160,
         height: 50,
         fill: "#996228",
@@ -197,18 +219,18 @@ export class GameScreenView implements View{
         strokeWidth: 2,
         });
 
-        this.tipNumber = new Konva.Text({
+        this.dayDisplay = new Konva.Text({
         x: 80,
         y: 25,
-        text: `Tip: $${this.tips}`,
+        text: `Day: ${this.day}`,
         fontSize: 16,
         fill: "white",
         });
-        this.tipNumber.offsetX(this.tipNumber.width() / 2);
-        this.tipNumber.offsetY(this.tipNumber.height() / 2);
+        this.dayDisplay.offsetX(this.dayDisplay.width() / 2);
+        this.dayDisplay.offsetY(this.dayDisplay.height() / 2);
 
-        tipCount.add(tipRect, this.tipNumber);
-        this.group.add(tipCount)
+        dayCount.add(dayRect, this.dayDisplay);
+        this.group.add(dayCount)
 
 
         // Back to main menu button (top-right corner)
@@ -714,6 +736,11 @@ export class GameScreenView implements View{
         if(success){
             this.orderNum+=1
             this.orderNumber.text(`Order Number: ${this.orderNum}`)
+            //TEMPORARY DAY PROGRESSION, CHANGE OR REMOVE LATER TODO IMPORTANT DONT FORGET
+            if(this.orderNum>5){
+                this.day+=1
+                this.dayDisplay.text(`Day: ${this.day}`)
+            }
             this.group.getLayer()?.batchDraw();
         }
 
