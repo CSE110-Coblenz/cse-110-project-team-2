@@ -243,7 +243,7 @@ export class MenuScreenView implements View {
             x: 120,
             y: 80,
             // may replace with image later
-            text: musicOn ? "Sound Effects ON" : "Sound Effects OFF",
+            text: musicOn ? "Effects ON" : " Effects OFF",
             fontSize: 16,
             fill: "white",
             listening: false,
