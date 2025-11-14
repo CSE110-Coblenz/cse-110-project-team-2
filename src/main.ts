@@ -8,10 +8,13 @@ import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScree
 import { OrderScreenController } from "./screens/OrderScreen/OrderScreenController";
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
+import { AudioManager } from "./audio/AudioManager";
 
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
 	private layer: Konva.Layer;
+
+	private audio: AudioManager;
 
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
@@ -26,13 +29,15 @@ class App implements ScreenSwitcher {
 		this.layer = new Konva.Layer();
 		this.stage.add(this.layer);
 
-		this.menuController = new MenuScreenController(this);
+		this.audio = new AudioManager("/audio/pizza-299710.mp3", 0.5);
+
+		this.menuController = new MenuScreenController(this, this.audio);
 		this.gameController = new GameScreenController(this);
 		this.difficultyController = new DifficultyScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
-		this.orderController = new OrderScreenController(this);
-		this.resultsController = new ResultScreenController(this.layer, this);
-		this.minigame2Controller = new Minigame2Controller(this);
+    this.orderController = new OrderScreenController(this);
+    this.resultsController = new ResultScreenController(this.layer, this);
+    this.minigame2Controller = new Minigame2Controller(this, this.audio);
 
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
