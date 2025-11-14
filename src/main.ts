@@ -29,21 +29,18 @@ class App implements ScreenSwitcher {
 		this.menuController = new MenuScreenController(this);
 		this.gameController = new GameScreenController(this);
 		this.difficultyController = new DifficultyScreenController(this);
+		this.tutorialController = new TutorialScreenController(this);
+		this.orderController = new OrderScreenController(this);
+		this.resultsController = new ResultScreenController(this.layer, this);
+		this.minigame2Controller = new Minigame2Controller(this);
 
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
 		this.layer.add(this.difficultyController.getView().getGroup());
-		this.tutorialController = new TutorialScreenController(this);
-        this.orderController = new OrderScreenController(this);
-        this.resultsController = new ResultScreenController(this.layer, this);
-        this.minigame2Controller = new Minigame2Controller(this);
-
-		this.layer.add(this.menuController.getView().getGroup());
-		this.layer.add(this.gameController.getView().getGroup());
 		this.layer.add(this.tutorialController.getView().getGroup());
-        this.layer.add(this.orderController.getView().getGroup());
-        this.layer.add(this.resultsController.getView().getGroup());
-        this.layer.add(this.minigame2Controller.getView().getGroup());
+		this.layer.add(this.orderController.getView().getGroup());
+		this.layer.add(this.resultsController.getView().getGroup());
+		this.layer.add(this.minigame2Controller.getView().getGroup());
 
 		// Start on the menu
 		this.switchToScreen({ type: "menu"});
