@@ -317,6 +317,9 @@ export class GameScreenView implements View{
 
         //remove all toppings on pizza when number of slices change
         button.on("click", ()=>{
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
             this.sliceArcs=[];
             this.pizzaGroup.destroyChildren();
             this.model.pizzaNum=numPizza
@@ -341,11 +344,6 @@ export class GameScreenView implements View{
 
 
     drawPizza( pizzaX:number): void {
-        //reset pizza
-        if(pizzaX===PIZZA.pizzaX2){
-            this.sliceArcs=[];
-            this.pizzaGroup.destroyChildren();
-        }
 
         //build the base circle
         const basePizza=new Image()
@@ -417,7 +415,10 @@ export class GameScreenView implements View{
         button.on("click", ()=>{
             this.pizzaGroup.find('Line').forEach((node) =>node.destroy());
             this.pizzaGroup.find('.slice').forEach((node)=>node.destroy());
-            
+
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
             this.sliceArcs = [];
             this.model.sliceNum=slices;
             if(this.model.pizzaNum===1){
@@ -768,6 +769,14 @@ export class GameScreenView implements View{
                 this.day+=1
                 this.dayDisplay.text(`Day: ${this.day}`)
             }
+            for (let toppingList of this.model.toppingsOnPizza.values()){
+                for (let i = 0; i < toppingList.length; i++){
+                    toppingList[i].destroy();
+                }
+            }
+            this.model.filled.clear();
+            this.model.toppingsOnPizza.clear();
+            this.pizzaGroup.destroyChildren()
             this.group.getLayer()?.batchDraw();
         }
 
