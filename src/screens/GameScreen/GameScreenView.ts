@@ -746,11 +746,11 @@ export class GameScreenView implements View{
                 const expected=(count as number);
                 let current=this.model.filled.get(topping as ToppingType)?.size??0;
                 const LCM=denom/this.model.sliceNum
-                current*=LCM
+                const weightedCurrent=current*LCM
                 expectedTotal+=expected;
-                currentTotal+=current||0;
+                currentTotal+=weightedCurrent||0;
                 lines.push(`${topping}: expected ${expected}/${denom}  —  current ${current}/${this.model.sliceNum}`);
-                if (expected!==current){
+                if (expected!==weightedCurrent){
                     allMatch=false;
                 };
                 if(expectedTotal>denom) expectedPizzaNum=2;
