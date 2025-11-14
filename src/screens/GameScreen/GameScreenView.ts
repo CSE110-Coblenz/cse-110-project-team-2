@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { STAGE_HEIGHT,STAGE_WIDTH, SLICE_OPTIONS, ToppingType } from "../../constants";
+import { STAGE_HEIGHT,STAGE_WIDTH, SLICE_OPTIONS, ToppingType, ORDERS_PER_DAY } from "../../constants";
 import { GameScreenModel } from "./GameScreenModel";
 import { View, Order } from "../../types";
 import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
@@ -197,7 +197,7 @@ export class GameScreenView implements View{
         this.orderNumber = new Konva.Text({
         x: 80,
         y: 25,
-        text: `Order Number: ${this.orderNum}`,
+        text: `Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`,
         fontSize: 16,
         fill: "white",
         });
@@ -735,9 +735,9 @@ export class GameScreenView implements View{
         const success= allMatch&&expectedTotal===currentTotal&&expectedPizzaNum===this.model.pizzaNum;
         if(success){
             this.orderNum+=1
-            this.orderNumber.text(`Order Number: ${this.orderNum}`)
+            this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)
             //TEMPORARY DAY PROGRESSION, CHANGE OR REMOVE LATER TODO IMPORTANT DONT FORGET
-            if(this.orderNum>5){
+            if(this.orderNum>ORDERS_PER_DAY){
                 this.day+=1
                 this.dayDisplay.text(`Day: ${this.day}`)
             }

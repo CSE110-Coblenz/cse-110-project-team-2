@@ -20,5 +20,6 @@ export const ORDER_BG_COLOR = "#fff3e0";
 export const ORDER_TITLE_COLOR = "#6d4c41";
 export const ORDER_BUTTON_FILL = "#43a047";
 export const ORDER_BUTTON_STROKE = "#2e7d32";
+export const ORDERS_PER_DAY:number = 5
 
 export const MINIGAME2_DURATION = 30; // seconds
