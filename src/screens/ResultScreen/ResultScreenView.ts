@@ -90,7 +90,7 @@ export class ResultsScreenView implements View {
 
     //Wraps callbacks so the latest assigned function is used
     const btnWrong = this.makeButton(card.x() + 40, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
-    const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "End game", () =>  this.onEndGame());
+    const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "Home screen", () =>  this.onEndGame());
     const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Next day", () => this.onNextDay());
 
     this.group.add(btnWrong, btnEnd, btnNext);
