@@ -83,12 +83,12 @@ export class GameScreenView implements View{
 
             })
             this.group.add(tongsIm);
-            tongsIm.on('mousedown',()=>{
+            tongsIm.on('dragstart',()=>{
                 tongsIm.rotation(0)
                 this.group.getLayer()?.batchDraw();
 
             })
-            tongsIm.on("mouseup", () => {
+            tongsIm.on("dragend", () => {
                 this.group.getLayer();
 
                 const box=tongsIm.getClientRect();
