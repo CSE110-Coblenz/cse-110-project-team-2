@@ -744,7 +744,9 @@ export class GameScreenView implements View{
         if (order.toppingsCounts) {
             for (const [topping, count] of Object.entries(order.toppingsCounts)) {
                 const expected=(count as number);
-                const current=this.model.filled.get(topping as ToppingType)?.size??0;
+                let current=this.model.filled.get(topping as ToppingType)?.size??0;
+                const LCM=denom/this.model.sliceNum
+                current*=LCM
                 expectedTotal+=expected;
                 currentTotal+=current||0;
                 lines.push(`${topping}: expected ${expected}/${denom}  —  current ${current}/${this.model.sliceNum}`);
