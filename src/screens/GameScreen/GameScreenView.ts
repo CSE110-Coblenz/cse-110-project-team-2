@@ -89,7 +89,6 @@ export class GameScreenView implements View{
 
             })
             tongsIm.on("dragend", () => {
-                this.group.getLayer();
 
                 const box=tongsIm.getClientRect();
                 const tongX=box.x+box.width/2;
@@ -147,19 +146,6 @@ export class GameScreenView implements View{
             align: 'center',
         });
         this.group.add(this.orderDisplay);
-
-        // result display 
-        const resultDisplay = new Konva.Text({
-            x: 40,
-            y: 140,
-            width: 300,
-            text: '',
-            fontSize: 18,
-            fill: 'black',
-            align: 'center',
-            lineHeight: 1.2,
-        });
-        this.group.add(resultDisplay);
 
         //submit button
         const submitGroup = new Konva.Group({ x: STAGE_WIDTH - 142.5, y: STAGE_HEIGHT-135 });
@@ -322,6 +308,7 @@ export class GameScreenView implements View{
             }
             this.sliceArcs=[];
             this.pizzaGroup.destroyChildren();
+            this.model.sliceNum=0
             this.model.pizzaNum=numPizza
             if(numPizza===1){
                 this.drawPizza(PIZZA.pizzaX)
@@ -636,7 +623,7 @@ export class GameScreenView implements View{
                 const filled = this.model.filled.get(type);
                 if (!filled||!filled.has(currentSlice)) continue;
                 // check filled to see if any of the other types are on the slice we want
-                for (let i=0; i<toppings.length; i++) {
+                for (let i=toppings.length-1; i>=0; i--) {
                     const node=toppings[i];
                     if (node.getAttr('countedSlice') === currentSlice) {
                         node.destroy();
@@ -722,7 +709,7 @@ export class GameScreenView implements View{
             this.orderDisplay.text(lines.join('\n'));
         }
         else{
-            this.orderDisplay.text(order.fraction);
+            this.orderDisplay.text(order.fraction??'');
         }
         this.group.getLayer()?.batchDraw();
     }
@@ -768,12 +755,19 @@ export class GameScreenView implements View{
             if(this.orderNum>ORDERS_PER_DAY){
                 this.day+=1
                 this.dayDisplay.text(`Day: ${this.day}`)
+                this.orderNum=1
             }
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
+            this.sliceArcs=[]
             for (let toppingList of this.model.toppingsOnPizza.values()){
                 for (let i = 0; i < toppingList.length; i++){
                     toppingList[i].destroy();
                 }
             }
+            this.model.sliceNum=0;
+            this.model.pizzaNum=0
             this.model.filled.clear();
             this.model.toppingsOnPizza.clear();
             this.pizzaGroup.destroyChildren()
