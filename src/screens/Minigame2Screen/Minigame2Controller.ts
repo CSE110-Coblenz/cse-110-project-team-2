@@ -13,17 +13,21 @@ export class Minigame2Controller extends ScreenController {
     private movementDirection: "up" | "down" | null = null;
     private movementSpeed = 2; // pixels per frame
     private movementAnimation: Konva.Animation | null = null;
-    private splashSound: AudioManager;
+    private audio: AudioManager; // Uses shared audio manager
 
-    constructor(switcher?: ScreenSwitcher) {
+
+    constructor(switcher: ScreenSwitcher, audio: AudioManager) {
         super();
         this.model = new Minigame2Model();
         this.view = new Minigame2View();
         this.switcher = switcher;
-        this.splashSound = new AudioManager("/audio/water-splash.mp3", 0.3, false);
+        this.audio = audio;
+
+        //this.splashSound = new AudioManager("/audio/water-splash.mp3", 0.3, false);
+        this.audio.registerSfx("splash", "/audio/water-splash.mp3");
         this.view.setOnPuddleHit(() => {
             this.handleAddObstacle();
-            this.splashSound.play();
+            this.audio.playSfx("splash");
         });
         this.view.setOnResultsButtonClick(() => this.handleResultsButtonClick());
     }

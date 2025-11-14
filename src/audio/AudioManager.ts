@@ -8,7 +8,7 @@ export class AudioManager{
 
     // Sound effects 
     private sfxEnabled = true;
-    private sfxVolume = 0.5;
+    private sfxVolume = 1;
     private sfx: Record<string, HTMLAudioElement> = {};
 
     /**
@@ -99,5 +99,5 @@ export class AudioManager{
         this.sfxEnabled = on;
     }
 
-    
+
 }
