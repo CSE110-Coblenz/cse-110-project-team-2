@@ -6,6 +6,11 @@ export class AudioManager{
     private audio: HTMLAudioElement;
     private musicEnabled = true;
 
+    // Sound effects 
+    private sfxEnabled = true;
+    private sfxVolume = 0.5;
+    private sfx: Record<string, HTMLAudioElement> = {};
+
     /**
      * 
      * @param src path to the audio file
@@ -66,4 +71,33 @@ export class AudioManager{
         return this.musicEnabled;
     }
 
+
+    // SFX
+    
+    //    Registers the sfx files at startup
+    
+    registerSfx(name: string, src: string){
+        const effects  = new Audio(src);
+        effects.preload = "auto";
+        this.sfx[name] = effects;
+    }
+
+    // Play a named sfx if sound effects enabled
+    playSfx(name: string){
+        if (!this.sfxEnabled) return;
+        const effects = this.sfx[name];
+        if(!effects) return;
+        // allows overlapping plays
+        const inst = effects.cloneNode(true) as HTMLAudioElement;
+        inst.volume = this.sfxVolume;
+
+        // autoplay errors
+        inst.play().catch(() => {} );
+    }
+
+    setSfxEnabled(on: boolean){
+        this.sfxEnabled = on;
+    }
+
+    
 }
