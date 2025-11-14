@@ -16,8 +16,9 @@ export class OrderScreenController extends ScreenController {
     }
 
     private handleAccept(): void {
-        // we don't forward the order to the game screen yet
-        this.screenSwitcher.switchToScreen({ type: "game" } as any);
+        // forward order to game
+        const order=this.model.getOrder();
+        this.screenSwitcher.switchToScreen({type:"game", order});
     }
 
     getView(): OrderScreenView {

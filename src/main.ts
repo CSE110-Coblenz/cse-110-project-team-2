@@ -69,7 +69,9 @@ class App implements ScreenSwitcher {
 				this.difficultyController.show();
 				break;
 			case "game":
-				this.gameController.startGame(screen.difficulty);
+				// pass optional difficulty and order through to game controller
+				// default to "proper" if no difficulty provided
+				this.gameController.startGame(screen.difficulty??"proper", (screen as any).order);
 				break;
 			case "tutorial":
 				this.tutorialController.show();
