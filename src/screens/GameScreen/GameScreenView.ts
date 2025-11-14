@@ -165,21 +165,21 @@ export class GameScreenView implements View{
         const submitGroup = new Konva.Group({ x: STAGE_WIDTH - 142.5, y: STAGE_HEIGHT-135 });
 
         const submit = new Konva.Rect({
-        width: 135,
-        height: 135,
-        fill: "green",
-        cornerRadius: 8,
-        stroke: "green",
-        strokeWidth: 2,
+            width: 135,
+            height: 135,
+            fill: "green",
+            cornerRadius: 8,
+            stroke: "green",
+            strokeWidth: 2,
         });
 
         const submitText = new Konva.Text({
-        x: 67.5,
-        y: 67.5,
-        text: "Submit",
-        fontSize: 36,
-        fill: "white",
-        align:'center'
+            x: 67.5,
+            y: 67.5,
+            text: "Submit",
+            fontSize: 36,
+            fill: "white",
+            align:'center'
         });
         submitText.offsetX(submitText.width() / 2);
         submitText.offsetY(submitText.height() / 2);
@@ -194,20 +194,20 @@ export class GameScreenView implements View{
         const orderCount = new Konva.Group({ x: STAGE_WIDTH - 550, y: 20 });
 
         const orderRect = new Konva.Rect({
-        width: 160,
-        height: 50,
-        fill: "#996228",
-        cornerRadius: 8,
-        stroke: "#996228",
-        strokeWidth: 2,
+            width: 160,
+            height: 50,
+            fill: "#996228",
+            cornerRadius: 8,
+            stroke: "#996228",
+            strokeWidth: 2,
         });
 
         this.orderNumber = new Konva.Text({
-        x: 80,
-        y: 25,
-        text: `Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`,
-        fontSize: 16,
-        fill: "white",
+            x: 80,
+            y: 25,
+            text: `Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`,
+            fontSize: 16,
+            fill: "white",
         });
         this.orderNumber.offsetX(this.orderNumber.width() / 2);
         this.orderNumber.offsetY(this.orderNumber.height() / 2);
@@ -219,20 +219,20 @@ export class GameScreenView implements View{
         const dayCount = new Konva.Group({ x: STAGE_WIDTH - 850, y: 20 });
 
         const dayRect = new Konva.Rect({
-        width: 160,
-        height: 50,
-        fill: "#996228",
-        cornerRadius: 8,
-        stroke: "#996228",
-        strokeWidth: 2,
+            width: 160,
+            height: 50,
+            fill: "#996228",
+            cornerRadius: 8,
+            stroke: "#996228",
+            strokeWidth: 2,
         });
 
         this.dayDisplay = new Konva.Text({
-        x: 80,
-        y: 25,
-        text: `Day: ${this.day}`,
-        fontSize: 16,
-        fill: "white",
+            x: 80,
+            y: 25,
+            text: `Day: ${this.day}`,
+            fontSize: 16,
+            fill: "white",
         });
         this.dayDisplay.offsetX(this.dayDisplay.width() / 2);
         this.dayDisplay.offsetY(this.dayDisplay.height() / 2);
@@ -245,21 +245,21 @@ export class GameScreenView implements View{
         const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
 
         const backBtn = new Konva.Rect({
-        width: 160,
-        height: 50,
-        fill: "#d84315",
-        cornerRadius: 8,
-        stroke: "#b71c1c",
-        strokeWidth: 2,
+            width: 160,
+            height: 50,
+            fill: "#d84315",
+            cornerRadius: 8,
+            stroke: "#b71c1c",
+            strokeWidth: 2,
         });
 
         const backText = new Konva.Text({
-        x: 80,
-        y: 25,
-        text: "Back to Menu",
-        fontSize: 16,
-        fill: "white",
-        });
+            x: 80,
+            y: 25,
+            text: "Back to Menu",
+            fontSize: 16,
+            fill: "white",
+            });
         backText.offsetX(backText.width() / 2);
         backText.offsetY(backText.height() / 2);
 
