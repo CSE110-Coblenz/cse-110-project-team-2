@@ -12,8 +12,11 @@ export class MenuScreenView implements View {
     private settingsPopup: Konva.Group | null = null; 
     private musicOn: boolean = true;
 
+    private sfxOn: boolean = true;
+
     constructor(onStartClick: () => void, 
                 private onToggleMusic: (on: boolean) => void,
+                private onToggleSfx: (on: boolean) => void,
                 private onTutorialClick: () => void) {
         this.group = new Konva.Group({ visible: true });
 
@@ -174,14 +177,21 @@ export class MenuScreenView implements View {
             return;
         }
 
-        const popup = new Konva.Group({
-            x: STAGE_WIDTH / 2 - 150,
-            y: STAGE_HEIGHT / 2 - 100,
-        });
+        const popupWidth = 300;
+        const popupHeight = 220; 
 
+        const popup = new Konva.Group({
+            //x: STAGE_WIDTH / 2 - 150,
+            //y: STAGE_HEIGHT / 2 - 100,
+            x: STAGE_WIDTH / 2 - popupWidth / 2,
+            y: STAGE_HEIGHT / 2 - popupHeight / 2,
+        });
+        
         const popupBackground = new Konva.Rect({
-            width: 300,
-            height: 200,
+            //width: 300,
+            //height: 200,
+            width: popupWidth,
+            height: popupHeight,
             fill: "white",
             stroke: "black",
             cornerRadius: 8,
@@ -191,7 +201,8 @@ export class MenuScreenView implements View {
         // Close button for the popup
         const closePopup = new Konva.Text({
             text: "X",
-            x: 270,
+            //x: 270,
+            x: popupWidth - 30,
             y: 10,
             fontSize: 20,
             fill: "black",
@@ -200,65 +211,98 @@ export class MenuScreenView implements View {
         // Title
         const popupTitle = new Konva.Text({
             text: "SETTINGS",
-            x: 110,
+            //x: 110,
+            x: popupWidth / 2,
             y: 20,
             fontSize: 18,
             fill: "black",
             //fontStyle: "bold",
         })
+        popupTitle.offsetX(popupTitle.width() / 2);
 
-        const musicGroup = new Konva.Group({ x: 90, y: 70, width: 120, height: 40 });
-
+        const toggleWidth = 140;
+        const toggleHeight = 40;
+        const centerX = (popupWidth - toggleWidth) / 2;
+        
+        const musicGroup = new Konva.Group({ x: centerX, y: 80, width: toggleWidth, height: toggleHeight });
         // Toggle button to turn on/off the music
         const musicToggle = new Konva.Rect({
-            x: 90,
-            y: 70,
-            width: 120,
-            height: 40,
+            //x: 90,
+            //y: 70,
+            //width: 120,
+            //height: 40,
+            x: 0,
+            y: 0,
+            width: toggleWidth,
+            height: toggleHeight,
             fill: musicOn ? "green" : "red",
             cornerRadius: 8,
         });
         const musicToggleText = new Konva.Text({
-            x: 120,
-            y: 80,
+            //x: 120,
+            //y: 80,
+            x: toggleWidth / 2,
+            y: toggleHeight / 2,
             text: musicOn ? "Music ON" : "Music OFF",
             fontSize: 16,
             fill: "white",
             listening: false,
         });
+        musicToggleText.offsetX(musicToggleText.width() / 2);
+        musicToggleText.offsetY(musicToggleText.height() / 2);
 
         musicGroup.add(musicToggle, musicToggleText);
 
         //Toggle button to turn on/off the sound effects
-        /*const soundEffectToggle = new Konva.Rect({
-            x: 120,
-            y: 100,
-            width: 120,
-            height: 40,
-            fill: musicOn ? "green" : "red",
+        const sfxGroup = new Konva.Group({ x: centerX, y: 140, width: toggleWidth, height: toggleHeight });
+
+        const sfxToggle = new Konva.Rect({
+            x: 0,
+            y: 0,
+            //width: 140,
+            //height: 40,
+            width: toggleWidth,
+            height: toggleHeight,
+            fill: this.sfxOn ? "green" : "red",
             cornerRadius: 8,
             
         });
-        const soundEffectText = new Konva.Text({
-            x: 120,
-            y: 80,
+        const sfxText = new Konva.Text({
+            //x: 70,
+            //y: 20,
+            x: toggleWidth / 2,
+            y: toggleHeight / 2,
             // may replace with image later
-            text: musicOn ? "Effects ON" : " Effects OFF",
+            text: this.sfxOn ? "Effects ON" : " Effects OFF",
             fontSize: 16,
             fill: "white",
             listening: false,
-        });*/
+        });
+        sfxText.offsetX(sfxText.width() / 2);
+        sfxText.offsetY(sfxText.height() / 2);
+        sfxGroup.add(sfxToggle, sfxText);
+
 
         // event handler to change the color of the music button
         musicToggle.on("click", () => {
             this.musicOn = !this.musicOn;
             musicToggle.fill(this.musicOn ? "green" : "red");
             musicToggleText.text(this.musicOn ? "Music ON" : "Music OFF");
-
+            musicToggleText.offsetX(musicToggleText.width() / 2);
             this.onToggleMusic(this.musicOn);
 
             this.group.getLayer()?.draw();
         });
+
+        // event handler to change the color of the sfx button
+        sfxGroup.on("click tap", () => {
+            this.sfxOn = !this.sfxOn;
+            sfxToggle.fill(this.sfxOn ? "green" : "red");
+            sfxText.text(this.sfxOn ? "Effects ON" : "Effects OFF");
+            sfxText.offsetX(sfxText.width() / 2);
+            this.onToggleSfx(this.sfxOn);
+            this.group.getLayer()?.batchDraw();
+          });
 
         // Event handler to close the settings popup
         closePopup.on("click", () => {
@@ -267,7 +311,7 @@ export class MenuScreenView implements View {
             onClose();
         });
 
-        popup.add(popupBackground, closePopup, popupTitle, musicToggle, musicToggleText);
+        popup.add(popupBackground, closePopup, popupTitle, musicGroup, sfxGroup);
         this.group.add(popup);
         this.group.getLayer()?.draw();
 
