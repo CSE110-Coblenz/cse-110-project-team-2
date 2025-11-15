@@ -15,17 +15,16 @@ export class DifficultyScreenController extends ScreenController {
     }
 
     private handleDifficultySelect(difficulty: Difficulty): void {
-        // If the user chose 'proper' difficulty, go to the Order screen first
-        // Johnny (todo): we need to implement different behavior for proper vs improper/mixed
         if (difficulty === "proper") {
-            this.screenSwitcher.switchToScreen({ type: "order" });
+            this.screenSwitcher.switchToScreen({ type: "order", mode: "proper" });
             return;
         }
-        // For improper and mixed, go directly to the game screen for now
-        this.screenSwitcher.switchToScreen({ 
-            type: "game",
-            difficulty: difficulty
-        });
+
+        if (difficulty === "improper") {
+            this.screenSwitcher.switchToScreen({ type: "order", mode: "improper" });
+            return;
+        }
+        this.screenSwitcher.switchToScreen({ type: "order", mode: "mixed" });
     }
 
     private handleBackToMenuClick() {

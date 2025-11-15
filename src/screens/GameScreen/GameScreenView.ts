@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { STAGE_HEIGHT,STAGE_WIDTH, SLICE_OPTIONS, ToppingType, ORDERS_PER_DAY } from "../../constants";
 import { GameScreenModel } from "./GameScreenModel";
-import { View, Order } from "../../types";
+import type { View, Order, Difficulty } from "../../types";
 import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
 import { PIZZA } from "../../constants";
 
@@ -11,6 +11,7 @@ export class GameScreenView implements View{
     sliceArcs:Konva.Arc[]=[];
     private orderDisplay: Konva.Text;
     private currentOrder?: Order;
+    private currentDifficulty: Difficulty = "proper";
     private orderNum=1;
     private orderNumber:Konva.Text
     private day:number=1
@@ -20,7 +21,8 @@ export class GameScreenView implements View{
     model=new GameScreenModel()
     private rOuter=0;
 
-    constructor(onBackToMenuClick: () => void) {
+    // onOrderSuccess is called when the current order was completed successfully
+    constructor(onBackToMenuClick: () => void, private onOrderSuccess?: (d?: Difficulty) => void) {
         this.group = new Konva.Group({ visible: false });
         const basePizza=new Image()
         basePizza.src='/pizza.png'
@@ -823,10 +825,7 @@ export class GameScreenView implements View{
                 this.model.toppingsOnPizza.clear();
                 this.pizzaGroup.getLayer()?.batchDraw();
 
-                //idk why but it bugs when there;s only 2
-                new OrderScreenModel().generateRandomOrder()
-                let newOrder=new OrderScreenModel().generateRandomOrder();
-                this.displayOrder(newOrder);
+                if (this.onOrderSuccess) this.onOrderSuccess(this.currentDifficulty);
             }
             this.group.getLayer()?.batchDraw();
         });
@@ -918,7 +917,9 @@ export class GameScreenView implements View{
         this.group.add(backgroundGroup)
     }
 
-
+    setDifficulty(d: Difficulty): void {
+        this.currentDifficulty = d;
+    }
 
     getGroup(): Konva.Group {
         return this.group;

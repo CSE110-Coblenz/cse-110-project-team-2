@@ -12,11 +12,15 @@ export class GameScreenController extends ScreenController{
 
     constructor(screenSwitcher?: ScreenSwitcher){
         super()
-        this.view = new GameScreenView(() => this.handleBackToMenuClick());
+        this.view = new GameScreenView(() => this.handleBackToMenuClick(), (d) => this.handleOrderSuccess(d));
         this.model=this.view.model
         this.screen=screenSwitcher;
 
         this.view.show()
+    }
+
+    private handleOrderSuccess(difficulty?: Difficulty): void {
+        this.screen?.switchToScreen({ type: "order", mode: difficulty ?? "proper", returnToGame: true });
     }
 
     getView(): GameScreenView {
@@ -26,12 +30,13 @@ export class GameScreenController extends ScreenController{
     private handleBackToMenuClick(){
         this.screen?.switchToScreen({type:"menu"});
     }
-    startGame(difficulty: Difficulty, order:Order): void {
+    startGame(difficulty: Difficulty, order?: Order): void {
         // Configure game based on difficulty level:
         // proper: generates only proper fractions (numerator < denominator)
         // improper: generates only improper fractions (numerator > denominator)
         // mixed: generates both proper and improper fractions
         console.log(`Starting game with ${difficulty} difficulty`);
+        if ((this.view as any).setDifficulty) (this.view as any).setDifficulty(difficulty);
         if (order){
             // forward the order to the view
             this.view.displayOrder(order);

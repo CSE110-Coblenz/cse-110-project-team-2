@@ -74,8 +74,15 @@ class App implements ScreenSwitcher {
 				this.tutorialController.show();
 				break;
             case "order":
-                this.orderController.show();
-                break;
+				if ((screen as any).mode) {
+					// If returnToGame is set, show the Order screen so the user
+					// can accept the prepared order. 
+					this.orderController.prepareForMode((screen as any).mode);
+					this.orderController.show();
+				} else {
+					this.orderController.show();
+				}
+				break;
             case "result":
                 this.resultsController.setStats({
                     ordersReceived: 25, //Dummy Values, will replaced later on
