@@ -61,12 +61,13 @@ export class GameScreenView implements View{
         this.group.add(numPizzaText)
 
 
-        this.drawTopping(450,170,"Mushroom","brown",15)
-        this.drawTopping(675,170,"Pepperoni","red",15)
-        this.drawTopping(900,170,"Pepper","green",15)
+        this.drawTopping(450,170,"Mushroom","mushroom.png",0.75)
+        this.drawTopping(675,170,"Pepperoni","pepperoni.png",0.75)
+        this.drawTopping(900,170,"Basil","basil.png",0.075)
 
         const tongs=new Image()
         tongs.src='/tongs.png'
+        const Ytong:number=STAGE_HEIGHT*1/3-16
         tongs.onload=()=>{
             const tongsIm=new Konva.Image({
                 scaleX:0.5, 
@@ -76,13 +77,18 @@ export class GameScreenView implements View{
                 offsetY:tongs.height/2,
                 listening:true,
                 x:1090,
-                y:STAGE_HEIGHT*1/3-60,
+                y:Ytong,
                 draggable:true,
+                rotation:60
 
             })
             this.group.add(tongsIm);
+            tongsIm.on('dragstart',()=>{
+                tongsIm.rotation(0)
+                this.group.getLayer()?.batchDraw();
+
+            })
             tongsIm.on("dragend", () => {
-                this.group.getLayer();
 
                 const box=tongsIm.getClientRect();
                 const tongX=box.x+box.width/2;
@@ -105,7 +111,8 @@ export class GameScreenView implements View{
                     }
                 });
 
-                tongsIm.setPosition({ x:1090, y:STAGE_HEIGHT*1/3-60});
+                tongsIm.setPosition({ x:1090, y:Ytong});
+                tongsIm.rotation(60)
 
                 if (!closestNode||!closestType) {
                     this.group.getLayer()?.batchDraw();
@@ -140,38 +147,25 @@ export class GameScreenView implements View{
         });
         this.group.add(this.orderDisplay);
 
-        // result display 
-        const resultDisplay = new Konva.Text({
-            x: 40,
-            y: 140,
-            width: 300,
-            text: '',
-            fontSize: 18,
-            fill: 'black',
-            align: 'center',
-            lineHeight: 1.2,
-        });
-        this.group.add(resultDisplay);
-
         //submit button
         const submitGroup = new Konva.Group({ x: STAGE_WIDTH - 142.5, y: STAGE_HEIGHT-135 });
 
         const submit = new Konva.Rect({
-        width: 135,
-        height: 135,
-        fill: "green",
-        cornerRadius: 8,
-        stroke: "green",
-        strokeWidth: 2,
+            width: 135,
+            height: 135,
+            fill: "green",
+            cornerRadius: 8,
+            stroke: "green",
+            strokeWidth: 2,
         });
 
         const submitText = new Konva.Text({
-        x: 67.5,
-        y: 67.5,
-        text: "Submit",
-        fontSize: 36,
-        fill: "white",
-        align:'center'
+            x: 67.5,
+            y: 67.5,
+            text: "Submit",
+            fontSize: 36,
+            fill: "white",
+            align:'center'
         });
         submitText.offsetX(submitText.width() / 2);
         submitText.offsetY(submitText.height() / 2);
@@ -186,20 +180,20 @@ export class GameScreenView implements View{
         const orderCount = new Konva.Group({ x: STAGE_WIDTH - 550, y: 20 });
 
         const orderRect = new Konva.Rect({
-        width: 160,
-        height: 50,
-        fill: "#996228",
-        cornerRadius: 8,
-        stroke: "#996228",
-        strokeWidth: 2,
+            width: 160,
+            height: 50,
+            fill: "#996228",
+            cornerRadius: 8,
+            stroke: "#996228",
+            strokeWidth: 2,
         });
 
         this.orderNumber = new Konva.Text({
-        x: 80,
-        y: 25,
-        text: `Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`,
-        fontSize: 16,
-        fill: "white",
+            x: 80,
+            y: 25,
+            text: `Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`,
+            fontSize: 16,
+            fill: "white",
         });
         this.orderNumber.offsetX(this.orderNumber.width() / 2);
         this.orderNumber.offsetY(this.orderNumber.height() / 2);
@@ -211,20 +205,20 @@ export class GameScreenView implements View{
         const dayCount = new Konva.Group({ x: STAGE_WIDTH - 850, y: 20 });
 
         const dayRect = new Konva.Rect({
-        width: 160,
-        height: 50,
-        fill: "#996228",
-        cornerRadius: 8,
-        stroke: "#996228",
-        strokeWidth: 2,
+            width: 160,
+            height: 50,
+            fill: "#996228",
+            cornerRadius: 8,
+            stroke: "#996228",
+            strokeWidth: 2,
         });
 
         this.dayDisplay = new Konva.Text({
-        x: 80,
-        y: 25,
-        text: `Day: ${this.day}`,
-        fontSize: 16,
-        fill: "white",
+            x: 80,
+            y: 25,
+            text: `Day: ${this.day}`,
+            fontSize: 16,
+            fill: "white",
         });
         this.dayDisplay.offsetX(this.dayDisplay.width() / 2);
         this.dayDisplay.offsetY(this.dayDisplay.height() / 2);
@@ -237,21 +231,21 @@ export class GameScreenView implements View{
         const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
 
         const backBtn = new Konva.Rect({
-        width: 160,
-        height: 50,
-        fill: "#d84315",
-        cornerRadius: 8,
-        stroke: "#b71c1c",
-        strokeWidth: 2,
+            width: 160,
+            height: 50,
+            fill: "#d84315",
+            cornerRadius: 8,
+            stroke: "#b71c1c",
+            strokeWidth: 2,
         });
 
         const backText = new Konva.Text({
-        x: 80,
-        y: 25,
-        text: "Back to Menu",
-        fontSize: 16,
-        fill: "white",
-        });
+            x: 80,
+            y: 25,
+            text: "Back to Menu",
+            fontSize: 16,
+            fill: "white",
+            });
         backText.offsetX(backText.width() / 2);
         backText.offsetY(backText.height() / 2);
 
@@ -309,8 +303,12 @@ export class GameScreenView implements View{
 
         //remove all toppings on pizza when number of slices change
         button.on("click", ()=>{
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
             this.sliceArcs=[];
             this.pizzaGroup.destroyChildren();
+            this.model.sliceNum=0
             this.model.pizzaNum=numPizza
             if(numPizza===1){
                 this.drawPizza(PIZZA.pizzaX)
@@ -333,11 +331,6 @@ export class GameScreenView implements View{
 
 
     drawPizza( pizzaX:number): void {
-        //reset pizza
-        if(pizzaX===PIZZA.pizzaX2){
-            this.sliceArcs=[];
-            this.pizzaGroup.destroyChildren();
-        }
 
         //build the base circle
         const basePizza=new Image()
@@ -409,7 +402,10 @@ export class GameScreenView implements View{
         button.on("click", ()=>{
             this.pizzaGroup.find('Line').forEach((node) =>node.destroy());
             this.pizzaGroup.find('.slice').forEach((node)=>node.destroy());
-            
+
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
             this.sliceArcs = [];
             this.model.sliceNum=slices;
             if(this.model.pizzaNum===1){
@@ -493,7 +489,7 @@ export class GameScreenView implements View{
 
 
     private drawTopping(tinX:number,tinY:number, 
-                                toppingType:ToppingType, toppingColor:string, toppingRadius:number):void{
+                                toppingType:ToppingType, toppingURL:string, toppingScale:number):void{
     
         //group
         const toppingBin=new Konva.Group({
@@ -530,68 +526,85 @@ export class GameScreenView implements View{
             this.group.getLayer()?.batchDraw();
             
             for(let i=0;i<5;i++){
-                this.createTopping(tinX-25,tinY-50,toppingType,toppingColor,toppingRadius)
+                this.createTopping(tinX-25,tinY-20,toppingType,toppingURL,toppingScale)
             }
     
         }
             
     }
 
-    createTopping(toppingX:number,toppingY:number, toppingType:ToppingType, toppingColor:string, toppingRadius:number):void{
-        const topping=new Konva.Circle({
-                stroke:"black",
-                strokeWidth:4,
-                radius:toppingRadius,
-                fill:toppingColor,
+    createTopping(toppingX:number,toppingY:number, toppingType:ToppingType, toppingURL:string, toppingScale:number):void{
+        const toppingIm=new Image()
+        toppingIm.src=toppingURL
+        toppingIm.onload=()=>{
+            const toppingGroup=new Konva.Group({
                 x:toppingX+(Math.random()*50),
-                y:toppingY+(Math.random()*30),
+                y:toppingY+(Math.random()*10),
                 draggable:true,
                 listening:true,
                 name:toppingType
+
+            })
+            const image=new Konva.Image({
+                image:toppingIm,
+                scale:{x:toppingScale,y:toppingScale},
+                rotationDeg:Math.random()*360,
+            })
+            image.offsetX(image.width()/2)
+            image.offsetY(image.height()/2)
+            const topping=new Konva.Circle({
+                radius:image.width()/2*toppingScale,
+                fillEnabled:false
             })
             topping.setAttr("countedSlice",null)
             topping.setAttr("isTopping", true); 
             topping.setAttr("toppingType", toppingType);
-            this.group.add(topping)
+
+            toppingGroup.add(image, topping)
+            this.group.add(toppingGroup)
 
             //auto creae topping after dragging one away
-            topping.on('dragstart', ()=>{
-                const x=topping.x()-toppingX
-                const y=topping.y()-toppingY
+            toppingGroup.on('dragstart', ()=>{
+                const x=toppingGroup.x()-toppingX
+                const y=toppingGroup.y()-toppingY
                 const dist=(Math.sqrt(x*x+y*y))
                 if(dist<200){
-                    this.createTopping(toppingX,toppingY,toppingType,toppingColor,toppingRadius)
+                    this.createTopping(toppingX,toppingY,toppingType,toppingURL,toppingScale)
                 }
             })
 
             //determine where topping is at end of drag and if it is on a slice
-            topping.on("dragend",()=>{
+            toppingGroup.on("dragend",()=>{
 
                 if (this.model.pizzaNum===0||this.model.sliceNum===0){
-                    topping.destroy()
+                    toppingGroup.destroy()
                 }
                 //check at different positions depending on how many pizzas there are
                 else if(this.model.pizzaNum===2){
-                    if(this.model.inPizza(topping.x(),topping.y(),PIZZA.pizzaX1,this.rOuter)){
-                        this.dragToppingLogic(topping,toppingType,PIZZA.pizzaX1,this.rOuter)
+                    if(this.model.inPizza(toppingGroup.x(),toppingGroup.y(),PIZZA.pizzaX1,this.rOuter)){
+                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX1,this.rOuter)
                        
                     }
                     else {
-                        this.dragToppingLogic(topping,toppingType,PIZZA.pizzaX2,this.rOuter)
+                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX2,this.rOuter)
                         
                     }
                 }
                 else if (this.model.pizzaNum===1){
-                    this.dragToppingLogic(topping,toppingType,PIZZA.pizzaX,this.rOuter)
+                    this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX,this.rOuter)
 
                 }
 
                 this.group.getLayer()?.batchDraw();
                 
             })
+
+
+        }
+
     }
 
-    dragToppingLogic(topping:Konva.Circle,toppingType:ToppingType,pizzaX:number,rOuter:number){
+    dragToppingLogic(topping:Konva.Group,toppingType:ToppingType,pizzaX:number,rOuter:number){
         this.model.typeCheck(toppingType)
         const previousSlice=topping.getAttr("countedSlice")
         if(this.model.inPizza(topping.x(),topping.y(),pizzaX,rOuter)){
@@ -610,7 +623,7 @@ export class GameScreenView implements View{
                 const filled = this.model.filled.get(type);
                 if (!filled||!filled.has(currentSlice)) continue;
                 // check filled to see if any of the other types are on the slice we want
-                for (let i=0; i<toppings.length; i++) {
+                for (let i=toppings.length-1; i>=0; i--) {
                     const node=toppings[i];
                     if (node.getAttr('countedSlice') === currentSlice) {
                         node.destroy();
@@ -696,7 +709,7 @@ export class GameScreenView implements View{
             this.orderDisplay.text(lines.join('\n'));
         }
         else{
-            this.orderDisplay.text(order.fraction);
+            this.orderDisplay.text(order.fraction??'');
         }
         this.group.getLayer()?.batchDraw();
     }
@@ -706,7 +719,7 @@ export class GameScreenView implements View{
     // check if its right and then generate new order after clicking submit button
     private handleSubmit(): void {
         const order=this.currentOrder;
-        if(this.model.pizzaNum===0) return;
+        if(this.model.pizzaNum===0||this.model.sliceNum===0) return;
         if (!order) return;
         const denom=order.fractionStruct?.denominator;
         if(!denom) return;
@@ -719,11 +732,13 @@ export class GameScreenView implements View{
         if (order.toppingsCounts) {
             for (const [topping, count] of Object.entries(order.toppingsCounts)) {
                 const expected=(count as number);
-                const current=this.model.filled.get(topping as ToppingType)?.size??0;
+                let current=this.model.filled.get(topping as ToppingType)?.size??0;
+                const LCM=denom/this.model.sliceNum
+                const weightedCurrent=current*LCM
                 expectedTotal+=expected;
-                currentTotal+=current||0;
-                lines.push(`${topping}: expected ${expected}/${denom}  —  current ${current}/${denom}`);
-                if (expected!==current){
+                currentTotal+=weightedCurrent||0;
+                lines.push(`${topping}: expected ${expected}/${denom}  —  current ${current}/${this.model.sliceNum}`);
+                if (expected!==weightedCurrent){
                     allMatch=false;
                 };
                 if(expectedTotal>denom) expectedPizzaNum=2;
@@ -735,12 +750,30 @@ export class GameScreenView implements View{
         const success= allMatch&&expectedTotal===currentTotal&&expectedPizzaNum===this.model.pizzaNum;
         if(success){
             this.orderNum+=1
-            this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)
             //TEMPORARY DAY PROGRESSION, CHANGE OR REMOVE LATER TODO IMPORTANT DONT FORGET
             if(this.orderNum>ORDERS_PER_DAY){
                 this.day+=1
                 this.dayDisplay.text(`Day: ${this.day}`)
+                this.orderNum=1
             }
+            this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)
+        
+            for (let toppingList of this.model.toppingsOnPizza.values()){
+                for (let i = 0; i < toppingList.length; i++){
+                    toppingList[i].destroy();
+                }
+            }
+            this.model.filled.clear();
+            this.model.toppingsOnPizza.clear();
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
+            //get rid of on screen pizza, comment out if unwanted
+            this.sliceArcs=[]
+            this.model.sliceNum=0;
+            this.model.pizzaNum=0
+            this.pizzaGroup.destroyChildren()
+            
             this.group.getLayer()?.batchDraw();
         }
 
