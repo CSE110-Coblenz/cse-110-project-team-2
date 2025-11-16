@@ -126,4 +126,12 @@ export class OrderScreenView implements View {
     getGroup(): Konva.Group {
         return this.group;
     }
+
+    // Refresh the displayed order from the current model state.
+    refresh(): void {
+        if (!this.orderText) return;
+        const orderLines = this.buildOrderLines(this.model.getOrder());
+        this.orderText.text(orderLines.join("\n"));
+        this.group.getLayer()?.batchDraw();
+    }
 }

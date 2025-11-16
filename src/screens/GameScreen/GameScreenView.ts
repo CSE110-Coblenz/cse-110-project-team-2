@@ -1,22 +1,24 @@
 import Konva from "konva";
 import { STAGE_HEIGHT,STAGE_WIDTH, SLICE_OPTIONS, ToppingType, ORDERS_PER_DAY } from "../../constants";
 import { GameScreenModel } from "./GameScreenModel";
-import { View, Order } from "../../types";
+import type { View, Order, Difficulty } from "../../types";
 import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
 import { PIZZA } from "../../constants";
 import { ResultStore } from "../../data/ResultStore";
 import { OrderResult } from "../../data/OrderResult";
 
-export class GameScreenView implements View{
+export class GameScreenView implements View {
     group: Konva.Group;
     pizzaGroup =new Konva.Group();
     sliceArcs:Konva.Arc[]=[];
     private orderDisplay: Konva.Text;
     private currentOrder?: Order;
+    private currentDifficulty: Difficulty = "proper";
     private orderNum=1;
     private orderNumber:Konva.Text
     private day:number=1
     private dayDisplay:Konva.Text
+    public onOrderSuccess: (difficulty: Difficulty) => void = () => {};
 
 
     model=new GameScreenModel()
@@ -24,7 +26,8 @@ export class GameScreenView implements View{
 
     private resultStore: ResultStore;
 
-    constructor(onBackToMenuClick: () => void, resultStore: ResultStore) {
+    constructor(onBackToMenuClick: () => void, resultStore: ResultStore, onOrderSuccess?: (difficulty?: Difficulty) => void) {
+    // onOrderSuccess is called when the current order was completed successfully
         this.group = new Konva.Group({ visible: false });
         this.resultStore = resultStore;
         const basePizza=new Image()
@@ -94,7 +97,6 @@ export class GameScreenView implements View{
 
             })
             tongsIm.on("dragend", () => {
-                this.group.getLayer();
 
                 const box=tongsIm.getClientRect();
                 const tongX=box.x+box.width/2;
@@ -152,19 +154,6 @@ export class GameScreenView implements View{
             align: 'center',
         });
         this.group.add(this.orderDisplay);
-
-        // result display 
-        const resultDisplay = new Konva.Text({
-            x: 40,
-            y: 140,
-            width: 300,
-            text: '',
-            fontSize: 18,
-            fill: 'black',
-            align: 'center',
-            lineHeight: 1.2,
-        });
-        this.group.add(resultDisplay);
 
         //submit button
         const submitGroup = new Konva.Group({ x: STAGE_WIDTH - 142.5, y: STAGE_HEIGHT-135 });
@@ -322,8 +311,12 @@ export class GameScreenView implements View{
 
         //remove all toppings on pizza when number of slices change
         button.on("click", ()=>{
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
             this.sliceArcs=[];
             this.pizzaGroup.destroyChildren();
+            this.model.sliceNum=0
             this.model.pizzaNum=numPizza
             if(numPizza===1){
                 this.drawPizza(PIZZA.pizzaX)
@@ -346,11 +339,6 @@ export class GameScreenView implements View{
 
 
     drawPizza( pizzaX:number): void {
-        //reset pizza
-        if(pizzaX===PIZZA.pizzaX2){
-            this.sliceArcs=[];
-            this.pizzaGroup.destroyChildren();
-        }
 
         //build the base circle
         const basePizza=new Image()
@@ -422,7 +410,10 @@ export class GameScreenView implements View{
         button.on("click", ()=>{
             this.pizzaGroup.find('Line').forEach((node) =>node.destroy());
             this.pizzaGroup.find('.slice').forEach((node)=>node.destroy());
-            
+
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
             this.sliceArcs = [];
             this.model.sliceNum=slices;
             if(this.model.pizzaNum===1){
@@ -640,7 +631,7 @@ export class GameScreenView implements View{
                 const filled = this.model.filled.get(type);
                 if (!filled||!filled.has(currentSlice)) continue;
                 // check filled to see if any of the other types are on the slice we want
-                for (let i=0; i<toppings.length; i++) {
+                for (let i=toppings.length-1; i>=0; i--) {
                     const node=toppings[i];
                     if (node.getAttr('countedSlice') === currentSlice) {
                         node.destroy();
@@ -726,7 +717,7 @@ export class GameScreenView implements View{
             this.orderDisplay.text(lines.join('\n'));
         }
         else{
-            this.orderDisplay.text(order.fraction);
+            this.orderDisplay.text(order.fraction??'');
         }
         this.group.getLayer()?.batchDraw();
     }
@@ -736,7 +727,7 @@ export class GameScreenView implements View{
     // check if its right and then generate new order after clicking submit button
     private handleSubmit(): void {
         const order=this.currentOrder;
-        if(this.model.pizzaNum===0) return;
+        if(this.model.pizzaNum===0||this.model.sliceNum===0) return;
         if (!order) return;
         const denom=order.fractionStruct?.denominator;
         if(!denom) return;
@@ -749,11 +740,13 @@ export class GameScreenView implements View{
         if (order.toppingsCounts) {
             for (const [topping, count] of Object.entries(order.toppingsCounts)) {
                 const expected=(count as number);
-                const current=this.model.filled.get(topping as ToppingType)?.size??0;
+                let current=this.model.filled.get(topping as ToppingType)?.size??0;
+                const LCM=denom/this.model.sliceNum
+                const weightedCurrent=current*LCM
                 expectedTotal+=expected;
-                currentTotal+=current||0;
+                currentTotal+=weightedCurrent||0;
                 lines.push(`${topping}: expected ${expected}/${denom}  —  current ${current}/${this.model.sliceNum}`);
-                if (expected!==current){
+                if (expected!==weightedCurrent){
                     allMatch=false;
                 };
                 if(expectedTotal>denom) expectedPizzaNum=2;
@@ -777,12 +770,30 @@ export class GameScreenView implements View{
 
         if(success){
             this.orderNum+=1
-            this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)
             //TEMPORARY DAY PROGRESSION, CHANGE OR REMOVE LATER TODO IMPORTANT DONT FORGET
             if(this.orderNum>ORDERS_PER_DAY){
                 this.day+=1
                 this.dayDisplay.text(`Day: ${this.day}`)
+                this.orderNum=1
             }
+            this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)
+        
+            for (let toppingList of this.model.toppingsOnPizza.values()){
+                for (let i = 0; i < toppingList.length; i++){
+                    toppingList[i].destroy();
+                }
+            }
+            this.model.filled.clear();
+            this.model.toppingsOnPizza.clear();
+            for(let i=0;i<this.sliceArcs.length;i++){
+                this.sliceArcs[i].destroy()
+            }
+            //get rid of on screen pizza, comment out if unwanted
+            this.sliceArcs=[]
+            this.model.sliceNum=0;
+            this.model.pizzaNum=0
+            this.pizzaGroup.destroyChildren()
+            
             this.group.getLayer()?.batchDraw();
         }
 
@@ -865,10 +876,7 @@ export class GameScreenView implements View{
                 this.model.toppingsOnPizza.clear();
                 this.pizzaGroup.getLayer()?.batchDraw();
 
-                //idk why but it bugs when there;s only 2
-                new OrderScreenModel().generateRandomOrder()
-                let newOrder=new OrderScreenModel().generateRandomOrder();
-                this.displayOrder(newOrder);
+                if (this.onOrderSuccess) this.onOrderSuccess(this.currentDifficulty);
             }
             this.group.getLayer()?.batchDraw();
         });
@@ -960,7 +968,9 @@ export class GameScreenView implements View{
         this.group.add(backgroundGroup)
     }
 
-
+    setDifficulty(d: Difficulty): void {
+        this.currentDifficulty = d;
+    }
 
     getGroup(): Konva.Group {
         return this.group;

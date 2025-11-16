@@ -8,17 +8,20 @@ import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScree
 import { OrderScreenController } from "./screens/OrderScreen/OrderScreenController";
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
-import { ResultStore } from "./data/ResultStore";	
+import { AudioManager } from "./audio/AudioManager";
+import { ResultStore } from "./data/ResultStore";
 
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
 	private layer: Konva.Layer;
 
-	private currentDifficulty: Difficulty = "proper"
+	private audio: AudioManager;
+
+	private currentDifficulty: Difficulty = "proper";
 	getCurrentDifficulty() {
 		return this.currentDifficulty;
 	}
-	
+  
 	private resultStore: ResultStore;
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
@@ -33,14 +36,16 @@ class App implements ScreenSwitcher {
 		this.layer = new Konva.Layer();
 		this.stage.add(this.layer);
 
-		this.resultStore = new ResultStore();
-		this.menuController = new MenuScreenController(this);
+		this.audio = new AudioManager("/audio/pizza-299710.mp3", 0.5);
+
+		this.resultStore = new ResultStore(); 
+		this.menuController = new MenuScreenController(this, this.audio);
 		this.gameController = new GameScreenController(this, this.resultStore);
 		this.difficultyController = new DifficultyScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
-		this.orderController = new OrderScreenController(this);
-		this.resultsController = new ResultScreenController(this.layer, this, this.resultStore);
-		this.minigame2Controller = new Minigame2Controller(this);
+    	this.orderController = new OrderScreenController(this);
+    	this.resultsController = new ResultScreenController(this.layer, this, this.resultStore);
+    	this.minigame2Controller = new Minigame2Controller(this, this.audio);
 
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
@@ -51,9 +56,9 @@ class App implements ScreenSwitcher {
 		this.layer.add(this.minigame2Controller.getView().getGroup());
 
 		// Start on the menu
-		this.switchToScreen({ type: "menu"});
+		//this.switchToScreen({ type: "menu"});
 		// this.switchToScreen({ type: "minigame2" });
-        //this.switchToScreen({type: "result", score: 21}); 
+        this.switchToScreen({type: "result", score: 21}); 
 	}
 
 	switchToScreen(screen: Screen): void {
@@ -82,8 +87,15 @@ class App implements ScreenSwitcher {
 				this.tutorialController.show();
 				break;
             case "order":
-                this.orderController.show();
-                break;
+				if ((screen as any).mode) {
+					// If returnToGame is set, show the Order screen so the user
+					// can accept the prepared order. 
+					this.orderController.prepareForMode((screen as any).mode);
+					this.orderController.show();
+				} else {
+					this.orderController.show();
+				}
+				break;
             case "result":
                 this.resultsController.refreshFromStore();
 				this.resultsController.show();

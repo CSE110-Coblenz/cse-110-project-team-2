@@ -1,0 +1,24 @@
+Meeting 11/14/2025 (In-person)
+
+    Attendees: Michelle, Randy, Jolene, Jolene, Johnny, Teddy
+
+    Agenda: 
+        1. Finalize goals/tasks for Sprint 2
+        2. Work Meeting 
+
+    Notes:
+        1. Merge Pull Requests (Jolene's branch)
+        2. Remember to add labels to your PR's.
+        3. Sprint 2 current progress reflection.
+        4. Discuss everyone's contributions this week.
+            - Michelle: Added "back to menu" button for the different screens. Finished Minigame 2, added popup for performance summary, tip calculations, and tests
+            - Johnny: Added the proper and improper fractions generation for orders (will have a PR by Monday). Should reduce pizza orders 
+            - Woojin: Overhauled UI for GameScreen, added 2 pizza options, added correct or wrong functionality, and added topping removal tool
+            - Jolene: Centralized Audio Manager (promoting maintainability), added toggle for audio for sound effects, mkae setting button and standardize
+            - Teddy: Added tests (vitest) and PR template
+            - Randy: Worked on ResultScreen making the screen look nicer since tasks were backlogged behind Woojin's, will work on the data storage functionality for pizza correctness. 
+        5. Update release tags: minor (rightmost), more major (more left)
+        6. Changing the tip system: no longer doing tips for the main game. Also we're not unlocking more ingredients as the game progresses.
+        7. Deleted/Backlog issues that we are no longer doing. 
+    
+        

@@ -16,6 +16,8 @@ export const TOPPINGS = ["Mushroom", "Basil", "Pepperoni"] as const;
 export type ToppingType = typeof TOPPINGS[number];
 export const PIZZA ={pizzaX:STAGE_WIDTH/2+75, pizzaY:STAGE_HEIGHT-205, pizzaX1:STAGE_WIDTH/3+75, pizzaX2:STAGE_WIDTH*2/3+75};
 export const SLICE_OPTIONS=[4,8,12,16] as const;
+// Minimum number of distinct topping types to appear in an improper-order
+export const MIN_TOPPING_TYPES = 2;
 export const ORDER_BG_COLOR = "#fff3e0";
 export const ORDER_TITLE_COLOR = "#6d4c41";
 export const ORDER_BUTTON_FILL = "#43a047";
