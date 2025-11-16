@@ -8,6 +8,7 @@ import { TutorialScreenController } from "./screens/TutorialScreen/TutorialScree
 import { OrderScreenController } from "./screens/OrderScreen/OrderScreenController";
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
+import { ResultStore } from "./data/ResultStore";	
 
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
@@ -18,7 +19,7 @@ class App implements ScreenSwitcher {
 		return this.currentDifficulty;
 	}
 	
-
+	private resultStore: ResultStore;
 	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
 	private difficultyController: DifficultyScreenController;
@@ -32,12 +33,13 @@ class App implements ScreenSwitcher {
 		this.layer = new Konva.Layer();
 		this.stage.add(this.layer);
 
+		this.resultStore = new ResultStore();
 		this.menuController = new MenuScreenController(this);
-		this.gameController = new GameScreenController(this);
+		this.gameController = new GameScreenController(this, this.resultStore);
 		this.difficultyController = new DifficultyScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
 		this.orderController = new OrderScreenController(this);
-		this.resultsController = new ResultScreenController(this.layer, this);
+		this.resultsController = new ResultScreenController(this.layer, this, this.resultStore);
 		this.minigame2Controller = new Minigame2Controller(this);
 
 		this.layer.add(this.menuController.getView().getGroup());
@@ -49,9 +51,9 @@ class App implements ScreenSwitcher {
 		this.layer.add(this.minigame2Controller.getView().getGroup());
 
 		// Start on the menu
-		//this.switchToScreen({ type: "menu"});
+		this.switchToScreen({ type: "menu"});
 		// this.switchToScreen({ type: "minigame2" });
-        this.switchToScreen({type: "result", score: 21}); 
+        //this.switchToScreen({type: "result", score: 21}); 
 	}
 
 	switchToScreen(screen: Screen): void {
@@ -72,14 +74,9 @@ class App implements ScreenSwitcher {
 				this.difficultyController.show();
 				break;
 			case "game":
-<<<<<<< HEAD
-				this.currentDifficulty = screen.difficulty;
-				this.gameController.startGame(screen.difficulty);
-=======
 				// pass optional difficulty and order through to game controller
 				// default to "proper" if no difficulty provided
 				this.gameController.startGame(screen.difficulty??"proper", (screen as any).order);
->>>>>>> 015982062ecc9da7bcd39cbbf5a3b4f1d2cc2eb6
 				break;
 			case "tutorial":
 				this.tutorialController.show();
@@ -88,12 +85,9 @@ class App implements ScreenSwitcher {
                 this.orderController.show();
                 break;
             case "result":
-                this.resultsController.setStats({
-                    ordersReceived: 25, //Dummy Values, will replaced later on
-                    ordersCorrect: screen.score,
-                    tipsReceived: 12,
-                    totalTips: 42
-                });
+                this.resultsController.refreshFromStore();
+				this.resultsController.show();
+                break;    
 				this.resultsController.setNextDayDifficulty(this.currentDifficulty);
                 this.resultsController.show();
                 break;

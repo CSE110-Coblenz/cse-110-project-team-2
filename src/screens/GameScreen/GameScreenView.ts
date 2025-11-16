@@ -4,6 +4,8 @@ import { GameScreenModel } from "./GameScreenModel";
 import { View, Order } from "../../types";
 import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
 import { PIZZA } from "../../constants";
+import { ResultStore } from "../../data/ResultStore";
+import { OrderResult } from "../../data/OrderResult";
 
 export class GameScreenView implements View{
     group: Konva.Group;
@@ -20,8 +22,11 @@ export class GameScreenView implements View{
     model=new GameScreenModel()
     private rOuter=0;
 
-    constructor(onBackToMenuClick: () => void) {
+    private resultStore: ResultStore;
+
+    constructor(onBackToMenuClick: () => void, resultStore: ResultStore) {
         this.group = new Konva.Group({ visible: false });
+        this.resultStore = resultStore;
         const basePizza=new Image()
         basePizza.src='/pizza.png'
         basePizza.onload=()=>{
@@ -758,6 +763,18 @@ export class GameScreenView implements View{
         }
         // show popup with results
         const success= allMatch&&expectedTotal===currentTotal&&expectedPizzaNum===this.model.pizzaNum;
+
+        this.resultStore.add({
+            orderNumber: this.orderNum,
+            day: this.day,
+            success, 
+            details: lines.join("\n"),
+            expectedTotal,
+            currentTotal,
+            expectedPizzaNum,
+            currentPizzaNumber: this.model.pizzaNum,   
+        });
+
         if(success){
             this.orderNum+=1
             this.orderNumber.text(`Order Number: ${this.orderNum} / ${ORDERS_PER_DAY}`)

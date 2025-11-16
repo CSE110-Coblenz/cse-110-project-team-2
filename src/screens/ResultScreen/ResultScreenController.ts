@@ -3,12 +3,86 @@ import { ResultsScreenView } from "./ResultScreenView";
 import { ScreenController, ScreenSwitcher } from "../../types";
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../../constants";
 import { Difficulty } from "../../types";
+import { ResultStore } from "../../data/ResultStore";
+import { OrderResult } from "../../data/OrderResult";
 
 export class ResultScreenController extends ScreenController{
     private view: ResultsScreenView;
     private nextDayDifficulty: Difficulty = "proper";
 
-    constructor(private layer: Konva.Layer, private switcher: ScreenSwitcher) {
+    private renderWrongOrdersScreen = (wrongOrders: Konva.Group) => {
+        const children = wrongOrders.getChildren();
+        const backButton = children[children.length - 1];
+        wrongOrders.removeChildren();
+
+        wrongOrders.add(new Konva.Rect({
+            x: 0,
+            y: 0, 
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "#fde68a",
+        }));
+
+        wrongOrders.add(new Konva.Text({ 
+            x: 20, 
+            y: 20, 
+            text: "Wrong Orders",
+            fontSize: 28,
+            fontStyle: "bold",
+            fill: "black"
+        }));
+
+        wrongOrders.add(backButton);
+
+        const results = this.resultStore.getAll().filter(r => !r.success);
+
+        let y = 80;
+        const lineHeight = 20;
+
+        if(results.length === 0) {
+            wrongOrders.add(new Konva.Text({
+                x: 20,
+                y,
+                text: "No wrong orders! Great job!",
+                fontSize: 20,
+                fill: "black"
+            }));
+            return;
+        } 
+
+        for (const result of results) {
+            wrongOrders.add(new Konva.Text({
+                x: 20,
+                y, 
+                text: `Day ${result.day} - Order #${result.orderNumber}`,
+                fontSize: 20,
+                fill: "black"
+            }));
+            y += lineHeight + 4;
+                
+            wrongOrders.add(new Konva.Text({
+                x: 40, 
+                y,
+                text: result.details,
+                fontSize: 16,
+                fill: "black"
+            }));
+            y += lineHeight * (result.details.split("\n").length + 1);
+
+            if(y > STAGE_HEIGHT - 60) {
+                wrongOrders.add(new Konva.Text({
+                    x: 20,
+                    y,
+                    text: "...more wrong orders not shown.",
+                    fontSize: 16,
+                    fill: "black"
+                }));
+                break;
+            }                
+        }
+    };
+
+    constructor(private layer: Konva.Layer, private switcher: ScreenSwitcher, private resultStore: ResultStore) {
         super();
         this.view = new ResultsScreenView();
 
@@ -19,10 +93,10 @@ export class ResultScreenController extends ScreenController{
             g.add(new Konva.Text({x: 20, y: 20, text: label, fontSize: 28, fontStyle: "bold", fill: "black"}));
             this.layer.add(g);
             return g;
-        }
+        };
 
-        const wrongOrders = placeHolderScreen("Wrong Orders", "#fde68a");
-        const nextDay = placeHolderScreen("Next Day", "#fde68a");
+        const wrongOrders = placeHolderScreen("Wrong Orders Screen", "#fde68a");
+        const nextDay = placeHolderScreen("Next Day Screen", "#fde68a");
 
         const makeBackButton = (onClick: () => void): Konva.Group => {
             const width = 120;
@@ -57,12 +131,19 @@ export class ResultScreenController extends ScreenController{
             this.layer.draw()
         };
 
-        this.view.onViewWrongOrders = () => show(wrongOrders);
+        this.view.onViewWrongOrders = () => {
+            this.renderWrongOrdersScreen(wrongOrders);
+            show(wrongOrders);  
+        };
+
         this.view.onEndGame = () => this.switcher.switchToScreen({type: "menu"});
-        this.view.onNextDay = () => this.switcher.switchToScreen({
+        this.view.onNextDay = () => { 
+            this.resultStore.clear();
+            this.switcher.switchToScreen({
             type: "game",
             difficulty: this.nextDayDifficulty
-        });
+            });
+        };
         
         show(this.view.getGroup());
     }
@@ -73,6 +154,20 @@ export class ResultScreenController extends ScreenController{
 
     getView() {
         return this.view
+    }
+
+    refreshFromStore() {
+        const results: OrderResult[] = this.resultStore.getAll();
+        const ordersReceived = results.length;
+        const ordersCorrect = results.filter(r => r.success).length;
+        const tipsReceived = 0
+        const totalTips = 0;
+        this.view.updateStats({
+            ordersReceived,
+            ordersCorrect,
+            tipsReceived,
+            totalTips
+        });
     }
 
     //Updates the numbers displayed on the screen

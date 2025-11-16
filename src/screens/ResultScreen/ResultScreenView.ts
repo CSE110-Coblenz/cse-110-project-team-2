@@ -45,7 +45,7 @@ export class ResultsScreenView implements View {
     this.group.add(card);
 
     const image = new window.Image();
-    image.src = "pizza.png";
+    image.src = "pizza_res.png";
     image.onload = () => {
       const targetW = 240;
       const scale = targetW / image.width;
