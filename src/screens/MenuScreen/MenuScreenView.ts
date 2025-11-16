@@ -1,6 +1,7 @@
 import Konva from "konva";
 import type { View } from "../../types";
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY } from "../../constants";
+
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -23,7 +24,9 @@ export class MenuScreenView implements View {
         
         // background
         const bgImage = new Image();
-        bgImage.src = "/background-checkers.jpg";
+        //bgImage.src = "/background-checkers.jpg";
+        bgImage.src = SCREEN_BACKGROUNDS.MENU;
+        
         
         const bg = new Konva.Image();
         bg.x(0);
@@ -39,8 +42,12 @@ export class MenuScreenView implements View {
         }
         // Make the background softer
         const overlay = new Konva.Rect({
-            x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT,
-            fill: "rgba(228,202,192,0.50)",
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            //fill: "rgba(228,202,192,0.50)",
+            fill: SCREEN_OVERLAY.COLOR,
             listening: false,
         });
 
