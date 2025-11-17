@@ -1,6 +1,8 @@
 import Konva from "konva";
 import type { View } from "../../types";
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY, TITLE_COLOR } from "../../constants";
+import { FONTS } from "../../fonts";
+
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -23,7 +25,9 @@ export class MenuScreenView implements View {
         
         // background
         const bgImage = new Image();
-        bgImage.src = "/background-checkers.jpg";
+        //bgImage.src = "/background-checkers.jpg";
+        bgImage.src = SCREEN_BACKGROUNDS.MENU;
+        
         
         const bg = new Konva.Image();
         bg.x(0);
@@ -39,20 +43,25 @@ export class MenuScreenView implements View {
         }
         // Make the background softer
         const overlay = new Konva.Rect({
-            x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT,
-            fill: "rgba(228,202,192,0.50)",
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            //fill: "rgba(228,202,192,0.50)",
+            fill: SCREEN_OVERLAY.COLOR,
             listening: false,
         });
 
         // Title text
 
         const title = new Konva.Text({
-            x: STAGE_WIDTH / 2,
+            x: 0,
             y: 90,
-            text: "Slice by Slice",
-            fontSize: 80,
-            fontFamily: "Arial Black",
-            fill: "#AB321B",
+            width: STAGE_WIDTH,
+            text: `Slice by Slice`,
+            fontSize: 120,
+            fontFamily: FONTS.GAME_TITLE,
+            fill: TITLE_COLOR,
             align: "center",
             shadowColor: "rgba(0,0,0,0.25)",
             shadowBlur: 6,
@@ -60,18 +69,17 @@ export class MenuScreenView implements View {
         });
     
         const titleOutline = new Konva.Text({
-            x: STAGE_WIDTH / 2,
+            x: 0,
             y: 90,
-            text: "Slice by Slice",
-            fontSize: 80,
-            fontFamily: "Arial Black",
+            width: STAGE_WIDTH,
+            text: `Slice by Slice`,
+            fontSize: 120,
+            fontFamily: FONTS.GAME_TITLE,
             fill: "transparent",
             stroke: "#4B1F0E",           
-            strokeWidth: 3,              
-            align: "center",
+            strokeWidth: 3,      
+            align: "center",        
         })
-        title.offsetX(title.width() / 2);
-        titleOutline.offsetX(titleOutline.width() / 2);
 
         // Start button  -----
         const startButtonGroup = new Konva.Group();
@@ -86,7 +94,14 @@ export class MenuScreenView implements View {
             strokeWidth: 2,
         });
 
-        const startText = new Konva.Text({ x: STAGE_WIDTH / 2, y: 278, text: "Start", fontSize: 22, fill: "white" });
+        const startText = new Konva.Text({ 
+            x: STAGE_WIDTH / 2, 
+            y: 278, 
+            text: "Start", 
+            fontFamily: FONTS.BUTTON,
+            fontSize: 22, 
+            fill: "white" 
+        });
         startText.offsetX(startText.width() / 2);
 
         startButtonGroup.add(startButton);
@@ -108,9 +123,10 @@ export class MenuScreenView implements View {
         });
 
         const instructionText = new Konva.Text({
-            x: STAGE_WIDTH - 190,
+            x: STAGE_WIDTH - 195,
             y: STAGE_HEIGHT - 50,
             text: "INSTRUCTIONS",
+            fontFamily: FONTS.BUTTON,
             fontSize: 13, 
             fill: "white",
             listening: false,
@@ -142,6 +158,7 @@ export class MenuScreenView implements View {
             x: STAGE_WIDTH - 325,
             y: STAGE_HEIGHT - 50,
             text: "SETTINGS",
+            fontFamily: FONTS.BUTTON,
             fontSize: 13, 
             fill: "white",
         });
@@ -211,12 +228,11 @@ export class MenuScreenView implements View {
         // Title
         const popupTitle = new Konva.Text({
             text: "SETTINGS",
-            //x: 110,
+            fontFamily: FONTS.SUBHEADER,
             x: popupWidth / 2,
             y: 20,
             fontSize: 18,
             fill: "black",
-            //fontStyle: "bold",
         })
         popupTitle.offsetX(popupTitle.width() / 2);
 
@@ -244,6 +260,7 @@ export class MenuScreenView implements View {
             x: toggleWidth / 2,
             y: toggleHeight / 2,
             text: musicOn ? "Music ON" : "Music OFF",
+            fontFamily: FONTS.BUTTON,
             fontSize: 16,
             fill: "white",
             listening: false,
@@ -274,6 +291,7 @@ export class MenuScreenView implements View {
             y: toggleHeight / 2,
             // may replace with image later
             text: this.sfxOn ? "Effects ON" : " Effects OFF",
+            fontFamily: FONTS.BUTTON,
             fontSize: 16,
             fill: "white",
             listening: false,

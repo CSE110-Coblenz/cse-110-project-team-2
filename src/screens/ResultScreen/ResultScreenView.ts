@@ -2,6 +2,7 @@ import Konva from "konva";
 import {STAGE_WIDTH, STAGE_HEIGHT} from "../../constants";
 import {View} from "../../types"; 
 import {Group} from "konva/lib/Group";
+import { FONTS } from "../../fonts";
 
 export class ResultsScreenView implements View {
   private group: Konva.Group;

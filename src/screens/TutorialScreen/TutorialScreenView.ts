@@ -1,6 +1,7 @@
 import Konva from "konva";
 import type { View } from "../../types";
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY } from "../../constants";
+import { FONTS } from "../../fonts";
 
 export class TutorialScreenView implements View {
   private group: Konva.Group;
@@ -10,7 +11,9 @@ export class TutorialScreenView implements View {
 
     // background
     const bgImage = new Image();
-    bgImage.src = "/background-checkers.jpg";
+    //bgImage.src = "/background-checkers.jpg";
+    bgImage.src = SCREEN_BACKGROUNDS.MENU;
+    
     
     const bg = new Konva.Image();
     bg.x(0);
@@ -26,8 +29,12 @@ export class TutorialScreenView implements View {
     }
     // Make the background softer
     const overlay = new Konva.Rect({
-        x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT,
-        fill: "rgba(228,202,192,0.50)",
+        x: 0,
+        y: 0,
+        width: STAGE_WIDTH,
+        height: STAGE_HEIGHT,
+        //fill: "rgba(228,202,192,0.50)",
+        fill: SCREEN_OVERLAY.COLOR,
         listening: false,
     });
       
@@ -36,8 +43,8 @@ export class TutorialScreenView implements View {
       x: STAGE_WIDTH / 2,
       y: 50,
       text: "INSTRUCTIONS",
-      fontSize: 48,
-      fontFamily: "Arial Black",
+      fontSize: 60,
+      fontFamily: FONTS.HEADER,
       fill: "#AB321B",
       align: "center",
       shadowColor: "rgba(0,0,0,0.25)",
@@ -49,8 +56,8 @@ export class TutorialScreenView implements View {
         x: STAGE_WIDTH / 2,
         y: 50,
         text: "INSTRUCTIONS",
-        fontSize: 48,
-        fontFamily: "Arial Black",
+        fontSize: 60,
+        fontFamily: FONTS.HEADER,
         fill: "transparent",
         stroke: "#4B1F0E",           
         strokeWidth: 3,              
@@ -61,14 +68,14 @@ export class TutorialScreenView implements View {
     titleOutline.offsetX(titleOutline.width() / 2);
 
     // big text block placeholder
-    const textBoxW = Math.min(700, STAGE_WIDTH - 120);
+    const textBoxW = STAGE_WIDTH - 200//Math.min(700, STAGE_WIDTH - 120);
     const textBoxX = (STAGE_WIDTH - textBoxW) / 2;
 
     const block = new Konva.Rect({
       x: textBoxX,
       y: 105,
       width: textBoxW,
-      height: 400,
+      height: 425,
       fill: "white",
       stroke: "#999",
       cornerRadius: 12,
@@ -96,15 +103,15 @@ export class TutorialScreenView implements View {
 
         "🍕 MINI GAMES:\n" +
         "• *Compare Toppings*: Match the right topping ratios to win bonus tips.\n" +
-        "• *Delivery Challenge*: At the end of the day, deliver your pizza while dodging obstacles to earn extra rewards.\n\n" +
+        "• *Delivery Challenge*: At the end of the day, deliver your pizza while dodging obstacles\n to earn extra rewards.\n\n" +
 
 
         "Good luck, chef — the customers are waiting!",
       fontSize: 15,
       lineHeight: 1.4,
-      fontFamily: "Arial",
+      fontFamily: FONTS.BODY,
       fill: "#333",
-      align: "left",
+      align: "center",
     });
 
     // buttons at bottom
@@ -121,9 +128,10 @@ export class TutorialScreenView implements View {
       strokeWidth: 2,
     });
     const tutorialText = new Konva.Text({
-      x: 90,
+      x: 80,
       y: 28,
       text: "Watch Tutorial",
+      fontFamily: FONTS.BUTTON,
       fontSize: 20,
       fill: "#212121",
     });
@@ -147,6 +155,7 @@ export class TutorialScreenView implements View {
       x: 80,
       y: 25,
       text: "Back to Menu",
+      fontFamily: FONTS.BUTTON,
       fontSize: 16,
       fill: "white",
     });
