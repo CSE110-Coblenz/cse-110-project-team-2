@@ -140,8 +140,8 @@ export class ResultScreenController extends ScreenController{
         this.view.onNextDay = () => { 
             this.resultStore.clear();
             this.switcher.switchToScreen({
-            type: "game",
-            difficulty: this.nextDayDifficulty
+            type: "order",
+            mode: this.nextDayDifficulty
             });
         };
         
