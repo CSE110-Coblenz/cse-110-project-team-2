@@ -4,8 +4,10 @@ import { GameScreenModel } from "./GameScreenModel";
 import type { View, Order, Difficulty } from "../../types";
 import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
 import { PIZZA } from "../../constants";
+import { ResultStore } from "../../data/ResultStore";
+import { OrderResult } from "../../data/OrderResult";
 
-export class GameScreenView implements View{
+export class GameScreenView implements View {
     group: Konva.Group;
     pizzaGroup =new Konva.Group();
     sliceArcs:Konva.Arc[]=[];
@@ -16,13 +18,20 @@ export class GameScreenView implements View{
     private orderNumber:Konva.Text
     private day:number=1
     private dayDisplay:Konva.Text
+    public onOrderSuccess: (difficulty: Difficulty) => void = () => {};
+    public onGoToMinigame1: () => void = () => {};
+    private onBackToMenuClick: () => void;
 
 
     model=new GameScreenModel()
     private rOuter=0;
 
+    private resultStore: ResultStore;
+
+    constructor(onBackToMenuClick: () => void, resultStore: ResultStore, onOrderSuccess?: (difficulty?: Difficulty) => void) {
     // onOrderSuccess is called when the current order was completed successfully
-    constructor(onBackToMenuClick: () => void, private onOrderSuccess?: (d?: Difficulty) => void) {
+        this.onBackToMenuClick = onBackToMenuClick;
+        this.resultStore = resultStore;
         this.group = new Konva.Group({ visible: false });
         const basePizza=new Image()
         basePizza.src='/pizza.png'
@@ -177,6 +186,35 @@ export class GameScreenView implements View{
         // click event → submit the current pizza against the order
         submitGroup.on("click", () => this.handleSubmit());
         this.group.add(submitGroup);
+
+        // To minigame 1 button
+        const minigameGroup = new Konva.Group({ x: STAGE_WIDTH - 142.5, y: STAGE_HEIGHT-300 });
+
+        const minigameBtn = new Konva.Rect({
+            width: 135,     
+            height: 135,
+            fill: "#1e40af",
+            cornerRadius: 8,
+            stroke: "#1e40af",
+            strokeWidth: 2,
+        });
+
+        const minigameText = new Konva.Text({       
+            x: 67.5,
+            y: 67.5,
+            text: "Minigame 1",
+            fontSize: 28,
+            fill: "white",
+            align:'center'
+        });
+
+        minigameText.offsetX(minigameText.width() / 2);
+        minigameText.offsetY(minigameText.height() / 2);
+        minigameGroup.add(minigameBtn, minigameText);
+
+        // click event → goes to minigame 1 screen
+        minigameGroup.on("click", () => this.onGoToMinigame1());
+        this.group.add(minigameGroup);
 
 
         const orderCount = new Konva.Group({ x: STAGE_WIDTH - 550, y: 20 });
@@ -750,6 +788,18 @@ export class GameScreenView implements View{
         }
         // show popup with results
         const success= allMatch&&expectedTotal===currentTotal&&expectedPizzaNum===this.model.pizzaNum;
+
+        this.resultStore.add({
+            orderNumber: this.orderNum,
+            day: this.day,
+            success, 
+            details: lines.join("\n"),
+            expectedTotal,
+            currentTotal,
+            expectedPizzaNum,
+            currentPizzaNumber: this.model.pizzaNum,   
+        });
+
         if(success){
             this.orderNum+=1
             //TEMPORARY DAY PROGRESSION, CHANGE OR REMOVE LATER TODO IMPORTANT DONT FORGET

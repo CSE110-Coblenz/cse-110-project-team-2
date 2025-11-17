@@ -4,18 +4,22 @@ import { GameScreenView } from "./GameScreenView";
 import { PIZZA } from "../../constants";
 import { ScreenController, Difficulty, Order } from "../../types";
 import { ScreenSwitcher } from "../../types";
+import { ResultStore } from "../../data/ResultStore";
 
 export class GameScreenController extends ScreenController{
     private model:GameScreenModel;
     private view:GameScreenView;
     private screen?: ScreenSwitcher;
 
-    constructor(screenSwitcher?: ScreenSwitcher){
+    constructor(screenSwitcher: ScreenSwitcher, private resultStore: ResultStore) {
         super()
-        this.view = new GameScreenView(() => this.handleBackToMenuClick(), (d) => this.handleOrderSuccess(d));
+        this.view = new GameScreenView(() => this.handleBackToMenuClick(), this.resultStore);
+        this.view.onOrderSuccess = (d) => this.handleOrderSuccess(d);
         this.model=this.view.model
+        this.view.onGoToMinigame1 = () => {
+            this.screen?.switchToScreen({type:"minigame1"});
+        }
         this.screen=screenSwitcher;
-
         this.view.show()
     }
 
