@@ -105,5 +105,10 @@ class App implements ScreenSwitcher {
 	}
 }
 
-new App("container");
+loadFonts()
+	.catch(() => {
+	})
+	.finally(() => {
+		new App("container");
+	});
 

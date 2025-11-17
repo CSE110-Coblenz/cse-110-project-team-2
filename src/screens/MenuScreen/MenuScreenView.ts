@@ -55,32 +55,31 @@ export class MenuScreenView implements View {
         // Title text
 
         const title = new Konva.Text({
-            x: 250,
+            x: 0,
             y: 90,
-            //width: STAGE_WIDTH,
+            width: STAGE_WIDTH,
             text: `Slice by Slice`,
             fontSize: 120,
             fontFamily: FONTS.GAME_TITLE,
             fill: TITLE_COLOR,
-            //align: "center",
+            align: "center",
             shadowColor: "rgba(0,0,0,0.25)",
             shadowBlur: 6,
             shadowOffsetY: 5,
         });
     
         const titleOutline = new Konva.Text({
-            x: 250,
+            x: 0,
             y: 90,
+            width: STAGE_WIDTH,
             text: `Slice by Slice`,
             fontSize: 120,
             fontFamily: FONTS.GAME_TITLE,
             fill: "transparent",
             stroke: "#4B1F0E",           
-            strokeWidth: 3,              
-            align: "center",
+            strokeWidth: 3,      
+            align: "center",        
         })
-        //title.offsetX(title.width() / 2);
-        //titleOutline.offsetX(titleOutline.width() / 2);
 
         // Start button  -----
         const startButtonGroup = new Konva.Group();
