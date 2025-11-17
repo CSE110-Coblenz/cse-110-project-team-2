@@ -229,12 +229,11 @@ export class MenuScreenView implements View {
         // Title
         const popupTitle = new Konva.Text({
             text: "SETTINGS",
-            //x: 110,
+            fontFamily: FONTS.SUBHEADER,
             x: popupWidth / 2,
             y: 20,
             fontSize: 18,
             fill: "black",
-            //fontStyle: "bold",
         })
         popupTitle.offsetX(popupTitle.width() / 2);
 
@@ -262,6 +261,7 @@ export class MenuScreenView implements View {
             x: toggleWidth / 2,
             y: toggleHeight / 2,
             text: musicOn ? "Music ON" : "Music OFF",
+            fontFamily: FONTS.BUTTON,
             fontSize: 16,
             fill: "white",
             listening: false,
@@ -292,6 +292,7 @@ export class MenuScreenView implements View {
             y: toggleHeight / 2,
             // may replace with image later
             text: this.sfxOn ? "Effects ON" : " Effects OFF",
+            fontFamily: FONTS.BUTTON,
             fontSize: 16,
             fill: "white",
             listening: false,
