@@ -1,6 +1,7 @@
 import Konva from "konva";
 import type { View } from "../../types";
-import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY } from "../../constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY, TITLE_COLOR } from "../../constants";
+import { FONTS } from "../../fonts";
 
 
 /**
@@ -54,31 +55,32 @@ export class MenuScreenView implements View {
         // Title text
 
         const title = new Konva.Text({
-            x: STAGE_WIDTH / 2,
+            x: 250,
             y: 90,
-            text: "Slice by Slice",
-            fontSize: 80,
-            fontFamily: "Arial Black",
-            fill: "#AB321B",
-            align: "center",
+            //width: STAGE_WIDTH,
+            text: `Slice by Slice`,
+            fontSize: 120,
+            fontFamily: FONTS.GAME_TITLE,
+            fill: TITLE_COLOR,
+            //align: "center",
             shadowColor: "rgba(0,0,0,0.25)",
             shadowBlur: 6,
             shadowOffsetY: 5,
         });
     
         const titleOutline = new Konva.Text({
-            x: STAGE_WIDTH / 2,
+            x: 250,
             y: 90,
-            text: "Slice by Slice",
-            fontSize: 80,
-            fontFamily: "Arial Black",
+            text: `Slice by Slice`,
+            fontSize: 120,
+            fontFamily: FONTS.GAME_TITLE,
             fill: "transparent",
             stroke: "#4B1F0E",           
             strokeWidth: 3,              
             align: "center",
         })
-        title.offsetX(title.width() / 2);
-        titleOutline.offsetX(titleOutline.width() / 2);
+        //title.offsetX(title.width() / 2);
+        //titleOutline.offsetX(titleOutline.width() / 2);
 
         // Start button  -----
         const startButtonGroup = new Konva.Group();
@@ -93,7 +95,14 @@ export class MenuScreenView implements View {
             strokeWidth: 2,
         });
 
-        const startText = new Konva.Text({ x: STAGE_WIDTH / 2, y: 278, text: "Start", fontSize: 22, fill: "white" });
+        const startText = new Konva.Text({ 
+            x: STAGE_WIDTH / 2, 
+            y: 278, 
+            text: "Start", 
+            fontFamily: FONTS.BUTTON,
+            fontSize: 22, 
+            fill: "white" 
+        });
         startText.offsetX(startText.width() / 2);
 
         startButtonGroup.add(startButton);
@@ -115,9 +124,10 @@ export class MenuScreenView implements View {
         });
 
         const instructionText = new Konva.Text({
-            x: STAGE_WIDTH - 190,
+            x: STAGE_WIDTH - 195,
             y: STAGE_HEIGHT - 50,
             text: "INSTRUCTIONS",
+            fontFamily: FONTS.BUTTON,
             fontSize: 13, 
             fill: "white",
             listening: false,
@@ -149,6 +159,7 @@ export class MenuScreenView implements View {
             x: STAGE_WIDTH - 325,
             y: STAGE_HEIGHT - 50,
             text: "SETTINGS",
+            fontFamily: FONTS.BUTTON,
             fontSize: 13, 
             fill: "white",
         });

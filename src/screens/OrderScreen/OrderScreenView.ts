@@ -4,6 +4,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 import { ORDER_BG_COLOR, ORDER_TITLE_COLOR, ORDER_BUTTON_FILL, ORDER_BUTTON_STROKE } from "../../constants";
 import type { Order } from "../../types";
 import type { OrderScreenModel } from "./OrderScreenModel";
+import { FONTS } from "../../fonts";
 
 export class OrderScreenView implements View {
     private group: Konva.Group;
@@ -92,7 +93,7 @@ export class OrderScreenView implements View {
 
         const acceptGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 90, y: STAGE_HEIGHT - 120 });
         const acceptBtn = new Konva.Rect({ width: 180, height: 56, fill: ORDER_BUTTON_FILL, cornerRadius: 8, stroke: ORDER_BUTTON_STROKE, strokeWidth: 2 });
-        const acceptText = new Konva.Text({ x: 90, y: 18, text: "Sounds good", fontSize: 20, fill: "white" });
+        const acceptText = new Konva.Text({ x: 90, y: 18, text: "Sounds good", fontFamily: FONTS.BUTTON, fontSize: 20, fill: "white" });
         acceptText.offsetX(acceptText.width() / 2);
         acceptText.offsetY(acceptText.height() / 2);
         acceptGroup.add(acceptBtn, acceptText);

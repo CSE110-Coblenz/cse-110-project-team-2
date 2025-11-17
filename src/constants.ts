@@ -24,26 +24,11 @@ export const ORDER_BUTTON_FILL = "#43a047";
 export const ORDER_BUTTON_STROKE = "#2e7d32";
 export const ORDERS_PER_DAY:number = 5
 
+export const TITLE_COLOR = "#AB321B";
+
 export const MINIGAME2_DURATION = 30; // seconds
 
-// Standardized Font Constants
-export const FONTS = {
-    GAME_TITLE: {
-        FAMILY: "Arial Black"
-        //SIZE: 48,
-        //COLOR: 
-    },
-    HEADER: {
-        FAMILY: "Times New Roman"
-        //SIZE:
-        //COLOR: 
-    },
-    BODY: {
-        FAMILY: "Arial"
-        //SIZE:
-        //COLOR: 
-    }
-} as const;
+
 
 // Background Constants
 export const SCREEN_BACKGROUNDS = {

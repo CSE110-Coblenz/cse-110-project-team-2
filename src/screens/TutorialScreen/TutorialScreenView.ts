@@ -1,6 +1,7 @@
 import Konva from "konva";
 import type { View } from "../../types";
 import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY } from "../../constants";
+import { FONTS } from "../../fonts";
 
 export class TutorialScreenView implements View {
   private group: Konva.Group;
@@ -42,8 +43,8 @@ export class TutorialScreenView implements View {
       x: STAGE_WIDTH / 2,
       y: 50,
       text: "INSTRUCTIONS",
-      fontSize: 48,
-      fontFamily: "Arial Black",
+      fontSize: 60,
+      fontFamily: FONTS.HEADER,
       fill: "#AB321B",
       align: "center",
       shadowColor: "rgba(0,0,0,0.25)",
@@ -55,8 +56,8 @@ export class TutorialScreenView implements View {
         x: STAGE_WIDTH / 2,
         y: 50,
         text: "INSTRUCTIONS",
-        fontSize: 48,
-        fontFamily: "Arial Black",
+        fontSize: 60,
+        fontFamily: FONTS.HEADER,
         fill: "transparent",
         stroke: "#4B1F0E",           
         strokeWidth: 3,              
@@ -102,13 +103,13 @@ export class TutorialScreenView implements View {
 
         "🍕 MINI GAMES:\n" +
         "• *Compare Toppings*: Match the right topping ratios to win bonus tips.\n" +
-        "• *Delivery Challenge*: At the end of the day, deliver your pizza while dodging obstacles to earn extra rewards.\n\n" +
+        "• *Delivery Challenge*: At the end of the day, deliver your pizza while dodging obstacles\n to earn extra rewards.\n\n" +
 
 
         "Good luck, chef — the customers are waiting!",
       fontSize: 15,
       lineHeight: 1.4,
-      fontFamily: "Arial",
+      fontFamily: FONTS.BODY,
       fill: "#333",
       align: "left",
     });

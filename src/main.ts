@@ -9,6 +9,9 @@ import { OrderScreenController } from "./screens/OrderScreen/OrderScreenControll
 import { ResultScreenController } from "./screens/ResultScreen/ResultScreenController";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
 import { AudioManager } from "./audio/AudioManager";
+import { loadFonts } from "./fonts";
+
+
 
 class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
@@ -79,15 +82,8 @@ class App implements ScreenSwitcher {
 				this.tutorialController.show();
 				break;
             case "order":
-				if ((screen as any).mode) {
-					// If returnToGame is set, show the Order screen so the user
-					// can accept the prepared order. 
-					this.orderController.prepareForMode((screen as any).mode);
-					this.orderController.show();
-				} else {
-					this.orderController.show();
-				}
-				break;
+                this.orderController.show();
+                break;
             case "result":
                 this.resultsController.setStats({
                     ordersReceived: 25, //Dummy Values, will replaced later on
@@ -110,3 +106,4 @@ class App implements ScreenSwitcher {
 }
 
 new App("container");
+
