@@ -4,6 +4,7 @@ import { GameScreenModel } from "./GameScreenModel";
 import type { View, Order, Difficulty } from "../../types";
 import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
 import { PIZZA } from "../../constants";
+import { FONTS } from "../../fonts";
 
 export class GameScreenView implements View{
     group: Konva.Group;

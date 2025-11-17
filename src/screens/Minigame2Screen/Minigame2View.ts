@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import { FONTS } from "../../fonts";
 
 export class Minigame2View {
     private group: Konva.Group;
