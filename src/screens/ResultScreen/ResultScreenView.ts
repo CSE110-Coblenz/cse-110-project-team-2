@@ -44,6 +44,25 @@ export class ResultsScreenView implements View {
       cornerRadius: 16,
     });
     this.group.add(card);
+
+    const image = new window.Image();
+    image.src = "pizza_res.png";
+    image.onload = () => {
+      const targetW = 240;
+      const scale = targetW / image.width;
+      const targetH = image.height * scale;
+
+      const pizzaImage = new Konva.Image({
+        x: card.x() + card.width() - targetW - 60,
+        y: card.y() + 60,
+        image: image,
+        width: targetW,
+        height: targetH,
+        listening: false,
+      });
+      this.group.add(pizzaImage);
+      this.group.draw();
+    };
     
     //Title text
     const title = new Konva.Text({
@@ -61,7 +80,7 @@ export class ResultsScreenView implements View {
     const rowGap = 40;
 
     //Rows of stats
-    this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Ordered received:");
+    this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Orders received:");
     this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Orders correct:");
     this.percentCorrect = this.makeRow(card.x() + 26, startY + rowGap * 2,"% correct:");
     this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received:");
@@ -72,7 +91,7 @@ export class ResultsScreenView implements View {
 
     //Wraps callbacks so the latest assigned function is used
     const btnWrong = this.makeButton(card.x() + 40, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
-    const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "End game", () =>  this.onEndGame());
+    const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "Home screen", () =>  this.onEndGame());
     const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Next day", () => this.onNextDay());
 
     this.group.add(btnWrong, btnEnd, btnNext);
