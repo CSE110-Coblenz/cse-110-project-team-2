@@ -50,7 +50,7 @@ class App implements ScreenSwitcher {
 		this.tutorialController = new TutorialScreenController(this);
     	this.orderController = new OrderScreenController(this);
     	this.resultsController = new ResultScreenController(this.layer, this, this.resultStore);
-		this.minigame1Controller = new Minigame1Controller(this, this.audio);
+		this.minigame1Controller = new Minigame1Controller(this, this.audio, this.resultStore);
     	this.minigame2Controller = new Minigame2Controller(this, this.audio);
 
 		this.layer.add(this.menuController.getView().getGroup());
