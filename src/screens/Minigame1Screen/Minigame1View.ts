@@ -6,13 +6,13 @@ import type { OrderResult } from "../../data/OrderResult";
 export class Minigame1View implements View {
     private group: Konva.Group;
     private content: Konva.Group;
-    
+
     // controller will set this to go to Minigame 2
     public onGoToMinigame2: () => void = () => {};
     // controller can set this after a result to navigate away
     public onBackToMenu: () => void = () => {};
 
-    constructor(onBackToMenuClick: () => void) {
+    constructor() {
         this.group = new Konva.Group({ visible: false, listening: true });
         this.drawBackground()
 
@@ -62,35 +62,6 @@ export class Minigame1View implements View {
         minigame2Group.on("mouseenter", () => document.body.style.cursor = "pointer");
         minigame2Group.on("mouseleave", () => document.body.style.cursor = "default");
         this.group.add(minigame2Group);
-
-        // Back to main menu button (top-right corner)
-        // TODO: Why is this nonfunctional?
-        const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
-
-        const backBtn = new Konva.Rect({
-            width: 160,
-            height: 50,
-            fill: "#d84315",
-            cornerRadius: 8,
-            stroke: "#b71c1c",
-            strokeWidth: 2,
-        });
-
-        const backText = new Konva.Text({
-            x: 80,
-            y: 25,
-            text: "Back to Menu",
-            fontSize: 16,
-            fill: "white",
-            });
-        backText.offsetX(backText.width() / 2);
-        backText.offsetY(backText.height() / 2);
-
-        backGroup.add(backBtn, backText);
-
-        // click event → goes back to menu
-        backGroup.on("click", onBackToMenuClick);
-        this.group.add(backGroup);
     }
 
     getGroup(): Konva.Group {
@@ -107,7 +78,7 @@ export class Minigame1View implements View {
         this.group.getLayer()?.batchDraw();
     }
 
-    // modified function from GameScreenView. Thanks Woojin
+    // modified function from GameScreenView
     drawBackground() {
         const backgroundGroup=new Konva.Group()
         
@@ -174,6 +145,8 @@ export class Minigame1View implements View {
 
     }
 
+    
+
     showMessage(message: string) {
         this.content.destroyChildren();
         this.content.add(new Konva.Text({ x: 40, y: 20, text: message, fontSize: 20, fill: "black" }));
@@ -203,7 +176,7 @@ export class Minigame1View implements View {
         const boxW = 420;
         const boxH = 220;
         const leftBox = new Konva.Rect({ x: leftX, y: 50, width: boxW, height: boxH, fill: "white", stroke: "black" });
-        this.content.add(leftBox);
+        /*this.content.add(leftBox);
         this.content.add(new Konva.Text({ x: leftX + 12, y: 60, text: `Pizza A (Day ${a.day} #${a.orderNumber})`, fontSize: 18, fill: "black" }));
 
         // right box (B)
@@ -228,20 +201,14 @@ export class Minigame1View implements View {
         const btnA = this.makeButton(leftX + 40, btnY, "Pizza A", () => onChoice("A"));
         const btnB = this.makeButton(rightX + 40, btnY, "Pizza B", () => onChoice("B"));
         const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Tie", () => onChoice("Tie"));
-        this.content.add(btnA, btnB, btnTie);
+        this.content.add(btnA, btnB, btnTie);*/
 
         this.group.getLayer()?.batchDraw();
     }
 
     showResult(isCorrect: boolean, details?: string) {
         // overlay panel
-        const overlay = new Konva.Rect({
-            x: 0,
-            y: 0,
-            width: STAGE_WIDTH,
-            height: STAGE_HEIGHT,
-            fill: "black",
-            opacity: 0.4 });
+        const overlay = new Konva.Rect({ x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "black", opacity: 0.4 });
         const panelW = 520;
         const panelH = 220;
         const panelX = (STAGE_WIDTH - panelW) / 2;
