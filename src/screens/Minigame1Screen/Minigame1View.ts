@@ -2,11 +2,15 @@ import Konva from "konva";
 import { STAGE_WIDTH, STAGE_HEIGHT, TOPPINGS } from "../../constants";
 import { View } from "../../types";
 import type { OrderResult } from "../../data/OrderResult";
+import { PIZZA } from "../../constants";
+
 
 export class Minigame1View implements View {
     private group: Konva.Group;
     private content: Konva.Group;
-
+    private pizzaGroup =new Konva.Group();
+    
+    
     // controller will set this to go to Minigame 2
     public onGoToMinigame2: () => void = () => {};
     // controller can set this after a result to navigate away
@@ -15,6 +19,10 @@ export class Minigame1View implements View {
     constructor() {
         this.group = new Konva.Group({ visible: false, listening: true });
         this.drawBackground()
+        this.group.add(this.pizzaGroup);
+        // add two blank pizzas to the board
+        this.drawPizza(PIZZA.pizzaX1)
+        this.drawPizza(PIZZA.pizzaX2)
 
         // Title
         this.group.add(new Konva.Text({
@@ -62,6 +70,8 @@ export class Minigame1View implements View {
         minigame2Group.on("mouseenter", () => document.body.style.cursor = "pointer");
         minigame2Group.on("mouseleave", () => document.body.style.cursor = "default");
         this.group.add(minigame2Group);
+
+
     }
 
     getGroup(): Konva.Group {
@@ -150,7 +160,9 @@ export class Minigame1View implements View {
     showMessage(message: string) {
         this.content.destroyChildren();
         this.content.add(new Konva.Text({ x: 40, y: 20, text: message, fontSize: 20, fill: "black" }));
-
+        
+        // Temporary until back button works
+        // TODO: Why does this not work
         const back = this.makeButton(STAGE_WIDTH / 2 - 60, 120, "Back", () => {
             this.onBackToMenu();
         });
@@ -176,7 +188,7 @@ export class Minigame1View implements View {
         const boxW = 420;
         const boxH = 220;
         const leftBox = new Konva.Rect({ x: leftX, y: 50, width: boxW, height: boxH, fill: "white", stroke: "black" });
-        /*this.content.add(leftBox);
+        this.content.add(leftBox);
         this.content.add(new Konva.Text({ x: leftX + 12, y: 60, text: `Pizza A (Day ${a.day} #${a.orderNumber})`, fontSize: 18, fill: "black" }));
 
         // right box (B)
@@ -201,7 +213,7 @@ export class Minigame1View implements View {
         const btnA = this.makeButton(leftX + 40, btnY, "Pizza A", () => onChoice("A"));
         const btnB = this.makeButton(rightX + 40, btnY, "Pizza B", () => onChoice("B"));
         const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Tie", () => onChoice("Tie"));
-        this.content.add(btnA, btnB, btnTie);*/
+        this.content.add(btnA, btnB, btnTie);
 
         this.group.getLayer()?.batchDraw();
     }
@@ -242,5 +254,24 @@ export class Minigame1View implements View {
         g.on("mouseleave", () => document.body.style.cursor = "default");
         return g;
     }
-}
 
+    drawPizza(pizzaX:number): void {
+        //build the base circle
+        const basePizza=new Image()
+        basePizza.src='/pizza.png'
+        const scale=0.8;
+        basePizza.onload=()=>{
+            const pizzaBase=new Konva.Image({
+                scaleX:scale,
+                scaleY:scale,
+                image:basePizza,
+                offsetX:basePizza.width/2,
+                offsetY:basePizza.height/2,
+                listening:false,
+                x:pizzaX,
+                y:PIZZA.pizzaY
+            })
+            this.pizzaGroup.add(pizzaBase);
+        } 
+    }
+}
