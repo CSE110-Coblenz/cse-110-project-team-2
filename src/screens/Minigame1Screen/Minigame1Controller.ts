@@ -33,17 +33,12 @@ export class Minigame1Controller extends ScreenController {
     startGame(): void {
         // pick two orders from the most recent day that have order data
         const all = this.resultStore.getAll();
-        if (!all || all.length === 0) {
-            this.view.showMessage("No orders recorded yet today.");
-            this.show();
-            return;
-        }
-
         // find the latest day value
         const days = all.map(r => r.day);
         const latestDay = Math.max(...days);
         const todays = all.filter(r => r.day === latestDay && r.order && r.order.toppingsCounts);
 
+        // NOTE: This won't be needed in the actual game because the player won't be able to go to the minigame manually. I think.
         if (todays.length < 2) {
             this.view.showMessage("Not enough completed orders for today to play this minigame.");
             this.show();

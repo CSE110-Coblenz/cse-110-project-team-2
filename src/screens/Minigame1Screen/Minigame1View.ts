@@ -9,6 +9,7 @@ export class Minigame1View implements View {
     private group: Konva.Group;
     private content: Konva.Group;
     private pizzaGroup =new Konva.Group();
+    private pizzaRadius: Map<number, number> = new Map();
     
     
     // controller will set this to go to Minigame 2
@@ -20,9 +21,9 @@ export class Minigame1View implements View {
         this.group = new Konva.Group({ visible: false, listening: true });
         this.drawBackground()
         this.group.add(this.pizzaGroup);
-        // add two blank pizzas to the board
-        this.drawPizza(PIZZA.pizzaX1)
-        this.drawPizza(PIZZA.pizzaX2)
+        // add two blank pizzas to the board (pass index so we can identify them later)
+        this.drawPizza(PIZZA.pizzaX1, 0)
+        this.drawPizza(PIZZA.pizzaX2, 1)
 
         // Title
         this.group.add(new Konva.Text({
@@ -70,8 +71,6 @@ export class Minigame1View implements View {
         minigame2Group.on("mouseenter", () => document.body.style.cursor = "pointer");
         minigame2Group.on("mouseleave", () => document.body.style.cursor = "default");
         this.group.add(minigame2Group);
-
-
     }
 
     getGroup(): Konva.Group {
@@ -155,8 +154,8 @@ export class Minigame1View implements View {
 
     }
 
-    
-
+    // NOTE: This is really only for showing the message that there's not enough pizzas to compare
+    // In the actual game, this function won't be needed
     showMessage(message: string) {
         this.content.destroyChildren();
         this.content.add(new Konva.Text({ x: 40, y: 20, text: message, fontSize: 20, fill: "black" }));
@@ -183,39 +182,99 @@ export class Minigame1View implements View {
         });
         this.content.add(question);
 
-        // left box (A)
-        const leftX = 60;
-        const boxW = 420;
-        const boxH = 220;
-        const leftBox = new Konva.Rect({ x: leftX, y: 50, width: boxW, height: boxH, fill: "white", stroke: "black" });
-        this.content.add(leftBox);
-        this.content.add(new Konva.Text({ x: leftX + 12, y: 60, text: `Pizza A (Day ${a.day} #${a.orderNumber})`, fontSize: 18, fill: "black" }));
+        // render toppings visually on the pizzas
+        this.clearMinigameToppings();
+        // determine how many pizzas the order used (saved in OrderResult as currentPizzaNumber)
+        const aPizzaNum = a.currentPizzaNumber;
+        const bPizzaNum = b.currentPizzaNumber;
 
-        // right box (B)
-        const rightX = leftX + boxW + 40;
-        const rightBox = new Konva.Rect({ x: rightX, y: 50, width: boxW, height: boxH, fill: "white", stroke: "black" });
-        this.content.add(rightBox);
-        this.content.add(new Konva.Text({ x: rightX + 12, y: 60, text: `Pizza B (Day ${b.day} #${b.orderNumber})`, fontSize: 18, fill: "black" }));
+        // If pizzaNum === 1 (there was only one pizza), put all toppings on the left (index 0). If 2 pizzas in one order, split ceil/ floor between A and B.
+        this.renderToppingsForOrder(a.order!, aPizzaNum, 0);
+        this.renderToppingsForOrder(b.order!, bPizzaNum, 1);
 
-        // show topping counts for each topping type
-        const toppingsToShow = TOPPINGS;
-        let yy = 95;
-        for (const t of toppingsToShow) {
-            const aCount = (a.order!.toppingsCounts as any)?.[t] ?? 0;
-            const bCount = (b.order!.toppingsCounts as any)?.[t] ?? 0;
-            this.content.add(new Konva.Text({ x: leftX + 12, y: yy, text: `${t}: ${aCount}`, fontSize: 16, fill: "black" }));
-            this.content.add(new Konva.Text({ x: rightX + 12, y: yy, text: `${t}: ${bCount}`, fontSize: 16, fill: "black" }));
-            yy += 28;
-        }
+        // make pizza bases clickable
+        const bases = this.pizzaGroup.find((node: Konva.Node) => node.getAttr && node.getAttr("isMinigameBase"));
+        bases.forEach((node: Konva.Node) => {
+            // remove any previous click handlers
+            try { node.off && node.off("click"); } catch {}
+            const idx = node.getAttr("minigameIndex");
+            node.on && node.on("click", () => {
+                if (idx === 0) onChoice("A");
+                else onChoice("B");
+            });
+            node.on && node.on("mouseenter", () => document.body.style.cursor = "pointer");
+            node.on && node.on("mouseleave", () => document.body.style.cursor = "default");
+        });
 
-        // choice buttons
+        // NOTE: Tie button probably won't need to be in main game? But for testing purposes it was needed
         const btnY = 300;
-        const btnA = this.makeButton(leftX + 40, btnY, "Pizza A", () => onChoice("A"));
-        const btnB = this.makeButton(rightX + 40, btnY, "Pizza B", () => onChoice("B"));
         const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Tie", () => onChoice("Tie"));
-        this.content.add(btnA, btnB, btnTie);
+        this.content.add(btnTie);
 
         this.group.getLayer()?.batchDraw();
+    }
+
+    // Remove previously added minigame topping images
+    private clearMinigameToppings() {
+        const nodes = this.pizzaGroup.find((node: Konva.Node) => node.getAttr && node.getAttr("isMinigameTopping"));
+        nodes.forEach((n: Konva.Node) => n.destroy());
+    }
+
+    // Render toppings for an order on pizza index (0 -> pizzaX1, 1 -> pizzaX2)
+    // NOTE: I wasn't sure what to do if there were two pizzas in one order so I asked my copilot.
+    private renderToppingsForOrder(order: any, pizzaCount: number, pizzaIndex: number) {
+        if (!order || !order.toppingsCounts) return;
+        const pizzaX = pizzaIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2; // is this the left or right pizza?
+        const rOuter = this.pizzaRadius.get(pizzaX) ?? 80;
+
+        const toppingMap: Record<string, { url: string; scale: number }> = {
+            Mushroom: { url: "/mushroom.png", scale: 0.75 },
+            Pepperoni: { url: "/pepperoni.png", scale: 0.75 },
+            Basil: { url: "/basil.png", scale: 0.075 },
+        };
+
+        for (const t of Object.keys(order.toppingsCounts)) {
+            const total = order.toppingsCounts[t] ?? 0;
+            let countForThisPizza = 0;
+            if (pizzaCount === 1) {
+                // all on the first pizza (we'll show them on the pizzaX position passed in)
+                countForThisPizza = total;
+            } else {
+                // split between the two pizzas: assign ceil to pizzaIndex 0, floor to pizzaIndex 1
+                if (pizzaIndex === 0) countForThisPizza = Math.ceil(total / 2);
+                else countForThisPizza = Math.floor(total / 2);
+            }
+
+            const info = toppingMap[t] ?? { url: "/" + t.toLowerCase() + ".png", scale: 0.5 };
+            for (let i = 0; i < countForThisPizza; i++) {
+                this.createStaticTopping(pizzaX, rOuter, info.url, info.scale);
+            }
+        }
+    }
+
+    // Create a static topping image inside pizza area
+    private createStaticTopping(pizzaX: number, rOuter: number, url: string, scale: number) {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * (rOuter - 20);
+            const x = pizzaX + radius * Math.cos(angle);
+            const y = PIZZA.pizzaY + radius * Math.sin(angle);
+            const k = new Konva.Image({
+                image: img,
+                x,
+                y,
+                scaleX: scale,
+                scaleY: scale,
+                offsetX: img.width / 2,
+                offsetY: img.height / 2,
+                listening: false,
+            });
+            k.setAttr("isMinigameTopping", true);
+            this.pizzaGroup.add(k);
+            this.group.getLayer()?.batchDraw();
+        };
     }
 
     showResult(isCorrect: boolean, details?: string) {
@@ -255,7 +314,7 @@ export class Minigame1View implements View {
         return g;
     }
 
-    drawPizza(pizzaX:number): void {
+    drawPizza(pizzaX:number, index: number = 0): void {
         //build the base circle
         const basePizza=new Image()
         basePizza.src='/pizza.png'
@@ -267,11 +326,18 @@ export class Minigame1View implements View {
                 image:basePizza,
                 offsetX:basePizza.width/2,
                 offsetY:basePizza.height/2,
-                listening:false,
+                listening:true, // makes the pizzas clickable
                 x:pizzaX,
                 y:PIZZA.pizzaY
             })
+            // mark base as interactive for minigame (clickable)
+            pizzaBase.setAttr("isMinigameBase", true);
+            pizzaBase.setAttr("minigameIndex", index);
             this.pizzaGroup.add(pizzaBase);
+            // compute and store outer radius for placing toppings
+            const rOuter = (basePizza.width / 2) * scale - 5;
+            this.pizzaRadius.set(pizzaX, rOuter);
+            this.group.getLayer()?.batchDraw();
         } 
     }
 }
