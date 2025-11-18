@@ -7,10 +7,11 @@ import { TOPPINGS, ToppingType } from "../../constants";
 
 export class Minigame1Controller extends ScreenController {
     private view: Minigame1View
+    private screen?: ScreenSwitcher;
 
     constructor(private screenSwitcher: ScreenSwitcher, private audio: AudioManager, private resultStore: ResultStore) {  
         super();
-        this.view = new Minigame1View();
+        this.view = new Minigame1View(() => this.handleBackToMenuClick());
 
         this.view.onGoToMinigame2 = () => {
             this.screenSwitcher.switchToScreen({ type: "minigame2" });
@@ -28,7 +29,11 @@ export class Minigame1Controller extends ScreenController {
 
     hide(): void {
         this.view.hide();
-    }   
+    }
+
+    private handleBackToMenuClick(){
+        this.screen?.switchToScreen({type:"menu"});
+    }
 
     startGame(): void {
         // pick two orders from the most recent day that have order data
@@ -73,9 +78,6 @@ export class Minigame1Controller extends ScreenController {
 
             const isCorrect = choice === correct;
             this.view.showResult(isCorrect, `A: ${aCount}, B: ${bCount}`);
-
-            // after showing result, provide a Back button to return to menu
-            this.view.onBackToMenu = () => this.screenSwitcher.switchToScreen({ type: "menu" });
         });
 
         this.show();
