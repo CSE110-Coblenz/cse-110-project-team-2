@@ -10,9 +10,10 @@ import { AudioManager } from "../../audio/AudioManager";
 export class MenuScreenController extends ScreenController {
     private view: MenuScreenView;
     private screenSwitcher: ScreenSwitcher;
-    private audio: AudioManager;
+    //private audio: AudioManager;
+    private audio?: AudioManager;
 
-    constructor(screenSwitcher: ScreenSwitcher, audio:AudioManager) {
+    constructor(screenSwitcher: ScreenSwitcher, audio?:AudioManager) {
         super();
         this.screenSwitcher = screenSwitcher;
         //this.audio = new AudioManager("/audio/pizza-299710.mp3", 0.5);
@@ -20,20 +21,23 @@ export class MenuScreenController extends ScreenController {
 
         //sfx audio effects
         //this.audio.registerSfx("splash", "/audio/water-splash.mp3" );
-        this.audio.registerSfx("start", "/audio/game-start.mp3");
+        if (this.audio){
+            this.audio.registerSfx("start", "/audio/game-start.mp3");
+        }
 
         this.view = new MenuScreenView(
                                     () => {
-                                        this.audio.playSfx("start");
+                                        this.audio?.playSfx("start");
                                         this.handleStartClick();
                                     },
-                                    (musicOn: boolean) => this.audio.setMusicEnabled(musicOn),
-                                    (sfxOn: boolean)  => this.audio.setSfxEnabled(sfxOn),
-                                    () => this.handleTutorialClick()
+                                    (musicOn: boolean) => this.audio?.setMusicEnabled(musicOn),
+                                    () => this.handleTutorialClick(),
+                                    (sfxOn: boolean)  => this.audio?.setSfxEnabled(sfxOn)
+                                    
                                
                                     );
 
-        window.addEventListener("pointerdown", () => this.audio.musicStarted(), { once: true });
+        window.addEventListener("pointerdown", () => this.audio?.musicStarted(), { once: true });
     }
     
 
