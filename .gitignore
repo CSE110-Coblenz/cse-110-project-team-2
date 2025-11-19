@@ -6,4 +6,5 @@ node_modules/
 *.json
 
 # Ignore this specific file
-vite.config.ts
+vite.config.ts.DS_Store
+public/.DS_Store
