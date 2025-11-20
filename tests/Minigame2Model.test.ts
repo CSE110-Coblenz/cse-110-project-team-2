@@ -14,7 +14,7 @@ describe("calculateTipFromObstacles", () => {
 
   it("returns lower tip for moderate obstacles", () => {
     // fourth row of TIP_TABLE (5 or 6 obstacles)
-    const result = calculateTipFromObstacles(5);
+    const result = calculateTipFromObstacles(6);
     const expected = TIP_TABLE[3]; // { tip: 3.0, review: "Good pizza, but toppings were slightly off." }
 
     expect(result.tip).toBe(expected.tip);
@@ -29,4 +29,17 @@ describe("calculateTipFromObstacles", () => {
     expect(result.tip).toBe(expected.tip);
     expect(result.review).toBe(expected.review);
   });
+
+  
+});
+
+describe("edge cases", () => {
+    it("throws error for negative obstacle counts", () => {
+        expect(() => calculateTipFromObstacles(-1)).toThrow("obstacleCount cannot be negative");
+    });
+
+    it("handles extremely large obstacle counts", () => {
+        const result = calculateTipFromObstacles(999999);
+        expect(result).toEqual(TIP_TABLE[TIP_TABLE.length - 1]); // Infinity row
+    });
 });

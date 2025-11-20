@@ -28,5 +28,9 @@ export class Minigame2Model {
 
 // helper (logic is extracted for easier testing)
 export function calculateTipFromObstacles(obstacleCount: number): { tip: number; review: string } {
-  return TIP_TABLE.find(row => obstacleCount <= row.max)!;
-}
+  if (obstacleCount < 0) {
+    throw new Error("obstacleCount cannot be negative");
+  }
+  return TIP_TABLE.find(row => obstacleCount <= row.max) ?? TIP_TABLE[TIP_TABLE.length - 1]; // default to no tip
+} 
+
