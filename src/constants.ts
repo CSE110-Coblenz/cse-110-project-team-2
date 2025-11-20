@@ -26,8 +26,9 @@ export const ORDERS_PER_DAY:number = 5
 
 export const TITLE_COLOR = "#AB321B";
 
+export const MINIGAME_POPUP_WIDTH = 500;
+export const MINIGAME_POPUP_HEIGHT = 275;
 export const MINIGAME2_DURATION = 30; // seconds
-
 
 
 // Background Constants
