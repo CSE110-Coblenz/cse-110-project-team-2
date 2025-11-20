@@ -40,6 +40,6 @@ describe("edge cases", () => {
 
     it("handles extremely large obstacle counts", () => {
         const result = calculateTipFromObstacles(999999);
-        expect(result).toEqual(TIP_TABLE[TIP_TABLE.length - 1]); // Infinity row
+        expect(result).toEqual(TIP_TABLE[TIP_TABLE.length - 1]); // infinity row
     });
 });
