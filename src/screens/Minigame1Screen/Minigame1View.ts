@@ -184,10 +184,13 @@ export class Minigame1View implements View {
 
         // render toppings visually on the pizzas
         this.clearMinigameToppings();
+        this.clearMinigameSlices();
+
         // determine how many pizzas the order used (saved in OrderResult as currentPizzaNumber)
         const aPizzaNum = a.currentPizzaNumber;
         const bPizzaNum = b.currentPizzaNumber;
 
+        const aSlicesPerPizza = a.slicesUsed && aPizzaNum;
         // If pizzaNum === 1 (there was only one pizza), put all toppings on the left (index 0). If 2 pizzas in one order, split ceil/ floor between A and B.
         this.renderToppingsForOrder(a.order!, aPizzaNum, 0);
         this.renderToppingsForOrder(b.order!, bPizzaNum, 1);
@@ -219,6 +222,16 @@ export class Minigame1View implements View {
         const nodes = this.pizzaGroup.find((node: Konva.Node) => node.getAttr && node.getAttr("isMinigameTopping"));
         nodes.forEach((n: Konva.Node) => n.destroy());
     }
+
+    private clearMinigameSlices() {
+        const node = this.pizzaGroup.find((node: Konva.Node) => node.getAttr && node.getAttr("isMinigameSlice"));   
+        node.forEach((n: Konva.Node) => n.destroy());
+    }
+
+    private drawSlicesForPizza(pizzaX:number, slices:number) {
+        if(!slicesPerPizza || !Number.isFinite(slicesPerPizza) || slicesPerPizza < 1 ) {
+            return;
+        }
 
     // Render toppings for an order on pizza index (0 -> pizzaX1, 1 -> pizzaX2)
     // NOTE: I wasn't sure what to do if there were two pizzas in one order so I asked my copilot.

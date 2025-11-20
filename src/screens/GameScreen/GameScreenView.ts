@@ -799,6 +799,7 @@ export class GameScreenView implements View {
             currentTotal,
             expectedPizzaNum,
             currentPizzaNumber: this.model.pizzaNum,
+            slicesUsed: this.model.sliceNum,
             order: this.currentOrder,
         });
 
