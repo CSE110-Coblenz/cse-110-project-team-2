@@ -4,7 +4,6 @@ import { View } from "../../types";
 import type { OrderResult } from "../../data/OrderResult";
 import { PIZZA } from "../../constants";
 
-
 export class Minigame1View implements View {
     private group: Konva.Group;
     private content: Konva.Group;

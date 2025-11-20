@@ -9,6 +9,7 @@ export interface OrderResult {
   currentTotal: number;
   expectedPizzaNum: number;
   currentPizzaNumber: number;
+  slicesUsed: number;
   // Optional full order data (toppings, fraction, etc.) so minigames
   // and results screens can inspect exact order contents.
   order?: Order;

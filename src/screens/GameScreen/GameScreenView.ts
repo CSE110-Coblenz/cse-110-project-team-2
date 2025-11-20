@@ -799,7 +799,11 @@ export class GameScreenView implements View {
             currentTotal,
             expectedPizzaNum,
             currentPizzaNumber: this.model.pizzaNum,
-            order: this.currentOrder,
+            order: {
+                ...this.currentOrder,
+                toppingsCounts: {...this.currentOrder.toppingsCounts, } as Record<ToppingType, number>,
+            },
+            slicesUsed: this.sliceArcs.length
         });
 
         if(success){
