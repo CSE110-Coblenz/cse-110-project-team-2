@@ -190,10 +190,22 @@ export class Minigame1View implements View {
         const aPizzaNum = a.currentPizzaNumber;
         const bPizzaNum = b.currentPizzaNumber;
 
-        const aSlicesPerPizza = a.slicesUsed && aPizzaNum;
+        const aSlicesPerPizza = a.slicesUsed && aPizzaNum
+            ? a.slicesUsed / aPizzaNum
+            : a.order?.fractionStruct?.denominator || 0;
+
+        const bSlicesPerPizza = b.slicesUsed && bPizzaNum
+            ? b.slicesUsed / bPizzaNum
+            : b.order?.fractionStruct?.denominator || 0;
+
+        // draw slice lines on pizzas 
+        this.drawSlicesForPizza(PIZZA.pizzaX1, aSlicesPerPizza);
+        this.drawSlicesForPizza(PIZZA.pizzaX2, bSlicesPerPizza);
+
+        
         // If pizzaNum === 1 (there was only one pizza), put all toppings on the left (index 0). If 2 pizzas in one order, split ceil/ floor between A and B.
-        this.renderToppingsForOrder(a.order!, aPizzaNum, 0);
-        this.renderToppingsForOrder(b.order!, bPizzaNum, 1);
+        this.renderToppingsForOrder(a.order!, aPizzaNum, 0, aSlicesPerPizza);
+        this.renderToppingsForOrder(b.order!, bPizzaNum, 1, bSlicesPerPizza);
 
         // make pizza bases clickable
         const bases = this.pizzaGroup.find((node: Konva.Node) => node.getAttr && node.getAttr("isMinigameBase"));
@@ -229,13 +241,33 @@ export class Minigame1View implements View {
     }
 
     private drawSlicesForPizza(pizzaX:number, slices:number) {
-        if(!slicesPerPizza || !Number.isFinite(slicesPerPizza) || slicesPerPizza < 1 ) {
+        if(!slices || !Number.isFinite(slices) || slices < 1 ) {
             return;
         }
 
+        const rOuter = this.pizzaRadius.get(pizzaX) ?? 80;
+        for(let i=0; i<slices; i++) {
+            const angle = (2*Math.PI/slices)*i - Math.PI/2; 
+            const x1 = pizzaX;
+            const y1 = PIZZA.pizzaY;
+            const x2 = pizzaX + rOuter * Math.cos(angle);
+            const y2 = PIZZA.pizzaY + rOuter * Math.sin(angle);
+        
+            const line = new Konva.Line({
+                points: [x1, y1, x2, y2],
+                stroke: "black",
+                strokeWidth: 2,
+                listening: false,
+            });
+            line.setAttr("isMinigameSlice", true);
+            this.pizzaGroup.add(line);
+        }
+        this.group.getLayer()?.batchDraw();
+    }
+
     // Render toppings for an order on pizza index (0 -> pizzaX1, 1 -> pizzaX2)
     // NOTE: I wasn't sure what to do if there were two pizzas in one order so I asked my copilot.
-    private renderToppingsForOrder(order: any, pizzaCount: number, pizzaIndex: number) {
+    private renderToppingsForOrder(order: any, pizzaCount: number, pizzaIndex: number, slicesPerPizza?: number) {
         if (!order || !order.toppingsCounts) return;
         const pizzaX = pizzaIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2; // is this the left or right pizza?
         const rOuter = this.pizzaRadius.get(pizzaX) ?? 80;
@@ -260,13 +292,13 @@ export class Minigame1View implements View {
 
             const info = toppingMap[t] ?? { url: "/" + t.toLowerCase() + ".png", scale: 0.5 };
             for (let i = 0; i < countForThisPizza; i++) {
-                this.createStaticTopping(pizzaX, rOuter, info.url, info.scale);
+                this.createStaticTopping(pizzaX, rOuter, info.url, info.scale, slicesPerPizza);
             }
         }
     }
 
     // Create a static topping image inside pizza area
-    private createStaticTopping(pizzaX: number, rOuter: number, url: string, scale: number) {
+    private createStaticTopping(pizzaX: number, rOuter: number, url: string, scale: number, slicesPerPizza?: number) {
         const img = new Image();
         img.src = url;
         img.onload = () => {

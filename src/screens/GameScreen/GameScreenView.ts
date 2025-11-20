@@ -6,7 +6,7 @@ import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
 import { PIZZA } from "../../constants";
 import { FONTS } from "../../fonts";
 import { ResultStore } from "../../data/ResultStore";
-import { OrderResult } from "../../data/OrderResult";
+import { OrderResult, PlacedTopping } from "../../data/OrderResult";
 
 export class GameScreenView implements View {
     group: Konva.Group;
@@ -585,7 +585,8 @@ export class GameScreenView implements View {
                 listening:true,
                 name:toppingType
 
-            })
+            });
+            toppingGroup.setAttr("isTopping", true);
             const image=new Konva.Image({
                 image:toppingIm,
                 scale:{x:toppingScale,y:toppingScale},
@@ -643,6 +644,21 @@ export class GameScreenView implements View {
 
         }
 
+    }
+
+    public getPlacedToppings(): PlacedTopping[] {
+        const result: PlacedTopping[] = [];
+        const toppingGroup = this.group.find((node: Konva.Node) => node.getAttr && node.getAttr("isToppingGroup")) as Konva.Group[];
+        toppingGroup.forEach((g) => {
+            const toppingType = g.name() as ToppingType;
+            const x = g.x();
+            const y = g.y();
+            const dLeft = Math.hypot(x - PIZZA.pizzaX1, y - PIZZA.pizzaY);
+            const dRight = Math.hypot(x - PIZZA.pizzaX2, y - PIZZA.pizzaY);
+            const pizzaIndex: 0 | 1 = dLeft < dRight ? 0 : 1;
+            result.push({ type: toppingType, x, y, pizzaIndex });
+        });
+        return result;
     }
 
     dragToppingLogic(topping:Konva.Group,toppingType:ToppingType,pizzaX:number,rOuter:number){
@@ -764,6 +780,9 @@ export class GameScreenView implements View {
         if (!order) return;
         const denom=order.fractionStruct?.denominator;
         if(!denom) return;
+
+        const placedToppings=this.getPlacedToppings();
+
         const lines: string[]=[];
         let allMatch=true;
         let expectedTotal=0;
@@ -800,6 +819,7 @@ export class GameScreenView implements View {
             expectedPizzaNum,
             currentPizzaNumber: this.model.pizzaNum,
             slicesUsed: this.model.sliceNum,
+            placedToppings,
             order: this.currentOrder,
         });
 
