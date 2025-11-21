@@ -70,8 +70,9 @@ export class Minigame1Controller extends ScreenController {
             this.view.showResult(isCorrect, `A: ${aCount}, B: ${bCount}`);
 
             // after showing result, provide a Back button to return to menu
-            this.view.onBackToMenu = () => this.screenSwitcher.switchToScreen({ type: "menu" });
-        });
+            this.view.onBackToMenu = () => { this.startGame();
+        };
+    });
 
         this.show();
     }

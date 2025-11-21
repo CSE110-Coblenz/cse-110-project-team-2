@@ -158,7 +158,7 @@ export class Minigame1View implements View {
     // In the actual game, this function won't be needed
     showMessage(message: string) {
         this.content.destroyChildren();
-        this.content.add(new Konva.Text({ x: 40, y: 20, text: message, fontSize: 20, fill: "black" }));
+        this.content.add(new Konva.Text({ x: 20, y: 150, text: message, fontSize: 20, fill: "black" }));
         
         // Temporary until back button works
         // TODO: Why does this not work
@@ -225,8 +225,8 @@ export class Minigame1View implements View {
         });
 
         // NOTE: Tie button probably won't need to be in main game? But for testing purposes it was needed
-        const btnY = 300;
-        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Equivalent", () => onChoice("Tie"));
+        const btnY = 120;
+        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 20, btnY, "Equivalent", () => onChoice("Tie"));
         this.content.add(btnTie);
 
         this.group.getLayer()?.batchDraw();
@@ -387,7 +387,7 @@ export class Minigame1View implements View {
         title.offsetX(title.width() / 2);
         const body = new Konva.Text({ x: panelX + 20, y: panelY + 80, text: details ?? "", fontSize: 18, fill: "black" });
 
-        const back = this.makeButton(panelX + panelW / 2 - 60, panelY + panelH - 70, "Back to Menu", () => {
+        const back = this.makeButton(panelX + panelW / 2 - 60, panelY + panelH - 70, "Continue", () => {
             overlay.destroy();
             panel.destroy();
             title.destroy();
