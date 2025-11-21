@@ -1,0 +1,14 @@
+11/21/2025 Meeting (In-Person)
+
+Attendees: Michelle, Johnny, Randy, Jolene, Woojin (In-Person)
+(Virtual) Teddy
+
+Agenda:
+  1. Progress Updates
+
+Notes:
+  1. No more next day functionality, change the next day button to "continue playing" button
+  2. Use screenshots instead of re-rendering. 
+  3. Fix architecture to reduce file size.
+  4. Write test cases.
+  
