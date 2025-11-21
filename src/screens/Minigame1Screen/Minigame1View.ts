@@ -187,25 +187,28 @@ export class Minigame1View implements View {
         this.clearMinigameSlices();
 
         // determine how many pizzas the order used (saved in OrderResult as currentPizzaNumber)
-        const aPizzaNum = a.currentPizzaNumber;
-        const bPizzaNum = b.currentPizzaNumber;
+        const aPizzaNum = a.currentPizzaNumber || 1;
+        const bPizzaNum = b.currentPizzaNumber || 1;
 
-        const aSlicesPerPizza = a.slicesUsed && aPizzaNum
-            ? a.slicesUsed / aPizzaNum
-            : a.order?.fractionStruct?.denominator || 0;
-
-        const bSlicesPerPizza = b.slicesUsed && bPizzaNum
-            ? b.slicesUsed / bPizzaNum
-            : b.order?.fractionStruct?.denominator || 0;
+        const aSlices = a.slicesUsed ?? 0;
+        const bSlices = b.slicesUsed ?? 0;
 
         // draw slice lines on pizzas 
-        this.drawSlicesForPizza(PIZZA.pizzaX1, aSlicesPerPizza);
-        this.drawSlicesForPizza(PIZZA.pizzaX2, bSlicesPerPizza);
+        this.drawSlicesForPizza(PIZZA.pizzaX1, aSlices);
+        this.drawSlicesForPizza(PIZZA.pizzaX2, bSlices);
 
-        
-        // If pizzaNum === 1 (there was only one pizza), put all toppings on the left (index 0). If 2 pizzas in one order, split ceil/ floor between A and B.
-        this.renderToppingsForOrder(a.order!, aPizzaNum, 0, aSlicesPerPizza);
-        this.renderToppingsForOrder(b.order!, bPizzaNum, 1, bSlicesPerPizza);
+        // Exact reconstruction of placed toppings if available
+        if (a.placedToppings && a.placedToppings.length) {
+            this.renderPlacedToppings(a, 0);
+        } else {
+            this.renderToppingsForOrder(a.order!, aPizzaNum, 0);
+        }
+        if (b.placedToppings && b.placedToppings.length) {
+            this.renderPlacedToppings(b, 1);
+        } else {
+            this.renderToppingsForOrder(b.order!, bPizzaNum, 1);
+        }
+
 
         // make pizza bases clickable
         const bases = this.pizzaGroup.find((node: Konva.Node) => node.getAttr && node.getAttr("isMinigameBase"));
@@ -223,7 +226,7 @@ export class Minigame1View implements View {
 
         // NOTE: Tie button probably won't need to be in main game? But for testing purposes it was needed
         const btnY = 300;
-        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Tie", () => onChoice("Tie"));
+        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Equivalent", () => onChoice("Tie"));
         this.content.add(btnTie);
 
         this.group.getLayer()?.batchDraw();
@@ -236,8 +239,10 @@ export class Minigame1View implements View {
     }
 
     private clearMinigameSlices() {
-        const node = this.pizzaGroup.find((node: Konva.Node) => node.getAttr && node.getAttr("isMinigameSlice"));   
-        node.forEach((n: Konva.Node) => n.destroy());
+        const nodes = this.pizzaGroup.find(
+            (node: Konva.Node) => node.getAttr && node.getAttr("isMinigameSlice")
+        );   
+        nodes.forEach((n: Konva.Node) => n.destroy());
     }
 
     private drawSlicesForPizza(pizzaX:number, slices:number) {
@@ -295,6 +300,54 @@ export class Minigame1View implements View {
                 this.createStaticTopping(pizzaX, rOuter, info.url, info.scale, slicesPerPizza);
             }
         }
+    }
+
+    private renderPlacedToppings(order: OrderResult, minigamePizzaIndex: 0 | 1) {
+        if(!order.placedToppings || order.placedToppings.length === 0) return;
+
+        const originalPizzaCenterX = PIZZA.pizzaX;
+        const originalPizzaCenterY = PIZZA.pizzaY;
+          
+        // where this this order's pizza will be drawn in Minigame1
+        const minigameCenterX = minigamePizzaIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2;
+        const minigameCenterY = PIZZA.pizzaY;
+
+        const toppingMap: Record<string, { url: string; scale: number }> = {
+            Mushroom: { url: "/mushroom.png", scale: 0.75 },
+            Pepperoni: { url: "/pepperoni.png", scale: 0.75 },
+            Basil: { url: "/basil.png", scale: 0.075 },
+        };
+
+        order.placedToppings.forEach((t) => {
+                const info = toppingMap[t.type] ?? { url: "/" + t.type.toLowerCase() + ".png", scale: 0.5 };
+
+
+            // offset of topping from its orginal pizza center
+            const dx = t.x - originalPizzaCenterX;
+            const dy = t.y - originalPizzaCenterY;
+            
+            // new position in minigame pizza
+            const x = minigameCenterX + dx;
+            const y = minigameCenterY + dy;
+
+            const img = new Image();
+                img.src = info.url;
+                img.onload = () => {
+                    const k = new Konva.Image({
+                        image: img,
+                        x,
+                        y,
+                        scaleX: info.scale,
+                        scaleY: info.scale,
+                        offsetX: img.width / 2,
+                        offsetY: img.height / 2,
+                        listening: false,
+                    });
+                    k.setAttr("isMinigameTopping", true);
+                    this.pizzaGroup.add(k);
+                    this.group.getLayer()?.batchDraw();
+                };
+        });
     }
 
     // Create a static topping image inside pizza area

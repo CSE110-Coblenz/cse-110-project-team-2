@@ -624,22 +624,23 @@ export class GameScreenView implements View {
                 //check at different positions depending on how many pizzas there are
                 else if(this.model.pizzaNum===2){
                     if(this.model.inPizza(toppingGroup.x(),toppingGroup.y(),PIZZA.pizzaX1,this.rOuter)){
-                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX1,this.rOuter)
-                       
+                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX1,this.rOuter);
+                        this.model.registerPlacedTopping(toppingGroup.x(), toppingGroup.y(), toppingType, 0);   
                     }
                     else {
-                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX2,this.rOuter)
-                        
-                    }
+                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX2,this.rOuter);
+                        this.model.registerPlacedTopping(toppingGroup.x(), toppingGroup.y(), toppingType, 1);
+                    };
                 }
                 else if (this.model.pizzaNum===1){
-                    this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX,this.rOuter)
+                    this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX,this.rOuter);
+                    this.model.registerPlacedTopping(toppingGroup.x(), toppingGroup.y(), toppingType, 0);
 
                 }
 
                 this.group.getLayer()?.batchDraw();
                 
-            })
+            });
 
 
         }
@@ -809,6 +810,20 @@ export class GameScreenView implements View {
         // show popup with results
         const success= allMatch&&expectedTotal===currentTotal&&expectedPizzaNum===this.model.pizzaNum;
 
+        const originalOrder = this.currentOrder;
+        if(!originalOrder) return;
+
+        // make a copy of the order so it can't be mutated later
+        const orderCopy: Order = {
+            ...order,
+            toppingsCounts: { 
+                Mushroom: originalOrder.toppingsCounts?.Mushroom ?? 0,
+                Pepperoni: originalOrder.toppingsCounts?.Pepperoni ?? 0,
+                Basil: originalOrder.toppingsCounts?.Basil ?? 0,
+             },
+            fractionStruct: originalOrder.fractionStruct ? { ...originalOrder.fractionStruct } : undefined,
+        };
+
         this.resultStore.add({
             orderNumber: this.orderNum,
             day: this.day,
@@ -819,9 +834,17 @@ export class GameScreenView implements View {
             expectedPizzaNum,
             currentPizzaNumber: this.model.pizzaNum,
             slicesUsed: this.model.sliceNum,
-            placedToppings,
-            order: this.currentOrder,
+            placedToppings: this.model.placedToppings.map(t => ({
+                type: t.type,
+                x: t.x,
+                y: t.y,
+                pizzaIndex: t.pizzaIndex,
+            })),
+            order: orderCopy,
         });
+
+        // Clear mdoel state so new order starts fresh
+        this.model.resetnewOrder();
 
         if(success){
             this.orderNum+=1
