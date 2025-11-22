@@ -18,8 +18,8 @@ export class MenuScreenView implements View {
 
     constructor(onStartClick: () => void, 
                 private onToggleMusic: (on: boolean) => void,
-                private onToggleSfx: (on: boolean) => void,
-                private onTutorialClick: () => void) {
+                private onTutorialClick: () => void,
+                private onToggleSfx: (on: boolean) => void) {
         this.group = new Konva.Group({ visible: true });
 
         
@@ -338,6 +338,11 @@ export class MenuScreenView implements View {
     };
 
 
+    // Allows test to simulate clicking tutorial button
+    public triggerTutorial(): void {
+        this.onTutorialClick();
+    }
+    
     // Makes the view visible
     show(): void {
         this.group.visible(true);
