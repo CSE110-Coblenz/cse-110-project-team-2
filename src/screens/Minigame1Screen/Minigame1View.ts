@@ -17,9 +17,9 @@ export class Minigame1View implements View {
     // controller will set this to go to Minigame 2
     public onGoToMinigame2: () => void = () => {};
     // controller can set this after a result to navigate away
-    public onBackToMenu: () => void = () => {};
+    public onBackToGame: () => void = () => {};
     // callback set by renderPair so bases can call it when clicked
-    private onChoiceCallback: (choice: "A" | "B" | "Tie") => void = () => {};
+    private onChoiceCallback: (choice: "A" | "B" | "Equivalent") => void = () => {};
 
     constructor() {
         this.group = new Konva.Group({ visible: false, listening: true });
@@ -89,7 +89,7 @@ export class Minigame1View implements View {
     }
     
     // calls other functions to render the pizza bases, then render the toppings on top with their choices
-    renderPair(a: OrderResult, b: OrderResult, topping: string, onChoice: (choice: "A" | "B" | "Tie") => void) {
+    renderPair(a: OrderResult, b: OrderResult, topping: string, onChoice: (choice: "A" | "B" | "Equivalent") => void) {
         this.content.destroyChildren();
 
         const question = new Konva.Text({ 
@@ -121,7 +121,7 @@ export class Minigame1View implements View {
 
         // TODO: Tie button probably won't need to be in main game? But for testing purposes it was needed. Randy decide if it's needed or not
         const btnY = 300;
-        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Tie", () => onChoice("Tie"));
+        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Equivalent", () => onChoice("Equivalent"));
         this.content.add(btnTie);
 
         this.group.getLayer()?.batchDraw();
@@ -242,14 +242,14 @@ export class Minigame1View implements View {
             fill: "black"
         });
 
-        const back = this.makeButton(panelX + panelW / 2 - 60, panelY + panelH - 70, "Back to Menu", () => {
+        const back = this.makeButton(panelX + panelW / 2 - 60, panelY + panelH - 70, "Continue", () => {
             overlay.destroy();
             panel.destroy();
             title.destroy();
             body.destroy();
             back.destroy();
             this.group.getLayer()?.batchDraw();
-            this.onBackToMenu();
+            this.onBackToGame();
         });
 
         this.group.add(overlay, panel, title, body, back);
@@ -405,22 +405,20 @@ export class Minigame1View implements View {
         nodes.forEach((n: Konva.Node) => n.destroy());
     }
 
-    // TODO: This is really only for showing the message that there's not enough pizzas to compare
-    // This is just a debug function we can delete when minigame 1 is done
+    // This is just a debug function we can delete when minigame 1 is done, shows a message with a back button
     showMessage(message: string) {
         this.content.destroyChildren();
         this.content.add(new Konva.Text({ x: 20, y: 150, text: message, fontSize: 20, fill: "black" }));
         
         // Temporary until back button works
-        // TODO: Why does this not work
         const back = this.makeButton(STAGE_WIDTH / 2 - 60, 120, "Back", () => {
-            this.onBackToMenu();
+            this.onBackToGame();
         });
         this.content.add(back);
         this.group.getLayer()?.batchDraw();
     }
 
-    // TODO: the only place this is really needed is for the tie button. otherwise this was a debug function
+    // the only place this is really needed is for the equivalent button. otherwise this was a debug function
     private makeButton(x: number, y: number, label: string, onClick: () => void) {
         const g = new Konva.Group({ x, y, listening: true });
         const rect = new Konva.Rect({ x: 0, y: 0, width: 120, height: 40, fill: "#e5e7eb", stroke: "black", strokeWidth: 2, cornerRadius: 8 });

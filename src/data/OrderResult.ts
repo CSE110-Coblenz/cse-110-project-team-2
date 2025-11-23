@@ -12,6 +12,7 @@ export interface OrderResult {
   currentPizzaNumber: number;
   slicesUsed: number;
   placedToppings?: PlacedTopping[];
+  tipsEarned: number;
   // Optional full order data (toppings, fraction, etc.) so minigames
   // and results screens can inspect exact order contents.
   order?: Order;

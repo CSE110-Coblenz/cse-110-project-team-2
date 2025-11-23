@@ -827,7 +827,7 @@ export class GameScreenView implements View {
         this.resultStore.add({
             orderNumber: this.orderNum,
             day: this.day,
-            success, 
+            success,
             details: lines.join("\n"),
             expectedTotal,
             currentTotal,
@@ -841,6 +841,7 @@ export class GameScreenView implements View {
                 pizzaIndex: t.pizzaIndex,
             })),
             order: orderCopy,
+            tipsEarned: 0 
         });
 
         // Clear mdoel state so new order starts fresh

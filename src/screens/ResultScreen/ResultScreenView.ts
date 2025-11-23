@@ -12,7 +12,6 @@ export class ResultsScreenView implements View {
   private ordersCorrect: Konva.Text;
   private percentCorrect: Konva.Text;
   private tipsReceived: Konva.Text;
-  private totalTips: Konva.Text;
 
   //Callbacks to be assigned by controller
   public onViewWrongOrders: () => void = () => {};
@@ -84,7 +83,6 @@ export class ResultsScreenView implements View {
     this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Orders correct:");
     this.percentCorrect = this.makeRow(card.x() + 26, startY + rowGap * 2,"% correct:");
     this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received:");
-    this.totalTips = this.makeRow(card.x() + 26, startY + rowGap * 4, "Total tips:");
 
     //Row for bottons
     const buttonsY = card.y() + card.height() - 90;
@@ -92,7 +90,7 @@ export class ResultsScreenView implements View {
     //Wraps callbacks so the latest assigned function is used
     const btnWrong = this.makeButton(card.x() + 40, buttonsY, "View wrong orders", () => this.onViewWrongOrders());
     const btnEnd = this.makeButton(card.x() + card.width()/2 - 100, buttonsY, "Home screen", () =>  this.onEndGame());
-    const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Next day", () => this.onNextDay());
+    const btnNext = this.makeButton(card.x() + card.width() - 40 - 200, buttonsY, "Continue Playing", () => this.onNextDay());
 
     this.group.add(btnWrong, btnEnd, btnNext);
   }
@@ -125,7 +123,7 @@ export class ResultsScreenView implements View {
   }
 
   //Will update displayed stats, not currently used
-  updateStats(stats: {ordersReceived: number; ordersCorrect: number; tipsReceived: number; totalTips: number;}) : void {
+  updateStats(stats: {ordersReceived: number; ordersCorrect: number; tipsReceived: number;}) : void {
     const received = Math.max(0, stats.ordersReceived | 0);
     const correct = Math.max(0, Math.min(received, stats.ordersCorrect | 0));
     const pct = received === 0 ? 0 : (correct / received) * 100;
@@ -133,9 +131,7 @@ export class ResultsScreenView implements View {
     this.ordersReceived.text(String(received));
     this.ordersCorrect.text(String(correct));
     this.percentCorrect.text(pct.toFixed(1) + "%");
-    this.tipsReceived.text(String(Math.max(0, stats.tipsReceived | 0)));
-    this.totalTips.text("$" + Math.abs(stats.totalTips || 0).toFixed(2));
-
+    this.tipsReceived.text("$" + (stats.tipsReceived ?? 0).toFixed(2));
     this.group.draw();
   }
 

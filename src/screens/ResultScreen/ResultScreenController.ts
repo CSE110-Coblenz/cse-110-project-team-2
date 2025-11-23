@@ -136,7 +136,11 @@ export class ResultScreenController extends ScreenController{
             show(wrongOrders);  
         };
 
-        this.view.onEndGame = () => this.switcher.switchToScreen({type: "menu"});
+        this.view.onEndGame = () => {
+            this.resultStore.clear();
+            this.switcher.switchToScreen({type: "menu"});
+        };
+
         this.view.onNextDay = () => { 
             this.resultStore.clear();
             this.switcher.switchToScreen({
@@ -160,13 +164,12 @@ export class ResultScreenController extends ScreenController{
         const results: OrderResult[] = this.resultStore.getAll();
         const ordersReceived = results.length;
         const ordersCorrect = results.filter(r => r.success).length;
-        const tipsReceived = 0
-        const totalTips = 0;
+        const totalTips = this.resultStore.getTotalTips();
+        const tipsReceived = totalTips
         this.view.updateStats({
             ordersReceived,
             ordersCorrect,
             tipsReceived,
-            totalTips
         });
     }
 
@@ -175,7 +178,6 @@ export class ResultScreenController extends ScreenController{
         ordersReceived: number;
         ordersCorrect: number;
         tipsReceived: number;
-        totalTips: number;
     }) {
         this.view.updateStats(stats);
     }
