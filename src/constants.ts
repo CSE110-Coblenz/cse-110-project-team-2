@@ -24,4 +24,18 @@ export const ORDER_BUTTON_FILL = "#43a047";
 export const ORDER_BUTTON_STROKE = "#2e7d32";
 export const ORDERS_PER_DAY:number = 5
 
+export const TITLE_COLOR = "#AB321B";
+
 export const MINIGAME2_DURATION = 30; // seconds
+
+
+
+// Background Constants
+export const SCREEN_BACKGROUNDS = {
+    MENU: "/background-checkers.jpg",
+} as const;
+
+// Background Overlay
+export const SCREEN_OVERLAY = {
+    COLOR: "rgba(228,202,192,0.50)",
+}

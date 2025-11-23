@@ -1,6 +1,7 @@
 import Konva from "konva";
 import type { View } from "../../types";
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY, TITLE_COLOR } from "../../constants";
+import { FONTS } from "../../fonts";
 
 export type Difficulty = "proper" | "improper" | "mixed";
 
@@ -16,13 +17,33 @@ export class DifficultyScreenView implements View {
     constructor(onDifficultySelect: (difficulty: Difficulty) => void, onBackToMenuClick: () => void) {
         this.group = new Konva.Group({ visible: true });
 
-        // Background
-        const bg = new Konva.Rect({
+        // background
+        const bgImage = new Image();
+        //bgImage.src = "/background-checkers.jpg";
+        bgImage.src = SCREEN_BACKGROUNDS.MENU;
+        
+        
+        const bg = new Konva.Image();
+        bg.x(0);
+        bg.y(0);
+        bg.width(STAGE_WIDTH);
+        bg.height(STAGE_HEIGHT);
+        bg.listening(false);
+
+        bgImage.onload = () => {
+            bg.image(bgImage);
+            bg.moveToBottom()
+            this.group.getLayer()?.batchDraw();
+        }
+        // Make the background softer
+        const overlay = new Konva.Rect({
             x: 0,
             y: 0,
             width: STAGE_WIDTH,
             height: STAGE_HEIGHT,
-            fill: "#ffe0b2"
+            //fill: "rgba(228,202,192,0.50)",
+            fill: SCREEN_OVERLAY.COLOR,
+            listening: false,
         });
 
         // Title text
@@ -30,12 +51,26 @@ export class DifficultyScreenView implements View {
             x: STAGE_WIDTH / 2,
             y: 120,
             text: "Select Difficulty",
-            fontSize: 48,
-            fontFamily: "Arial",
-            fill: "#6d4c41",
+            fontSize: 80,
+            fontFamily: FONTS.HEADER,
+            fill: TITLE_COLOR,
             align: "center"
         });
         title.offsetX(title.width() / 2);
+
+        const titleOutline = new Konva.Text({
+            x: STAGE_WIDTH / 2,
+            y: 120,
+            text: "Select Difficulty",
+            fontSize: 80,
+            fontFamily: FONTS.HEADER,
+            fill: "transparent",
+            stroke: "#4B1F0E",           
+            strokeWidth: 3,              
+            align: "center",
+        })
+        titleOutline.offsetX(titleOutline.width() / 2);
+        
 
         // Create difficulty level buttons
         const buttonConfigs: Array<{difficulty: Difficulty; y: number; color: string; strokeColor: string; example: string; description: string}> = [
@@ -69,9 +104,9 @@ export class DifficultyScreenView implements View {
             const buttonGroup = new Konva.Group();
             
             const button = new Konva.Rect({
-                x: STAGE_WIDTH / 2 - 90,
+                x: STAGE_WIDTH / 2 - 125,
                 y: config.y,
-                width: 180,
+                width: 300,
                 height: 56,
                 fill: config.color,
                 cornerRadius: 8,
@@ -85,7 +120,7 @@ export class DifficultyScreenView implements View {
                 y: config.y + 8,
                 text: config.difficulty.charAt(0).toUpperCase() + config.difficulty.slice(1),
                 fontSize: 22,
-                fontFamily: "Arial",
+                fontFamily: FONTS.SUBHEADER,
                 fill: "white",
                 align: "center"
             });
@@ -97,7 +132,7 @@ export class DifficultyScreenView implements View {
                 y: config.y + 32,
                 text: `${config.description} (${config.example})`,
                 fontSize: 14,
-                fontFamily: "Arial",
+                fontFamily: FONTS.BUTTON,
                 fill: "white",
                 align: "center"
             });
@@ -130,20 +165,21 @@ export class DifficultyScreenView implements View {
         const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
 
         const backBtn = new Konva.Rect({
-        width: 160,
-        height: 50,
-        fill: "#d84315",
-        cornerRadius: 8,
-        stroke: "#b71c1c",
-        strokeWidth: 2,
+            width: 160,
+            height: 50,
+            fill: "#d84315",
+            cornerRadius: 8,
+            stroke: "#b71c1c",
+            strokeWidth: 2,
         });
 
         const backText = new Konva.Text({
-        x: 80,
-        y: 25,
-        text: "Back to Menu",
-        fontSize: 16,
-        fill: "white",
+            x: 80,
+            y: 25,
+            text: "Back to Menu",
+            fontFamily: FONTS.BUTTON,
+            fontSize: 16,
+            fill: "white",
         });
         backText.offsetX(backText.width() / 2);
         backText.offsetY(backText.height() / 2);
@@ -155,7 +191,7 @@ export class DifficultyScreenView implements View {
 
 
         // Add all elements to the main group
-        this.group.add(bg, title, ...buttons, backGroup);
+        this.group.add(bg, overlay, title, titleOutline, ...buttons, backGroup);
     }
 
     show(): void {

@@ -4,8 +4,9 @@ import { GameScreenModel } from "./GameScreenModel";
 import type { View, Order, Difficulty } from "../../types";
 import { OrderScreenModel } from "../OrderScreen/OrderScreenModel";
 import { PIZZA } from "../../constants";
+import { FONTS } from "../../fonts";
 import { ResultStore } from "../../data/ResultStore";
-import { OrderResult } from "../../data/OrderResult";
+import { OrderResult, PlacedTopping } from "../../data/OrderResult";
 
 export class GameScreenView implements View {
     group: Konva.Group;
@@ -584,7 +585,8 @@ export class GameScreenView implements View {
                 listening:true,
                 name:toppingType
 
-            })
+            });
+            toppingGroup.setAttr("isTopping", true);
             const image=new Konva.Image({
                 image:toppingIm,
                 scale:{x:toppingScale,y:toppingScale},
@@ -622,26 +624,42 @@ export class GameScreenView implements View {
                 //check at different positions depending on how many pizzas there are
                 else if(this.model.pizzaNum===2){
                     if(this.model.inPizza(toppingGroup.x(),toppingGroup.y(),PIZZA.pizzaX1,this.rOuter)){
-                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX1,this.rOuter)
-                       
+                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX1,this.rOuter);
+                        this.model.registerPlacedTopping(toppingGroup.x(), toppingGroup.y(), toppingType, 0);   
                     }
                     else {
-                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX2,this.rOuter)
-                        
-                    }
+                        this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX2,this.rOuter);
+                        this.model.registerPlacedTopping(toppingGroup.x(), toppingGroup.y(), toppingType, 1);
+                    };
                 }
                 else if (this.model.pizzaNum===1){
-                    this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX,this.rOuter)
+                    this.dragToppingLogic(toppingGroup,toppingType,PIZZA.pizzaX,this.rOuter);
+                    this.model.registerPlacedTopping(toppingGroup.x(), toppingGroup.y(), toppingType, 0);
 
                 }
 
                 this.group.getLayer()?.batchDraw();
                 
-            })
+            });
 
 
         }
 
+    }
+
+    public getPlacedToppings(): PlacedTopping[] {
+        const result: PlacedTopping[] = [];
+        const toppingGroup = this.group.find((node: Konva.Node) => node.getAttr && node.getAttr("isToppingGroup")) as Konva.Group[];
+        toppingGroup.forEach((g) => {
+            const toppingType = g.name() as ToppingType;
+            const x = g.x();
+            const y = g.y();
+            const dLeft = Math.hypot(x - PIZZA.pizzaX1, y - PIZZA.pizzaY);
+            const dRight = Math.hypot(x - PIZZA.pizzaX2, y - PIZZA.pizzaY);
+            const pizzaIndex: 0 | 1 = dLeft < dRight ? 0 : 1;
+            result.push({ type: toppingType, x, y, pizzaIndex });
+        });
+        return result;
     }
 
     dragToppingLogic(topping:Konva.Group,toppingType:ToppingType,pizzaX:number,rOuter:number){
@@ -763,6 +781,9 @@ export class GameScreenView implements View {
         if (!order) return;
         const denom=order.fractionStruct?.denominator;
         if(!denom) return;
+
+        const placedToppings=this.getPlacedToppings();
+
         const lines: string[]=[];
         let allMatch=true;
         let expectedTotal=0;
@@ -789,16 +810,42 @@ export class GameScreenView implements View {
         // show popup with results
         const success= allMatch&&expectedTotal===currentTotal&&expectedPizzaNum===this.model.pizzaNum;
 
+        const originalOrder = this.currentOrder;
+        if(!originalOrder) return;
+
+        // make a copy of the order so it can't be mutated later
+        const orderCopy: Order = {
+            ...order,
+            toppingsCounts: { 
+                Mushroom: originalOrder.toppingsCounts?.Mushroom ?? 0,
+                Pepperoni: originalOrder.toppingsCounts?.Pepperoni ?? 0,
+                Basil: originalOrder.toppingsCounts?.Basil ?? 0,
+             },
+            fractionStruct: originalOrder.fractionStruct ? { ...originalOrder.fractionStruct } : undefined,
+        };
+
         this.resultStore.add({
             orderNumber: this.orderNum,
             day: this.day,
-            success, 
+            success,
             details: lines.join("\n"),
             expectedTotal,
             currentTotal,
             expectedPizzaNum,
-            currentPizzaNumber: this.model.pizzaNum,   
+            currentPizzaNumber: this.model.pizzaNum,
+            slicesUsed: this.model.sliceNum,
+            placedToppings: this.model.placedToppings.map(t => ({
+                type: t.type,
+                x: t.x,
+                y: t.y,
+                pizzaIndex: t.pizzaIndex,
+            })),
+            order: orderCopy,
+            tipsEarned: 0 
         });
+
+        // Clear mdoel state so new order starts fresh
+        this.model.resetnewOrder();
 
         if(success){
             this.orderNum+=1

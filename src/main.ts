@@ -10,6 +10,9 @@ import { ResultScreenController } from "./screens/ResultScreen/ResultScreenContr
 import { Minigame1Controller } from "./screens/Minigame1Screen/Minigame1Controller";
 import { Minigame2Controller } from "./screens/Minigame2Screen/Minigame2Controller";
 import { AudioManager } from "./audio/AudioManager";
+import { loadFonts } from "./fonts";
+
+
 import { ResultStore } from "./data/ResultStore";
 
 class App implements ScreenSwitcher {
@@ -47,8 +50,8 @@ class App implements ScreenSwitcher {
 		this.tutorialController = new TutorialScreenController(this);
     	this.orderController = new OrderScreenController(this);
     	this.resultsController = new ResultScreenController(this.layer, this, this.resultStore);
-		this.minigame1Controller = new Minigame1Controller(this, this.audio);
-    	this.minigame2Controller = new Minigame2Controller(this, this.audio);
+		this.minigame1Controller = new Minigame1Controller(this, this.audio, this.resultStore);
+    	this.minigame2Controller = new Minigame2Controller(this, this.audio, this.resultStore);
 
 		this.layer.add(this.menuController.getView().getGroup());
 		this.layer.add(this.gameController.getView().getGroup());
@@ -92,7 +95,7 @@ class App implements ScreenSwitcher {
 				this.tutorialController.show();
 				break;
             case "order":
-				if ((screen as any).mode) {
+                if ((screen as any).mode) {
 					// If returnToGame is set, show the Order screen so the user
 					// can accept the prepared order. 
 					this.orderController.prepareForMode((screen as any).mode);
@@ -121,4 +124,10 @@ class App implements ScreenSwitcher {
 	}
 }
 
-new App("container");
+loadFonts()
+	.catch(() => {
+	})
+	.finally(() => {
+		new App("container");
+	});
+
