@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, MINIGAME_POPUP_HEIGHT, MINIGAME_POPUP_WIDTH } from "../../constants";
 import { FONTS } from "../../fonts";
 
 export class Minigame2View {
@@ -264,8 +264,8 @@ export class Minigame2View {
         });
 
         // summary box
-        const boxWidth = 500;
-        const boxHeight = 275;
+        const boxWidth = MINIGAME_POPUP_WIDTH;
+        const boxHeight = MINIGAME_POPUP_HEIGHT;
         const popup = new Konva.Rect({
             x: (STAGE_WIDTH - boxWidth) / 2,
             y: (STAGE_HEIGHT - boxHeight) / 2,

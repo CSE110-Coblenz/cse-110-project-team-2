@@ -26,9 +26,19 @@ export const ORDERS_PER_DAY:number = 5
 
 export const TITLE_COLOR = "#AB321B";
 
+export const MINIGAME_POPUP_WIDTH = 500;
+export const MINIGAME_POPUP_HEIGHT = 275;
 export const MINIGAME2_DURATION = 30; // seconds
 
-
+export const TIP_TABLE = [
+  { max: 0, tip: 6.0, review: "DELICIOUS! My pizza was fresh and hot 🔥" },
+  { max: 2, tip: 5.0, review: "Tasted great, but sauce leaked a bit." },
+  { max: 4, tip: 4.0, review: "Good pizza, but toppings were slightly off." },
+  { max: 6, tip: 3.0, review: "My pizza arrived tilted and a bit messy." },
+  { max: 8, tip: 2.0, review: "Why was my pizza upside down? 😕" },
+  { max: 10, tip: 1.0, review: "Pizza was all crushed up..." },
+  { max: Infinity, tip: 0.0, review: "Never ordering again 💀" },
+] as const;
 
 // Background Constants
 export const SCREEN_BACKGROUNDS = {
