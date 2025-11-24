@@ -8,6 +8,7 @@ import { FONTS } from "../../fonts";
 import { ResultStore } from "../../data/ResultStore";
 import { OrderResult, PlacedTopping } from "../../data/OrderResult";
 
+
 export class GameScreenView implements View {
     group: Konva.Group;
     pizzaGroup =new Konva.Group();
@@ -301,7 +302,7 @@ export class GameScreenView implements View {
 
 
 
-    //draw specified number od pizza
+    //draw specified number of pizza
     private drawPizzaButton(cx:number,cy:number,numPizza:number):void{
         //button group
         const button=new Konva.Group({
@@ -772,7 +773,17 @@ export class GameScreenView implements View {
         this.group.getLayer()?.batchDraw();
     }
 
+    private getGamePizzaCenter(pizzaCount: number, pizzaIndex: 0 | 1): { x: number; y: number } {
+            if(pizzaCount <= 1) {
+                return { x: PIZZA.pizzaX,  y: PIZZA.pizzaY };
+            }
 
+        // two pizzas layout in the main game 
+            return {
+                x: pizzaIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2,
+                y:  PIZZA.pizzaY
+            };
+        }   
 
     // check if its right and then generate new order after clicking submit button
     private handleSubmit(): void {
@@ -824,6 +835,8 @@ export class GameScreenView implements View {
             fractionStruct: originalOrder.fractionStruct ? { ...originalOrder.fractionStruct } : undefined,
         };
 
+        const pizzaCount = this.model.pizzaNum;
+
         this.resultStore.add({
             orderNumber: this.orderNum,
             day: this.day,
@@ -834,17 +847,20 @@ export class GameScreenView implements View {
             expectedPizzaNum,
             currentPizzaNumber: this.model.pizzaNum,
             slicesUsed: this.model.sliceNum,
-            placedToppings: this.model.placedToppings.map(t => ({
-                type: t.type,
-                x: t.x,
-                y: t.y,
-                pizzaIndex: t.pizzaIndex,
-            })),
+            placedToppings: this.model.placedToppings.map(t => {
+                const center = this.getGamePizzaCenter(pizzaCount, t.pizzaIndex as 0 | 1);
+                return {
+                    type: t.type,
+                    x: t.x - center.x,
+                    y: t.y - center.y,
+                    pizzaIndex: t.pizzaIndex,
+                };
+            }),
             order: orderCopy,
             tipsEarned: 0 
         });
 
-        // Clear mdoel state so new order starts fresh
+        // Clear model state so new order starts fresh
         this.model.resetnewOrder();
 
         if(success){

@@ -25,4 +25,11 @@ export interface PlacedTopping {
   pizzaIndex: 0 | 1;
 }
 
+export interface SavedTopping {
+  type: ToppingType;
+  offsetX: number
+  offsetY: number;
+  pizzaIndex: 0 | 1;
+}
+
 

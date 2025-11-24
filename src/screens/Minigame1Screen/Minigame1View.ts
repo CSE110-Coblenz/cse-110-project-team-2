@@ -1,8 +1,9 @@
 import Konva from "konva";
-import { STAGE_WIDTH, STAGE_HEIGHT, TOPPINGS } from "../../constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, TOPPINGS, ToppingType } from "../../constants";
 import { View } from "../../types";
 import type { OrderResult } from "../../data/OrderResult";
 import { PIZZA } from "../../constants";
+import type { Order } from "../../types";
 
 export class Minigame1View implements View {
     private group: Konva.Group;
@@ -103,6 +104,7 @@ export class Minigame1View implements View {
 
         // clear any previous pizza base
         this.clearMinigameToppings();
+        this.clearMinigameSlices();
         this.pizzaGroup.destroyChildren();
         this.pizzaRadius.clear();
 
@@ -110,14 +112,25 @@ export class Minigame1View implements View {
         const aPizzaNum = a.currentPizzaNumber;
         const bPizzaNum = b.currentPizzaNumber;
 
+        const aSlices = a.slicesUsed ?? 0;
+        const bSlices = b.slicesUsed ?? 0;
+
         this.onChoiceCallback = onChoice;
         // draw bases for each order (left = side 0, right = side 1)
-        this.createBasesForOrder(aPizzaNum, 0);
-        this.createBasesForOrder(bPizzaNum, 1);
+        //this.createBasesForOrder(aPizzaNum, 0);
+        //this.createBasesForOrder(bPizzaNum, 1);
 
         // render toppings on the newly created bases
-        this.renderToppingsForOrder(a.order!, aPizzaNum, 0);
-        this.renderToppingsForOrder(b.order!, bPizzaNum, 1);
+        //this.renderToppingsForOrder(a.order!, aPizzaNum, 0);
+        //this.renderToppingsForOrder(b.order!, bPizzaNum, 1);
+
+        //draw bases for each order (left = side 0, right = side 1)
+        this.createBasesForOrder(aPizzaNum, 0, aSlices);
+        this.createBasesForOrder(bPizzaNum, 1, bSlices);
+
+        //render toppings on the newly created bases
+        this.renderPlacedToppingsForOrder(a, 0);
+        this.renderPlacedToppingsForOrder(b, 1);
 
         // TODO: Tie button probably won't need to be in main game? But for testing purposes it was needed. Randy decide if it's needed or not
         const btnY = 300;
@@ -127,8 +140,53 @@ export class Minigame1View implements View {
         this.group.getLayer()?.batchDraw();
     }
 
+    // Compute the center of a specific pizza image on the minigame layout
+    private getMiniGamePizzaCenter(pizzaCount: number, sideIndex: number, pizzaIndex: 0 | 1): { x: number; y: number } {
+        const baseCenter = sideIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2;
+        if(pizzaCount <= 1) {
+            return { x: baseCenter,  y: PIZZA.pizzaY };
+        }
+         const dx = 70; // separation when drawing two smaller pizzas
+         if(pizzaIndex === 0) {
+            return { x: baseCenter - dx,  y: PIZZA.pizzaY - dx };
+         } else {
+            return { x: baseCenter + dx,  y: PIZZA.pizzaY + dx };
+         }
+    }
+
+    // Render toppings for this order based on saved placedToppings from the main game
+    private renderPlacedToppingsForOrder(result: OrderResult, sideIndex: number) {
+        if(!result.placedToppings || result.placedToppings.length === 0) {
+            if(result.order && result.order.toppingsCounts) {
+                this.renderToppingsForOrder(result.order!, result.currentPizzaNumber, sideIndex);
+            } 
+            return;
+        }
+
+        const pizzaCount = result.currentPizzaNumber;
+
+        // same mapping as in renderToppingsForOrder
+        const toppingMap: Record<string, { url: string; scale: number }> = {
+            Mushroom: { url: "/mushroom.png", scale: 0.75 },
+            Pepperoni: { url: "/pepperoni.png", scale: 0.75 },
+            Basil: { url: "/basil.png", scale: 0.075 },
+        };
+        
+        for(const placed of result.placedToppings) {
+            const info = toppingMap[placed.type] ?? { url: "/" + placed.type.toLowerCase() + ".png", scale: 0.5 };
+
+            // center of the mini-game pizza this topping goes on
+            const miniGameCenter = this.getMiniGamePizzaCenter(pizzaCount, sideIndex, placed.pizzaIndex);
+
+            const absX = miniGameCenter.x + placed.x;
+            const absY = miniGameCenter.y + placed.y;
+            
+            this.createStaticToppingAt(absX, absY, info.url, info.scale);
+        }
+    }
+
     // render toppings on base(s). sideIndex: 0 => left (A), 1 => right (B)
-    private renderToppingsForOrder(order: any, pizzaCount: number, sideIndex: number) {
+    private renderToppingsForOrder(order: Order, pizzaCount: number, sideIndex: number) {
         if (!order || !order.toppingsCounts) return;
 
         const toppingMap: Record<string, { url: string; scale: number }> = {
@@ -141,7 +199,7 @@ export class Minigame1View implements View {
         const baseCenter = sideIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2;
         const dx = 70; // separation when drawing two smaller pizzas
 
-        for (const t of Object.keys(order.toppingsCounts)) {
+        for (const t of Object.keys(order.toppingsCounts) as ToppingType[]) {
             const total = order.toppingsCounts[t] ?? 0;
 
             if (pizzaCount === 1) {
@@ -208,6 +266,53 @@ export class Minigame1View implements View {
         };
     }
 
+    // static topping image at an exact position
+    private createStaticToppingAt(x: number, y: number, url: string, scale: number) {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+            const k = new Konva.Image({
+                image: img,
+                x,
+                y,
+                scaleX: scale,
+                scaleY: scale,
+                offsetX: img.width / 2,
+                offsetY: img.height / 2,
+                listening: false,
+            });
+            k.setAttr("isMinigameTopping", true);
+            this.pizzaGroup.add(k);
+            this.group.getLayer()?.batchDraw();
+        };
+    }
+
+    // draw pizza slice lines
+    private drawSliceLines(centerX: number, centerY: number, rOuter: number, sliceNum: number) {
+        if (!sliceNum || !Number.isFinite(sliceNum) || sliceNum < 1) return;
+
+        for(let i = 0; i < sliceNum; i++) { 
+            const angle = (i / sliceNum) * Math.PI * 2;
+            const x = centerX + rOuter * Math.cos(angle);
+            const y = centerY + rOuter * Math.sin(angle);
+
+            const line = new Konva.Line({
+                points: [centerX, centerY, x, y],
+                stroke: "black",
+                strokeWidth: 2,
+                listening: false,
+            });
+            line.setAttr("isMinigameTopping", true);    
+            this.pizzaGroup.add(line);
+        }
+    }
+    
+    // clear toppings from previous minigame render
+    private clearMinigameSlices() {   
+        const nodes = this.pizzaGroup.find((node: Konva.Node) => node.getAttr &&node.getAttr("isMinigameTopping"));
+        nodes.forEach((node) => node.destroy());
+    }
+
     // result screen overlay
     showResult(isCorrect: boolean, details?: string) {
         const overlay = new Konva.Rect({ x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "black", opacity: 0.4 });
@@ -257,7 +362,7 @@ export class Minigame1View implements View {
     }
 
     // Create bases for an order side. sideIndex 0 => left (A), 1 => right (B)
-    private createBasesForOrder(pizzaCount: number, sideIndex: number) {
+    private createBasesForOrder(pizzaCount: number, sideIndex: number, sliceNum: number) {
         const baseCenter = sideIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2;
         if (pizzaCount <= 1) {
             // single larger pizza

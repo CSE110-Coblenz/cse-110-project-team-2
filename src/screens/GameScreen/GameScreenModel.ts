@@ -8,7 +8,21 @@ export class GameScreenModel{
       this.placedToppings=[];
     }
     registerPlacedTopping(x:number,y:number, type:ToppingType, pizzaIndex: 0|1) {
-      this.placedToppings.push({x,y,type, pizzaIndex});
+      let centerX: number;
+      if (this.pizzaNum === 1) {
+        centerX = PIZZA.pizzaX;
+      } else {
+        centerX = pizzaIndex === 0 ? PIZZA.pizzaX1 : PIZZA.pizzaX2;
+      } 
+      const centerY = PIZZA.pizzaY;
+
+      this.placedToppings.push({
+        type,
+        x: x - centerX,
+        y: y - centerY,
+        pizzaIndex
+      });
+
     }
     
 
