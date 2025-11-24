@@ -36,28 +36,26 @@ export class Minigame1Controller extends ScreenController {
 
     startGame(): void {
         // pick two orders from the most recent day that have order data
-        const all = this.resultStore.getAll();
-        // find the latest day value
-        const days = all.map(r => r.day);
-        const latestDay = Math.max(...days);
-        const todays = all.filter(r => r.day === latestDay && r.order && r.order.toppingsCounts);
+        const all = this.resultStore
+            .getAll()
+            .filter(r => r.order && r.order.toppingsCounts);
 
         // NOTE: This won't be needed in the actual game because the player won't be able to go to the minigame manually. I think.
-        if (todays.length < 2) {
+        if (all.length < 2) {
             this.view.showMessage("Not enough completed orders for today to play this minigame.");
             this.show();
             return;
         }
 
         // pick two random distinct orders
-        const aIndex = Math.floor(Math.random() * todays.length);
-        let bIndex = Math.floor(Math.random() * todays.length);
-        while (bIndex === aIndex && todays.length > 1) {
-            bIndex = Math.floor(Math.random() * todays.length);
+        const aIndex = Math.floor(Math.random() * all.length);
+        let bIndex = Math.floor(Math.random() * all.length);
+        while (bIndex === aIndex && all.length > 1) {
+            bIndex = Math.floor(Math.random() * all.length);
         }
 
-        const a = todays[aIndex];
-        const b = todays[bIndex];
+        const a = all[aIndex];
+        const b = all[bIndex];
 
         // pick a random topping to ask about
         const topping = TOPPINGS[Math.floor(Math.random() * TOPPINGS.length)] as ToppingType;

@@ -79,8 +79,8 @@ export class ResultsScreenView implements View {
     const rowGap = 40;
 
     //Rows of stats
-    this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Orders received:");
-    this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Orders correct:");
+    this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Number of attempts:");
+    this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Number of correct attempts:");
     this.percentCorrect = this.makeRow(card.x() + 26, startY + rowGap * 2,"% correct:");
     this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received:");
 

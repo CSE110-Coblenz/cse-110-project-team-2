@@ -3,7 +3,6 @@ import { ToppingType } from "../constants";
 
 export interface OrderResult {
   orderNumber: number;
-  day: number;
   success: boolean;
   details: string;
   expectedTotal: number;
@@ -16,6 +15,7 @@ export interface OrderResult {
   // Optional full order data (toppings, fraction, etc.) so minigames
   // and results screens can inspect exact order contents.
   order?: Order;
+  screenshotDataUrl?: string;
 }
 
 export interface PlacedTopping {
