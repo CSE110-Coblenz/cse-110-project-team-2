@@ -772,11 +772,39 @@ export class GameScreenView implements View {
 
   // capture an image of the current pizza 
   capturePizzaImage(): string | undefined {
+    const layer = this.group.getLayer();
+    if(!layer) return; 
+
+    const radius = this.rOuter || 150;
+    const margin = 20;
+
+    let leftX: number;
+    let rightX: number;
+
+    if(this.model.pizzaNum === 2) {
+        leftX = PIZZA.pizzaX1;
+        rightX = PIZZA.pizzaX2;
+    } else {
+        const centerX = PIZZA.pizzaX;
+        leftX = centerX;
+        rightX = centerX;
+    }
+
+    const minX = leftX - radius - margin;
+    const maxX = rightX + radius + margin;
+    const x = minX
+    const width = maxX - minX;
+
+    const y = PIZZA.pizzaY - radius - margin;
+    const height = radius * 2 + margin * 2;
+
     try {
-        if(!this.pizzaGroup.getLayer()) return;
-        return this.pizzaGroup.toDataURL({
-            mimeType: "image/png",
-            pixelRatio: 2,    
+        return this.group.toDataURL({
+            x,
+            y,
+            width,
+            height,
+            pixelRatio: 2,
         });
     } catch (e) {
         console.error("Error capturing pizza image:", e);
