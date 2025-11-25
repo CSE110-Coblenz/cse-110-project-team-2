@@ -2,6 +2,7 @@ import Konva from "konva";
 import type { View } from "../../types";
 import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY, TITLE_COLOR } from "../../constants";
 import { FONTS } from "../../fonts";
+import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
 export type Difficulty = "proper" | "improper" | "mixed";
 
@@ -13,8 +14,12 @@ export type Difficulty = "proper" | "improper" | "mixed";
  */
 export class DifficultyScreenView implements View {
     private group: Konva.Group;
+    private settingsPopup: Konva.Group | null = null;
 
-    constructor(onDifficultySelect: (difficulty: Difficulty) => void, onBackToMenuClick: () => void) {
+    constructor(onDifficultySelect: (difficulty: Difficulty) => void,
+                onBackToMenuClick: () => void,
+                onInstructionsClick: () => void
+                ) {
         this.group = new Konva.Group({ visible: true });
 
         // background
@@ -161,6 +166,7 @@ export class DifficultyScreenView implements View {
             return buttonGroup;
         });
 
+        /*
         // Back to main menu button (top-right corner)
         const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
 
@@ -192,6 +198,57 @@ export class DifficultyScreenView implements View {
 
         // Add all elements to the main group
         this.group.add(bg, overlay, title, titleOutline, ...buttons, backGroup);
+        */
+       // SETTINGS BUTTON (top-right corner)
+        const settingsGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
+
+        const settingsBtn = new Konva.Rect({
+            width: 160,
+            height: 50,
+            fill: "#d84315",
+            cornerRadius: 8,
+            stroke: "#b71c1c",
+            strokeWidth: 2,
+        });
+
+        const settingsText = new Konva.Text({
+            x: 80,
+            y: 25,
+            text: "SETTINGS",
+            fontFamily: FONTS.BUTTON,
+            fontSize: 16,
+            fill: "white",
+        });
+        settingsText.offsetX(settingsText.width() / 2);
+        settingsText.offsetY(settingsText.height() / 2);
+
+        settingsGroup.add(settingsBtn, settingsText);
+
+        // clicking opens/closes popup
+        settingsGroup.on("click tap", () => {
+            if (this.settingsPopup) {
+                this.settingsPopup.destroy();
+                this.settingsPopup = null;
+                this.group.getLayer()?.draw();
+                return;
+            }
+
+            this.settingsPopup = createMenuSettingsPopup({
+                onBackToMenu: onBackToMenuClick,
+                onInstructions: onInstructionsClick,
+                onClose: () => {
+                    this.settingsPopup = null;
+                    this.group.getLayer()?.draw();
+                },
+            });
+
+            this.group.add(this.settingsPopup);
+            this.group.getLayer()?.draw();
+        });
+
+        // Add all elements to the main group
+        this.group.add(bg, overlay, title, titleOutline, ...buttons, settingsGroup);
+
     }
 
     show(): void {
