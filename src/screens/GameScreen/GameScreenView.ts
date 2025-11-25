@@ -22,7 +22,7 @@ export class GameScreenView implements View {
     private dayDisplay:Konva.Text
     public onOrderSuccess: (difficulty: Difficulty) => void = () => {};
     public onGoToMinigame1: () => void = () => {};
-    //private onBackToMenuClick: () => void;
+    
 
     private settingsPopup: Konva.Group | null = null;
     
@@ -38,7 +38,7 @@ export class GameScreenView implements View {
                 resultStore: ResultStore,
                 onOrderSuccess?: (difficulty?: Difficulty) => void) {
     // onOrderSuccess is called when the current order was completed successfully
-        //this.onBackToMenuClick = onBackToMenuClick;
+        
         this.resultStore = resultStore;
         this.group = new Konva.Group({ visible: false });
         const basePizza=new Image()
