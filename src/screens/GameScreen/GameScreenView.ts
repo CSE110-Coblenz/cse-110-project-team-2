@@ -804,7 +804,7 @@ export class GameScreenView implements View {
             y,
             width,
             height,
-            pixelRatio: 2,
+            pixelRatio: 1,
         });
     } catch (e) {
         console.error("Error capturing pizza image:", e);

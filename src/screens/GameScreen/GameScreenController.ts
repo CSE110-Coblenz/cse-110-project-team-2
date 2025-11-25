@@ -95,6 +95,9 @@ export class GameScreenController extends ScreenController {
     //const pizzaCount = this.model.pizzaNum;
     const screenshotDataUrl = this.view.capturePizzaImage();
 
+    // keeps track of last order of the day
+    const isLastOrderOfDay = this.orderNum >= ORDERS_PER_DAY;
+
     this.resultStore.add({
         orderNumber: this.orderNum,
         success,
@@ -116,9 +119,10 @@ export class GameScreenController extends ScreenController {
     });
 
     if (evalResult.success) {
-      this.orderNum += 1;
-      if (this.orderNum > ORDERS_PER_DAY) this.orderNum = 1;
-      this.view.updateOrderNumber(this.orderNum);
+      if (!isLastOrderOfDay) {
+        this.orderNum += 1;
+        this.view.updateOrderNumber(this.orderNum);
+      }
 
       this.clearAllToppingsVisual();
       this.model.resetAll();
@@ -129,9 +133,21 @@ export class GameScreenController extends ScreenController {
       evalResult.lines.join("\n"),
       evalResult.success,
       (success) => {
-        if (success) {
-          this.screen?.switchToScreen({
-            type: "order",
+        if (!success) {
+          return;
+        }
+        
+        // if last order of the day, go to results screen
+        if (isLastOrderOfDay) {
+          this.orderNum = 1; // reset for next day
+          this.view.updateOrderNumber(this.orderNum);
+          this.screen?.switchToScreen({ 
+            type: "minigame1",
+          }); 
+        } else {
+          // proceed to next order
+          this.screen?.switchToScreen({ 
+            type: "order", 
             mode: this.currentDifficulty,
             returnToGame: true,
           });

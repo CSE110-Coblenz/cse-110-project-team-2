@@ -35,27 +35,39 @@ export class Minigame1Controller extends ScreenController {
     }   
 
     startGame(): void {
-        // pick two orders from the most recent day that have order data
-        const all = this.resultStore
-            .getAll()
-            .filter(r => r.order && r.order.toppingsCounts);
+        // Get all stored results
+        const allResults = this.resultStore.getAll()
+
+        // Only keep results that:
+        // - have screenshots
+        // - were orders completed successfully
+        // - have topping counts available
+        const screenShotResults: OrderResult[] = allResults.filter(
+            (r: OrderResult) => 
+                !!r.screenshotDataUrl &&
+                r.success &&
+                !!r.order &&
+                r.order.toppingsCounts
+        );
 
         // NOTE: This won't be needed in the actual game because the player won't be able to go to the minigame manually. I think.
-        if (all.length < 2) {
+        if (allResults.length < 2) {
             this.view.showMessage("Not enough completed orders for today to play this minigame.");
             this.show();
             return;
         }
 
+        const pool = screenShotResults;
+
         // pick two random distinct orders
-        const aIndex = Math.floor(Math.random() * all.length);
-        let bIndex = Math.floor(Math.random() * all.length);
-        while (bIndex === aIndex && all.length > 1) {
-            bIndex = Math.floor(Math.random() * all.length);
+        const aIndex = Math.floor(Math.random() * pool.length);
+        let bIndex = Math.floor(Math.random() * pool.length);
+        while (bIndex === aIndex && pool.length > 1) {
+            bIndex = Math.floor(Math.random() * pool.length);
         }
 
-        const a = all[aIndex];
-        const b = all[bIndex];
+        const a = pool[aIndex];
+        const b = pool[bIndex];
 
         // pick a random topping to ask about
         const topping = TOPPINGS[Math.floor(Math.random() * TOPPINGS.length)] as ToppingType;

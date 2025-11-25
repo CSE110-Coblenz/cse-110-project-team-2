@@ -107,15 +107,17 @@ export class Minigame1View implements View {
 
         this.onChoiceCallback = onChoice;
         
-        if (a.screenshotDataUrl && b.screenshotDataUrl) {
-            this.renderScreenshotsPair(a.screenshotDataUrl, b.screenshotDataUrl);
-        } else {
+        if (!a.screenshotDataUrl && !b.screenshotDataUrl) {
             this.showMessage("No pizza screeenshots available for this minigame.");
-        }
+            this.group.getLayer()?.batchDraw();
+            return;
+        } 
+
+        this.renderScreenshotsPair(a.screenshotDataUrl!, b.screenshotDataUrl!);
 
         // TODO: Tie button probably won't need to be in main game? But for testing purposes it was needed. Randy decide if it's needed or not
-        const btnY = 300;
-        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 60, btnY, "Equivalent", () => onChoice("Equivalent"));
+        const btnY = 120;
+        const btnTie = this.makeButton((STAGE_WIDTH / 2) - 20, btnY, "Equivalent", () => onChoice("Equivalent"));
         this.content.add(btnTie);
 
         this.group.getLayer()?.batchDraw();
