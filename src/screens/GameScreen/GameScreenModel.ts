@@ -1,6 +1,15 @@
 import {PIZZA, ToppingType} from "../../constants";
+import { PlacedTopping } from "../../data/OrderResult";
+
 export class GameScreenModel{
 
+    public placedToppings:PlacedTopping[]=[];
+    resetnewOrder() {
+      this.placedToppings=[];
+    }
+    registerPlacedTopping(x:number,y:number, type:ToppingType, pizzaIndex: 0|1) {
+      this.placedToppings.push({x,y,type, pizzaIndex});
+    }
     
 
     //list of Konva toppings currently on pizza

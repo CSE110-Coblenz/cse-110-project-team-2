@@ -15,6 +15,10 @@ export class Minigame1Controller extends ScreenController {
         this.view.onGoToMinigame2 = () => {
             this.screenSwitcher.switchToScreen({ type: "minigame2" });
         };
+
+        this.view.onBackToGame = () => {
+            this.screenSwitcher.switchToScreen({ type: "game" });
+        }
     }
 
     getView(): Minigame1View {
@@ -59,19 +63,31 @@ export class Minigame1Controller extends ScreenController {
         const topping = TOPPINGS[Math.floor(Math.random() * TOPPINGS.length)] as ToppingType;
 
         // render pair and evaluate player's choice
-        this.view.renderPair(a, b, topping, (choice: "A" | "B" | "Tie") => {
+        this.view.renderPair(a, b, topping, (choice: "A" | "B" | "Equivalent") => {
             const aCount = a.order!.toppingsCounts?.[topping] ?? 0;
             const bCount = b.order!.toppingsCounts?.[topping] ?? 0;
-            let correct: "A" | "B" | "Tie" = "Tie";
+            let correct: "A" | "B" | "Equivalent" = "Equivalent";
             if (aCount > bCount) correct = "A";
             else if (bCount > aCount) correct = "B";
 
             const isCorrect = choice === correct;
-            this.view.showResult(isCorrect, `A: ${aCount}, B: ${bCount}`);
+
+            // Tip logic 
+            let details = `A: ${aCount}, B: ${bCount}`;
+            if (isCorrect) {
+                this.resultStore.addTips(2);
+                details += " (earned $2 tip)";
+            } else {
+                details += " (no tip earned)";
+            }
+            
+            // Shows minigame result 
+            this.view.showResult(isCorrect, details);
 
             // after showing result, provide a Back button to return to menu
-            this.view.onBackToMenu = () => this.screenSwitcher.switchToScreen({ type: "menu" });
-        });
+            this.view.onBackToGame = () => { this.startGame();
+        };
+    });
 
         this.show();
     }
