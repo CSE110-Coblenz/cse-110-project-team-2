@@ -110,7 +110,24 @@ export function createMenuSettingsPopup({
     popup.destroy();
   });
 
-  popup.add(background, title, menuButtonGroup, instructionsButtonGroup);
+  // Close button for the popup
+  const closePopup = new Konva.Text({
+    text: "X",
+    //x: 270,
+    x: popupWidth - 30,
+    y: 10,
+    fontSize: 20,
+    fill: "black",
+  });
+
+  // Event handler to close the settings popup
+  closePopup.on("click tap", () => {
+    if (onClose) onClose();
+    popup.destroy();
+  });
+
+
+  popup.add(background, title, closePopup, menuButtonGroup, instructionsButtonGroup);
 
   return popup;
 }

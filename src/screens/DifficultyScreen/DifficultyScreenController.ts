@@ -2,6 +2,7 @@ import { ScreenController } from "../../types";
 import type { ScreenSwitcher } from "../../types";
 import { DifficultyScreenView, type Difficulty } from "./DifficultyScreenView";
 
+
 export class DifficultyScreenController extends ScreenController {
     private view: DifficultyScreenView;
     private screenSwitcher: ScreenSwitcher;
