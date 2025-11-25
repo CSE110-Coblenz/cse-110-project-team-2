@@ -13,7 +13,10 @@ export class GameScreenController extends ScreenController{
 
     constructor(screenSwitcher: ScreenSwitcher, private resultStore: ResultStore) {
         super()
-        this.view = new GameScreenView(() => this.handleBackToMenuClick(), this.resultStore);
+        this.view = new GameScreenView(
+                        () => this.handleBackToMenuClick(),
+                        () => this.handleInstructionsClick(),
+                        this.resultStore);
         this.view.onOrderSuccess = (d) => this.handleOrderSuccess(d);
         this.model=this.view.model
         this.view.onGoToMinigame1 = () => {
@@ -46,6 +49,10 @@ export class GameScreenController extends ScreenController{
             this.view.displayOrder(order);
         }
         this.view.show();
+    }
+
+    private handleInstructionsClick(){
+        this.screen?.switchToScreen({type:"tutorial"});
     }
 
     endGame(){

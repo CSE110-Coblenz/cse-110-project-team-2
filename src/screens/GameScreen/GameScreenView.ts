@@ -7,6 +7,7 @@ import { PIZZA } from "../../constants";
 import { FONTS } from "../../fonts";
 import { ResultStore } from "../../data/ResultStore";
 import { OrderResult, PlacedTopping } from "../../data/OrderResult";
+import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
 export class GameScreenView implements View {
     group: Konva.Group;
@@ -21,7 +22,10 @@ export class GameScreenView implements View {
     private dayDisplay:Konva.Text
     public onOrderSuccess: (difficulty: Difficulty) => void = () => {};
     public onGoToMinigame1: () => void = () => {};
-    private onBackToMenuClick: () => void;
+    //private onBackToMenuClick: () => void;
+
+    private settingsPopup: Konva.Group | null = null;
+    
 
 
     model=new GameScreenModel()
@@ -29,9 +33,12 @@ export class GameScreenView implements View {
 
     private resultStore: ResultStore;
 
-    constructor(onBackToMenuClick: () => void, resultStore: ResultStore, onOrderSuccess?: (difficulty?: Difficulty) => void) {
+    constructor(onBackToMenuClick: () => void,
+                onInstructionsClick: () => void,
+                resultStore: ResultStore,
+                onOrderSuccess?: (difficulty?: Difficulty) => void) {
     // onOrderSuccess is called when the current order was completed successfully
-        this.onBackToMenuClick = onBackToMenuClick;
+        //this.onBackToMenuClick = onBackToMenuClick;
         this.resultStore = resultStore;
         this.group = new Konva.Group({ visible: false });
         const basePizza=new Image()
@@ -268,10 +275,10 @@ export class GameScreenView implements View {
         this.group.add(dayCount)
 
 
-        // Back to main menu button (top-right corner)
-        const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
+        // SETTINGS BUTTON (top-right corner)
+        const settingsGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
 
-        const backBtn = new Konva.Rect({
+        const settingsBtn = new Konva.Rect({
             width: 160,
             height: 50,
             fill: "#d84315",
@@ -280,21 +287,43 @@ export class GameScreenView implements View {
             strokeWidth: 2,
         });
 
-        const backText = new Konva.Text({
+        const settingsText = new Konva.Text({
             x: 80,
             y: 25,
-            text: "Back to Menu",
-            fontSize: 16,
+            text: "⚙︎  |  𝓲",
+            fontFamily: FONTS.BUTTON,
+            fontSize: 30,
             fill: "white",
+        });
+        settingsText.offsetX(settingsText.width() / 2);
+        settingsText.offsetY(settingsText.height() / 2);
+
+        settingsGroup.add(settingsBtn, settingsText);
+
+        // clicking opens/closes popup
+        settingsGroup.on("click tap", () => {
+            if (this.settingsPopup) {
+                this.settingsPopup.destroy();
+                this.settingsPopup = null;
+                this.group.getLayer()?.draw();
+                return;
+            }
+
+            this.settingsPopup = createMenuSettingsPopup({
+                onBackToMenu: onBackToMenuClick,
+                onInstructions: onInstructionsClick,
+                onClose: () => {
+                    this.settingsPopup = null;
+                    this.group.getLayer()?.draw();
+                },
             });
-        backText.offsetX(backText.width() / 2);
-        backText.offsetY(backText.height() / 2);
 
-        backGroup.add(backBtn, backText);
+            this.group.add(this.settingsPopup);
+            this.group.getLayer()?.draw();
+        });
 
-        // click event → goes back to menu
-        backGroup.on("click", onBackToMenuClick);
-        this.group.add(backGroup);
+      
+        this.group.add(settingsGroup);
 
         this.show()
     }
