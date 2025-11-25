@@ -42,13 +42,14 @@ class App implements ScreenSwitcher {
 		this.stage.add(this.layer);
 
 		this.audio = new AudioManager("/audio/pizza-299710.mp3", 0.5);
+		this.audio.registerSfx("phonering", "/audio/phoneringing.mp3");
 
 		this.resultStore = new ResultStore(); 
 		this.menuController = new MenuScreenController(this, this.audio);
 		this.gameController = new GameScreenController(this, this.resultStore);
 		this.difficultyController = new DifficultyScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
-    	this.orderController = new OrderScreenController(this);
+		this.orderController = new OrderScreenController(this, this.audio);
     	this.resultsController = new ResultScreenController(this.layer, this, this.resultStore);
 		this.minigame1Controller = new Minigame1Controller(this, this.audio);
     	this.minigame2Controller = new Minigame2Controller(this, this.audio);
@@ -94,14 +95,13 @@ class App implements ScreenSwitcher {
 			case "tutorial":
 				this.tutorialController.show();
 				break;
-            case "order":
-                if ((screen as any).mode) {
-					// If returnToGame is set, show the Order screen so the user
-					// can accept the prepared order. 
+			case "order":
+				if ((screen as any).mode) {
 					this.orderController.prepareForMode((screen as any).mode);
 					this.orderController.show();
 				} else {
 					this.orderController.show();
+					this.audio.playSfx("phonering");
 				}
 				break;
             case "result":
