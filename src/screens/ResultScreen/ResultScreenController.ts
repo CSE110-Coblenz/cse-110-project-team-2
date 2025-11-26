@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { ResultsScreenView } from "./ResultScreenView"; 
+import { ResultScreenView } from "./ResultScreenView"; 
 import { ScreenController, ScreenSwitcher } from "../../types";
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../../constants";
 import { Difficulty } from "../../types";
@@ -7,7 +7,7 @@ import { ResultStore } from "../../data/ResultStore";
 import { OrderResult } from "../../data/OrderResult";
 
 export class ResultScreenController extends ScreenController{
-    private view: ResultsScreenView;
+    private view: ResultScreenView;
     private nextDayDifficulty: Difficulty = "proper";
 
     private wrongOrdersContent?: Konva.Group;
@@ -241,7 +241,7 @@ export class ResultScreenController extends ScreenController{
 
     constructor(private layer: Konva.Layer, private switcher: ScreenSwitcher, private resultStore: ResultStore) {
         super();
-        this.view = new ResultsScreenView();
+        this.view = new ResultScreenView();
 
         //Helper function that creates screens to test for button functionality
         const placeHolderScreen = (label: string, fill: string = "#1f2937") => {

@@ -4,7 +4,7 @@ import {View} from "../../types";
 import {Group} from "konva/lib/Group";
 import { FONTS } from "../../fonts";
 
-export class ResultsScreenView implements View {
+export class ResultScreenView implements View {
   private group: Konva.Group;
 
   //Text Fields to be updated
