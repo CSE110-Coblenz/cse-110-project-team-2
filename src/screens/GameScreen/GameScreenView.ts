@@ -11,8 +11,6 @@ import type { View, Order, Difficulty } from "../../types";
 import { PIZZA } from "../../constants";
 import { FONTS } from "../../fonts";
 import type { GameScreenModel } from "./GameScreenModel";
-import { ResultStore } from "../../data/ResultStore";
-import { OrderResult, PlacedTopping } from "../../data/OrderResult";
 
 export class GameScreenView implements View {
   group: Konva.Group;
