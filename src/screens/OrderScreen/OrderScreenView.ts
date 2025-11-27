@@ -1,7 +1,7 @@
 import Konva from "konva";
 import type { View } from "../../types";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
-import { ORDER_TITLE_COLOR, ORDER_BUTTON_FILL, ORDER_BUTTON_STROKE, SCREEN_OVERLAY, SCREEN_BACKGROUNDS } from "../../constants";
+import { ORDER_TITLE_COLOR, ORDER_BUTTON_FILL, ORDER_BUTTON_STROKE, SCREEN_OVERLAY, SCREEN_BACKGROUNDS, ORDER_PHRASES } from "../../constants";
 import type { Order } from "../../types";
 import type { OrderScreenModel } from "./OrderScreenModel";
 import { FONTS } from "../../fonts";
@@ -15,6 +15,12 @@ export class OrderScreenView implements View {
     private restaurantRect: Konva.Rect | null = null;
     private restaurantTail: Konva.Line | null = null;
     private restaurantText: Konva.Text | null = null;
+    private orderAreaX = 0;
+    private orderAreaWidth = 0;
+    private restW = 0;
+    private restH = 0;
+    private restY = 0;
+    private bubblePadding = 16;
 
     constructor(model: OrderScreenModel, onAccept: () => void) {
         this.model = model;
@@ -67,15 +73,21 @@ export class OrderScreenView implements View {
 
             const orderLines = this.buildOrderLines(this.model.getOrder());
 
-            const bubblePadding = 16;
+            const bubblePadding = this.bubblePadding;
             const bubbleX = orderAreaX - bubblePadding;
             const textX = orderAreaX;
 
             const restText = "Slice by Slice! What can I get for you?";
-            const restW = Math.min(300, orderAreaWidth + bubblePadding);
+            const restW = orderAreaWidth + bubblePadding * 2;
             const restH = 88;
-            const restX = orderAreaX + orderAreaWidth - restW;
+            const restX = bubbleX;
             const restY = phone.y() + 10;
+
+            this.orderAreaX = orderAreaX;
+            this.orderAreaWidth = orderAreaWidth;
+            this.restW = restW;
+            this.restH = restH;
+            this.restY = restY;
 
             const orderTextYStart = restY + restH + 12;
 
@@ -110,11 +122,11 @@ export class OrderScreenView implements View {
                     y: restY + 12,
                     width: restW - 24,
                     text: restText,
-                    fontSize: 26,
+                    fontSize: 32,
                     fontFamily: FONTS.BODY,
                     fill: "#222",
                     align: "left",
-                    lineHeight: 1.2,
+                    lineHeight: 1.25,
                 });
 
                 this.orderText = new Konva.Text({
@@ -122,11 +134,11 @@ export class OrderScreenView implements View {
                     y: orderTextYStart + 10,
                     width: orderAreaWidth,
                     text: orderLines.join("\n"),
-                    fontSize: 26,
+                    fontSize: 32,
                     fontFamily: FONTS.BODY,
                     fill: "#333",
                     align: "left",
-                    lineHeight: 1.4,
+                    lineHeight: 1.35,
                 });
                 this.orderText.name("orderText");
 
@@ -160,73 +172,105 @@ export class OrderScreenView implements View {
                     listening: false,
                 });
 
-                this.group.add(this.restaurantRect, this.restaurantTail, this.restaurantText, this.bubbleRect, this.bubbleTail, this.orderText);
+                this.restaurantRect.width(bubbleW);
+                this.restaurantRect.x(bubbleX);
+                this.restaurantText.width(bubbleW - 24);
+
+                this.group.add(this.restaurantRect!, this.restaurantTail!, this.restaurantText!, this.bubbleRect!, this.bubbleTail!, this.orderText!);
             } else {
-                if (this.restaurantRect && this.restaurantTail && this.restaurantText) {
-                    const restWcur = this.restaurantRect.width();
-                    const restXcur = orderAreaX + orderAreaWidth - restWcur;
-                    this.restaurantRect.x(restXcur);
-                    this.restaurantRect.y(restY);
-                    this.restaurantText.x(restXcur + 12);
-                    this.restaurantText.y(restY + 12);
-                    const rMidY2 = restY + this.restaurantRect.height() / 2;
-                    const rTailX1b = restXcur + restWcur;
-                    const rTailX2b = rTailX1b + 10;
-                    this.restaurantTail.points([rTailX1b, rMidY2 - 10, rTailX2b, rMidY2, rTailX1b, rMidY2 + 10]);
-                }
-
-                const orderY = restY + restH + 12;
-                if (this.orderText) {
-                    this.orderText.width(orderAreaWidth);
-                    this.orderText.x(textX);
-                    this.orderText.y(orderY + 10);
-                    this.orderText.text(orderLines.join("\n"));
-                }
-
-                if (this.bubbleRect) {
-                    const measuredH = this.orderText ? this.orderText.height() : 0;
-                    const bubbleW = orderAreaWidth + bubblePadding * 2;
-                    const bubbleH = measuredH + 28;
-                    this.bubbleRect.x(bubbleX);
-                    this.bubbleRect.y(orderY);
-                    this.bubbleRect.width(bubbleW);
-                    this.bubbleRect.height(bubbleH);
-                }
-
-                if (this.bubbleTail && this.bubbleRect) {
-                    const bubbleH2 = this.bubbleRect.height();
-                    const tailSize2 = 12;
-                    const tailMidY2 = orderY + bubbleH2 / 2;
-                    const tailX1b = bubbleX;
-                    const tailX2b = bubbleX - tailSize2;
-                    this.bubbleTail.points([tailX1b, tailMidY2 - tailSize2, tailX2b, tailMidY2, tailX1b, tailMidY2 + tailSize2]);
-                }
+                this.updateLayout();
             }
 
             this.group.getLayer()?.batchDraw();
         };
 
-        const acceptGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 90, y: STAGE_HEIGHT - 120 });
-        const acceptBtn = new Konva.Rect({ width: 180, height: 56, fill: ORDER_BUTTON_FILL, cornerRadius: 8, stroke: ORDER_BUTTON_STROKE, strokeWidth: 2 });
-        const acceptText = new Konva.Text({ x: 90, y: 18, text: "Sounds good", fontFamily: FONTS.BUTTON, fontSize: 20, fill: "white" });
-        acceptText.offsetX(acceptText.width() / 2);
-        acceptText.offsetY(acceptText.height() / 2);
-        acceptGroup.add(acceptBtn, acceptText);
-        acceptGroup.on("click", onAccept);
+    const acceptBtnW = 180;
+    const acceptBtnH = 56;
+    const acceptMargin = 24;
+    const acceptGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - acceptBtnW / 2, y: STAGE_HEIGHT - acceptMargin - acceptBtnH });
+    const acceptBtn = new Konva.Rect({ width: acceptBtnW, height: acceptBtnH, fill: ORDER_BUTTON_FILL, cornerRadius: 8, stroke: ORDER_BUTTON_STROKE, strokeWidth: 2 });
+    const acceptText = new Konva.Text({
+        x: acceptBtnW / 2,
+        y: acceptBtnH / 2,
+        text: "Sounds good",
+        fontFamily: "Arial Black",
+        fontSize: 20,
+        fill: "white",
+    });
+    acceptText.offsetX(acceptText.width() / 2);
+    acceptText.offsetY(acceptText.height() / 2);
+    acceptGroup.add(acceptBtn, acceptText);
+    acceptGroup.on("click", onAccept);
 
     this.group.add(bgKonva, overlay, phone, acceptGroup);
     }
 
     private buildOrderLines(order: Order): string[] {
-        const lines: string[] = [];
-        const denom = order.fractionStruct?.denominator ?? (order.fraction ? parseInt(order.fraction.split('/')[1]) : 1);
+        const items: string[] = [];
+        const denom = order.fractionStruct?.denominator ?? (order.fraction ? parseInt(order.fraction.split('/')[1]) : undefined);
         if (!order.toppingsCounts) return [`${order.fraction}`];
         for (const [t, c] of Object.entries(order.toppingsCounts)) {
-            if ((c as number) > 0) {
-                lines.push(`${c}/${denom} ${t}`);
+            const count = c as number;
+            if (count > 0) {
+                if (denom) items.push(`${count}/${denom} ${t}`);
+                else items.push(`${count} ${t}`);
             }
         }
-        return lines.length ? lines : [`${order.fraction}`];
+
+        if (!items.length) return [`${order.fraction}`];
+
+        let list = "";
+        if (items.length === 1) list = items[0];
+        else if (items.length === 2) list = `${items[0]} and ${items[1]}`;
+        else {
+            const last = items[items.length - 1];
+            list = `${items.slice(0, items.length - 1).join(', ')}, and ${last}`;
+        }
+
+        const template = ORDER_PHRASES[Math.floor(Math.random() * ORDER_PHRASES.length)];
+        const sentence = template.replace("LIST", list);
+        return [sentence];
+    }
+
+    private updateLayout(): void {
+        if (!this.orderText || !this.bubbleRect || !this.bubbleTail || !this.restaurantRect || !this.restaurantText || !this.restaurantTail) return;
+
+        const orderLines = this.buildOrderLines(this.model.getOrder());
+        const orderAreaW = this.orderAreaWidth || (STAGE_WIDTH - (this.orderAreaX || 0) - 40);
+
+        // order text
+        this.orderText.width(orderAreaW);
+        this.orderText.text(orderLines.join("\n"));
+
+        const measuredH = this.orderText.height();
+        const bubbleW = orderAreaW + this.bubblePadding * 2;
+        const bubbleH = measuredH + 28;
+        const bubbleX = this.orderAreaX - this.bubblePadding;
+        const orderY = this.restY + this.restH + 12;
+
+        this.bubbleRect.x(bubbleX);
+        this.bubbleRect.y(orderY);
+        this.bubbleRect.width(bubbleW);
+        this.bubbleRect.height(bubbleH);
+
+        const tailSize = 12;
+        const tailMidY = orderY + bubbleH / 2;
+        this.bubbleTail.points([bubbleX, tailMidY - tailSize, bubbleX - tailSize, tailMidY, bubbleX, tailMidY + tailSize]);
+
+        this.orderText.x(this.orderAreaX);
+        this.orderText.y(orderY + 10);
+
+    this.restaurantRect.width(bubbleW);
+    this.restaurantRect.x(bubbleX);
+    this.restaurantRect.y(this.restY);
+    this.restaurantText.width(bubbleW - 24);
+    this.restaurantText.x(bubbleX + 12);
+    this.restaurantText.y(this.restY + 12);
+    const rMidY2 = this.restY + this.restaurantRect.height() / 2;
+    const rTailX1b = bubbleX + bubbleW;
+    this.restaurantTail.points([rTailX1b, rMidY2 - 10, rTailX1b + 10, rMidY2, rTailX1b, rMidY2 + 10]);
+
+        this.group.getLayer()?.batchDraw();
     }
 
     show(): void {
@@ -245,9 +289,6 @@ export class OrderScreenView implements View {
 
     // Refresh the displayed order from the current model state.
     refresh(): void {
-        if (!this.orderText) return;
-        const orderLines = this.buildOrderLines(this.model.getOrder());
-        this.orderText.text(orderLines.join("\n"));
-        this.group.getLayer()?.batchDraw();
+        this.updateLayout();
     }
 }
