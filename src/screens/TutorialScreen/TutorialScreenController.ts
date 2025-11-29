@@ -12,7 +12,8 @@ export class TutorialScreenController extends ScreenController {
 
         this.view = new TutorialScreenView(
         () => this.handleBackToMenuClick(),
-        () => this.handleWatchTutorialClick()
+        () => this.handleWatchTutorialClick(),
+        () => this.handleInstructionsClick()
         );
     }
 
@@ -28,6 +29,10 @@ export class TutorialScreenController extends ScreenController {
     private handleWatchTutorialClick() {
         // Placeholder- no demo for now
         // this.screenSwitcher.switchToScreen({ type: "tutorial" });
+    }
+
+    private handleInstructionsClick(): void {
+        this.screenSwitcher.switchToScreen({ type: "tutorial" });
     }
 
     getView() {

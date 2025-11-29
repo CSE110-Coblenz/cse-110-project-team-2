@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { STAGE_WIDTH, STAGE_HEIGHT, MINIGAME_POPUP_HEIGHT, MINIGAME_POPUP_WIDTH } from "../../constants";
 import { FONTS } from "../../fonts";
+import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
 export class Minigame2View {
     private group: Konva.Group;
@@ -16,9 +17,16 @@ export class Minigame2View {
     private onResultsButtonClick?: () => void;
     private summaryNodes: Konva.Node[] = [];
 
+    private settingsPopup: Konva.Group | null = null;
+    private onBackToMenuClick: () => void;
+    private onInstructionsClick: () => void;
 
-    constructor() {
+
+    constructor(onBackToMenuClick: () => void,
+                onInstructionsClick: () => void) {
     this.group = new Konva.Group({ visible: false });
+    this.onBackToMenuClick = onBackToMenuClick;
+    this.onInstructionsClick = onInstructionsClick;
 
     // ========================= ROAD BACKGROUND ==========================
     const road = new Konva.Rect({
@@ -136,6 +144,56 @@ export class Minigame2View {
         this.group.add(img);
         this.group.getLayer()?.draw();
     });
+
+    // SETTINGS BUTTON (top-right corner)
+    const settingsGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: STAGE_HEIGHT - 70 });
+
+    const settingsBtn = new Konva.Rect({
+        width: 160,
+        height: 50,
+        fill: "#d84315",
+        cornerRadius: 8,
+        stroke: "#b71c1c",
+        strokeWidth: 2,
+    });
+
+    const settingsText = new Konva.Text({
+        x: 80,
+        y: 25,
+        text: "⚙︎  |  𝓲",
+        fontFamily: FONTS.BUTTON,
+        fontSize: 30,
+        fill: "white",
+    });
+    settingsText.offsetX(settingsText.width() / 2);
+    settingsText.offsetY(settingsText.height() / 2);
+
+    settingsGroup.add(settingsBtn, settingsText);
+
+    // clicking opens/closes popup
+    settingsGroup.on("click tap", () => {
+        if (this.settingsPopup) {
+            this.settingsPopup.destroy();
+            this.settingsPopup = null;
+            this.group.getLayer()?.draw();
+            return;
+        }
+
+        this.settingsPopup = createMenuSettingsPopup({
+            onBackToMenu: onBackToMenuClick,
+            onInstructions: onInstructionsClick,
+            onClose: () => {
+                this.settingsPopup = null;
+                this.group.getLayer()?.draw();
+            },
+        });
+
+        this.group.add(this.settingsPopup);
+        this.group.getLayer()?.draw();
+    });
+
+    // Add all elements to the main group
+    this.group.add(settingsGroup);
 }
 
     setOnPuddleHit(callback: () => void): void {
