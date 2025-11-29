@@ -163,7 +163,7 @@ export class Minigame1View implements View {
         this.onChoiceCallback = onChoice;
         
         if (!a.screenshotDataUrl && !b.screenshotDataUrl) {
-            this.showMessage("No pizza screenshots available for this minigame.");
+            this.showMessage("No pizza screeenshots available for this minigame.");
             this.group.getLayer()?.batchDraw();
             return;
         } 
