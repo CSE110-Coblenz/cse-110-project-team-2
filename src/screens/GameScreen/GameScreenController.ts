@@ -11,7 +11,6 @@ export class GameScreenController extends ScreenController {
   private view: GameScreenView;
   private screen?: ScreenSwitcher;
 
-<<<<<<< HEAD
   private currentOrder?: Order;
   private currentDifficulty: Difficulty = "proper";
   private orderNum = 1;
@@ -136,18 +135,6 @@ export class GameScreenController extends ScreenController {
       (success) => {
         if (!success) {
           return;
-=======
-    constructor(screenSwitcher: ScreenSwitcher, private resultStore: ResultStore) {
-        super()
-        this.view = new GameScreenView(
-                        () => this.handleBackToMenuClick(),
-                        () => this.handleInstructionsClick(),
-                        this.resultStore);
-        this.view.onOrderSuccess = (d) => this.handleOrderSuccess(d);
-        this.model=this.view.model
-        this.view.onGoToMinigame1 = () => {
-            this.screen?.switchToScreen({type:"minigame1"});
->>>>>>> dbb22e1eaf87d8bdd0e8f19bc5030628618c664c
         }
         
         // if last order of the day, go to results screen
@@ -169,22 +156,12 @@ export class GameScreenController extends ScreenController {
     );
   }
 
-<<<<<<< HEAD
   startGame(difficulty: Difficulty, order?: Order): void {
     this.currentDifficulty = difficulty;
     this.view.setDifficulty(difficulty);
     if (order) this.displayOrder(order);
     this.view.show();
   }
-=======
-    private handleInstructionsClick(){
-        this.screen?.switchToScreen({type:"tutorial"});
-    }
-
-    endGame(){
-        this.view.hide()
-    }
->>>>>>> dbb22e1eaf87d8bdd0e8f19bc5030628618c664c
 
   displayOrder(order: Order) {
     this.currentOrder = order;

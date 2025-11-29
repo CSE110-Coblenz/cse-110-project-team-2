@@ -3,12 +3,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT, TOPPINGS, ToppingType } from "../../constant
 import { View } from "../../types";
 import type { OrderResult } from "../../data/OrderResult";
 import { PIZZA } from "../../constants";
-<<<<<<< HEAD
 import type { Order } from "../../types";
-=======
-import { FONTS } from "../../fonts";
-import { createMenuSettingsPopup } from "../../BackButtonPopup";
->>>>>>> dbb22e1eaf87d8bdd0e8f19bc5030628618c664c
 
 export class Minigame1View implements View {
     private group: Konva.Group;
