@@ -41,7 +41,7 @@ export class TutorialScreenView implements View {
     // title
     const title = new Konva.Text({
       x: STAGE_WIDTH / 2,
-      y: 50,
+      y: 35,
       text: "INSTRUCTIONS",
       fontSize: 60,
       fontFamily: FONTS.HEADER,
@@ -54,7 +54,7 @@ export class TutorialScreenView implements View {
 
     const titleOutline = new Konva.Text({
         x: STAGE_WIDTH / 2,
-        y: 50,
+        y: 35,
         text: "INSTRUCTIONS",
         fontSize: 60,
         fontFamily: FONTS.HEADER,
@@ -73,40 +73,41 @@ export class TutorialScreenView implements View {
 
     const block = new Konva.Rect({
       x: textBoxX,
-      y: 105,
+      y: 95,
       width: textBoxW,
-      height: 425,
+      height: 475,
       fill: "white",
       stroke: "#999",
-      cornerRadius: 12,
+      cornerRadius: 8,
       shadowColor: "black",
       shadowBlur: 10,
       shadowOpacity: 0.2,
     });
 
     const blockText = new Konva.Text({
-      x: textBoxX + 20,
-      y: 115,
-      width: textBoxW - 40,
+      x: textBoxX,
+      y: 105,
+      width: textBoxW ,
       text:
-        "🍕 Game Instructions 🍕\n" +
         "Welcome to *Slice by Slice*! Your goal is to make the perfect pizza orders while earning tips.\n\n" +
 
-        "🎮 CONTROLS:\n" +
+        "🍕 Game Instructions 🍕\n" +
+        "• First pay attention to the order you have received.\n" +
+        "• To make your pizza, first select the number of pizzas you would like to make.\nThen choose the number of slices you want on that pizza.\n" +
         "• Use your mouse to drag toppings onto the pizza.\n" +
-        "• To remove a topping, use the tongs and drag it off the pizza.\n" +
-        "• Use the 'Help' button if you need a reminder of the current order.\n\n" +
+        "• To remove a topping, drag the tongs to the topping you would like to remove.\n" +
+        "• Remember to pay attention to your order! Click submit when you believe your order is correct.\nKeep trying until you get it, keep up the good work!\n\n" +
 
         "🎯 OBJECTIVE:\n" +
         "• Each customer wants a specific number of slices and toppings per pizza fraction.\n" +
-        "• Follow the order exactly — correct portions = happy customers + more tips!\n\n" +
+        "• Follow the order exactly — correct portions = happy customers!\n\n" +
 
         "🍕 MINI GAMES:\n" +
-        "• *Compare Toppings*: Match the right topping ratios to win bonus tips.\n" +
-        "• *Delivery Challenge*: At the end of the day, deliver your pizza while dodging obstacles\n to earn extra rewards.\n\n" +
+        "• *Compare Toppings*: Match the right topping ratios to win bonus tips.\n Pay attention to what the question is asking for and select the correct pizza!\n" +
+        "• *Delivery Challenge*: At the end of the day, deliver your pizza while dodging obstacles\n to earn extra rewards. Use the UP and DOWN arrow keys to move your car.\n\n" +
 
 
-        "Good luck, chef — the customers are waiting!",
+        "Good luck, chef - the customers are waiting!",
       fontSize: 15,
       lineHeight: 1.4,
       fontFamily: FONTS.BODY,
@@ -118,7 +119,7 @@ export class TutorialScreenView implements View {
     const btnY = STAGE_HEIGHT - 120;
 
     // Watch Tutorial (no-op for now)
-    const tutorialGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 100, y: btnY+15 });
+    const tutorialGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 100, y: btnY +40});
     const tutorialBtn = new Konva.Rect({
       width: 180,
       height: 56,

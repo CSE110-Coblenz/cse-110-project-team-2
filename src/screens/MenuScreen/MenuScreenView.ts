@@ -52,6 +52,7 @@ export class MenuScreenView implements View {
             listening: false,
         });
 
+
         // Title text
 
         const title = new Konva.Text({
@@ -80,6 +81,66 @@ export class MenuScreenView implements View {
             strokeWidth: 3,      
             align: "center",        
         })
+
+        // Pizza images ---------
+        const menuPizza = new Image();
+        menuPizza.src = "/homePizza.png";
+
+        menuPizza.onload = () => {
+            // big pizza image
+            const bigPizza = new Konva.Image({
+                image:menuPizza,
+                x: STAGE_WIDTH/2- 350,
+                y: STAGE_HEIGHT/2 + 80,
+                scaleX: 1,
+                scaleY: 1,
+                listening: false,
+            });
+
+            // pizza rotation
+            bigPizza.offsetX(menuPizza.width/2);
+            bigPizza.offsetY(menuPizza.height/2);
+
+            // small pizza image
+            const smallPizza = new Konva.Image({
+                image: menuPizza,
+                x: STAGE_WIDTH/2 + 320,
+                y: title.y() + title.fontSize() + 80,
+                scaleX: 0.5,
+                scaleY: 0.5,
+                listening: false,
+            });
+            smallPizza.offsetX(menuPizza.width / 2);
+            smallPizza.offsetY(menuPizza.height / 2);
+
+
+            // Add pizza image behind title and buttons and above overlay
+            this.group.add(bigPizza, smallPizza);
+            this.group.getLayer()?.batchDraw();
+
+            // pizza animation
+            const anim = new Konva.Animation((frame) => {
+                if (!frame) return;
+              
+                const period = 800;  // full cycle/period length in ms
+                const snapDuration = 400;  // how long it stays tilted
+                const t = frame.time % period;
+              
+                if (t < snapDuration) {
+                  // snap to right by rotation degrees
+                    bigPizza.rotation(10); 
+                    smallPizza.rotation(10);
+                } else {
+                  // snapped back to neutral
+                    bigPizza.rotation(0);
+                    smallPizza.rotation(0);
+                }
+            }, this.group.getLayer());
+              
+
+            anim.start(); // call the animation
+        };
+
 
         // Start button  -----
         const startButtonGroup = new Konva.Group();
