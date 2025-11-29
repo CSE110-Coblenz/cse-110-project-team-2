@@ -2,6 +2,7 @@ import { ScreenController } from "../../types";
 import type { ScreenSwitcher } from "../../types";
 import { DifficultyScreenView, type Difficulty } from "./DifficultyScreenView";
 
+
 export class DifficultyScreenController extends ScreenController {
     private view: DifficultyScreenView;
     private screenSwitcher: ScreenSwitcher;
@@ -11,7 +12,9 @@ export class DifficultyScreenController extends ScreenController {
         this.screenSwitcher = screenSwitcher;
         this.view = new DifficultyScreenView(
             (difficulty) => this.handleDifficultySelect(difficulty),
-            () => this.handleBackToMenuClick());
+            () => this.handleBackToMenuClick(),
+            () => this.handleInstructionsClick()
+            );
     }
 
     private handleDifficultySelect(difficulty: Difficulty): void {
@@ -30,6 +33,10 @@ export class DifficultyScreenController extends ScreenController {
     private handleBackToMenuClick() {
         this.screenSwitcher.switchToScreen({ type: "menu" });
     }   
+
+    private handleInstructionsClick(): void {
+        this.screenSwitcher.switchToScreen({ type: "tutorial"});
+    }
 
     getView(): DifficultyScreenView {
         return this.view;
