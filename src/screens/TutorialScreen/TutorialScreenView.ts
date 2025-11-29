@@ -119,7 +119,7 @@ export class TutorialScreenView implements View {
     const btnY = STAGE_HEIGHT - 120;
 
     // Watch Tutorial (no-op for now)
-    const tutorialGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 100, y: btnY +40});
+    const tutorialGroup = new Konva.Group({ x: STAGE_WIDTH / 2 - 100, y: btnY +50});
     const tutorialBtn = new Konva.Rect({
       width: 180,
       height: 56,
