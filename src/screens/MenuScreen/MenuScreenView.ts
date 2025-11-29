@@ -157,13 +157,14 @@ export class MenuScreenView implements View {
 
         const startText = new Konva.Text({ 
             x: STAGE_WIDTH / 2, 
-            y: 278, 
-            text: "Start", 
+            y: 260 + 56 / 2,//278, 
+            text: "START", 
             fontFamily: FONTS.BUTTON,
             fontSize: 22, 
             fill: "white" 
         });
         startText.offsetX(startText.width() / 2);
+        startText.offsetY(startText.height()/2);
 
         startButtonGroup.add(startButton);
         startButtonGroup.add(startText);
