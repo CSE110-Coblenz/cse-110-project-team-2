@@ -48,10 +48,10 @@ export class Minigame1View implements View {
         this.content = new Konva.Group({ x: 0, y: 70 });
         this.group.add(this.content);
 
-        // keep an affordance to go to minigame 2 if desired
+        // Button to go to Minigame 2
         const minigame2Group = new Konva.Group({
-            x: STAGE_WIDTH - 140,
-            y: 20,
+            x: STAGE_WIDTH / 2 - 60,
+            y: STAGE_HEIGHT / 2 - 20,
             listening: true,
         });
 
@@ -59,7 +59,7 @@ export class Minigame1View implements View {
             x: 0,
             y: 0,
             width: 120,
-            height: 34,
+            height: 40,
             fill: "#e5e7eb",
             stroke: "black",
             strokeWidth: 2,
@@ -67,12 +67,12 @@ export class Minigame1View implements View {
         });
 
         const minigame2Text = new Konva.Text({
-            x: 12,
-            y: 6,
+            x: 10,
+            y: 8,
             text: "Minigame 2",
-            fontSize: 14,
+            fontSize: 16,
             fill: "black",
-        });
+        });      
         minigame2Group.add(minigame2Btn, minigame2Text);
 
         // SETTINGS BUTTON (top-right corner)

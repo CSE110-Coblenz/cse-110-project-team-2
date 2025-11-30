@@ -3,12 +3,12 @@ import { Minigame1View } from "./Minigame1View";
 import { AudioManager } from "../../audio/AudioManager";
 import { ResultStore } from "../../data/ResultStore";
 import type { OrderResult } from "../../data/OrderResult";
-import { TOPPINGS, ToppingType } from "../../constants";
+import { TOPPINGS,ToppingType } from "../../constants";
 
 export class Minigame1Controller extends ScreenController {
     private view: Minigame1View
 
-    constructor(private screenSwitcher: ScreenSwitcher, private audio: AudioManager, private resultStore: ResultStore) {  
+    constructor(private screenSwitcher: any, private audio: AudioManager, private resultStore: ResultStore) {  
         super();
         this.view = new Minigame1View(
             () => this.handleBackToMenuClick(),
@@ -45,7 +45,6 @@ export class Minigame1Controller extends ScreenController {
     hide(): void {
         this.view.hide();
     }   
-
     startGame(): void {
         // Get all stored results
         const allResults = this.resultStore.getAll()

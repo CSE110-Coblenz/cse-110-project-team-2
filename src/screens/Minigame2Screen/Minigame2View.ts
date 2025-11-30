@@ -15,7 +15,6 @@ export class Minigame2View {
     private lastPuddleTime = 0;
     private onPuddleHit?: () => void;
     private onResultsButtonClick?: () => void;
-    private summaryNodes: Konva.Node[] = [];
 
     private settingsPopup: Konva.Group | null = null;
     private onBackToMenuClick: () => void;
@@ -118,15 +117,17 @@ export class Minigame2View {
       y: 30,
       text: "Obstacles hit: 0",
       fontSize: 30,
+      fontFamily: FONTS.BODY,
       fill: "black",
     });
 
     // timer display that counts down from 30 seconds
     this.timerText = new Konva.Text({
-        x: STAGE_WIDTH - 200,
+        x: STAGE_WIDTH - 230,
         y: 30,
         text: "Time left: 30",
         fontSize: 30,
+        fontFamily: FONTS.BODY,
         fill: "black",
     });
     this.group.add(this.timerText, this.obstacleText);
@@ -302,16 +303,7 @@ export class Minigame2View {
         this.group.getLayer()?.draw();
     }
 
-    // helper to clear previous summary display
-    clearSummary(): void {
-        if(this.summaryNodes.length === 0) return;
-        this.summaryNodes.forEach(node => node.destroy());  
-        this.summaryNodes = [];
-        this.group.getLayer()?.draw();
-    }
-
     showSummary(obstaclesHit: number, tip: number, review: string): void {
-       this.clearSummary();
         // background overlay
         const overlay = new Konva.Rect({
             x: 0,
@@ -346,6 +338,7 @@ export class Minigame2View {
             text: "🍕 Delivery Complete! 🍕",
             fontSize: 30,
             fontStyle: "bold",
+            fontFamily: FONTS.HEADER,
             fill: "#333",
         });
 
@@ -357,6 +350,7 @@ export class Minigame2View {
             align: "center",
             text: `Obstacles hit: ${obstaclesHit}`,
             fontSize: 22,
+            fontFamily: FONTS.BODY,
             fill: "#555",
         });
 
@@ -369,6 +363,7 @@ export class Minigame2View {
             text: tip > 0 ? `💰 Tip earned: $${tip.toFixed(2)}` : `💸 No tip earned`,
             fontSize: 26,
             fontStyle: "bold",
+            fontFamily: FONTS.HEADER,
             fill: tip > 0 ? "#2e7d32" : "#c62828",
         });
 
@@ -380,6 +375,7 @@ export class Minigame2View {
             align: "center",
             text: `Customer Review: "${review}"`,
             fontSize: 18,
+            fontFamily: FONTS.BODY,
             fill: "#333",
         });
 
@@ -413,6 +409,7 @@ export class Minigame2View {
             text: "Results",
             fontSize: 22,
             fontStyle: "bold",
+            fontFamily: FONTS.BUTTON,
             fill: "white",
         });
 
@@ -424,10 +421,6 @@ export class Minigame2View {
         buttonGroup.add(resultsButton, buttonLabel);
         this.group.add(buttonGroup);
 
-        this.group.add(overlay, popup, titleText, summaryText, tipText, reviewText, buttonGroup);
-        this.summaryNodes = [overlay, popup, titleText, summaryText, tipText, reviewText, buttonGroup];
-
-        this.group.getLayer()?.draw();
         // Michelle next steps: add hover effect?
     }
 
