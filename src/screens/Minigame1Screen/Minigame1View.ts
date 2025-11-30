@@ -1,33 +1,46 @@
 import Konva from "konva";
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
-import { View } from "../../types";  
+import { STAGE_WIDTH, STAGE_HEIGHT, TOPPINGS } from "../../constants";
+import { View } from "../../types";
+import type { OrderResult } from "../../data/OrderResult";
+import { PIZZA } from "../../constants";
+import { FONTS } from "../../fonts";
+import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
 export class Minigame1View implements View {
     private group: Konva.Group;
-
-    // controller will set this to go to Minigaem 2
+    private content: Konva.Group;
+    private pizzaGroup = new Konva.Group();
+    // map has key of strings and value of numbers
+    // map key is `${sideIndex}-${subIndex}` where sideIndex is 0 for A (left) and 1 for B (right)
+    // e.g. string "0-1" refers to left side, sub-pizza 1
+    private pizzaRadius: Map<string, number> = new Map();
+    private settingsPopup: Konva.Group | null = null;
+    
+    
+    // controller will set this to go to Minigame 2
     public onGoToMinigame2: () => void = () => {};
+    // controller can set this after a result to navigate away
+    public onBackToGame: () => void = () => {};
+    public handleInstructionsClick: () => void = () => {};
+    // callback set by renderPair so bases can call it when clicked
+    private onChoiceCallback: (choice: "A" | "B" | "Equivalent") => void = () => {};
 
-    constructor() {
-        this.group = new Konva.Group({ visible: false, listening: true });
+    constructor(
+        onBackToMenuClick: () => void,
+        onInstructionsClick: () => void
+        ) {
+            this.group = new Konva.Group({ visible: false, listening: true });
+            this.drawBackground()
+            this.group.add(this.pizzaGroup);
 
-        // Background
-        this.group.add(new Konva.Rect({
-            x: 0,
-            y: 0,
-            width: STAGE_WIDTH,
-            height: STAGE_HEIGHT,
-            fill: "#fde68a", 
-        }));
-
-        // Title
-        this.group.add(new Konva.Text({
-            x: 40,
-            y: 40,
-            text: "Minigame 1 Screen",
-            fontSize: 32,
-            fontStyle: "bold",
-            fill: "black",
+            // Title
+            this.group.add(new Konva.Text({
+                x: 40,
+                y: 80,
+                text: "Minigame 1",
+                fontSize: 32,
+                fontStyle: "bold",
+                fill: "black",
         }));
 
         // Button to go to Minigame 2
@@ -56,6 +69,56 @@ export class Minigame1View implements View {
             fill: "black",
         });      
         minigame2Group.add(minigame2Btn, minigame2Text);
+
+        // SETTINGS BUTTON (top-right corner)
+        const settingsGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
+
+        const settingsBtn = new Konva.Rect({
+            width: 160,
+            height: 50,
+            fill: "#d84315",
+            cornerRadius: 8,
+            stroke: "#b71c1c",
+            strokeWidth: 2,
+        });
+
+        const settingsText = new Konva.Text({
+            x: 80,
+            y: 25,
+            text: "⚙︎  |  𝓲",
+            fontFamily: FONTS.BUTTON,
+            fontSize: 30,
+            fill: "white",
+        });
+        settingsText.offsetX(settingsText.width() / 2);
+        settingsText.offsetY(settingsText.height() / 2);
+
+        settingsGroup.add(settingsBtn, settingsText);
+
+        // clicking opens/closes popup
+        settingsGroup.on("click tap", () => {
+            if (this.settingsPopup) {
+                this.settingsPopup.destroy();
+                this.settingsPopup = null;
+                this.group.getLayer()?.draw();
+                return;
+            }
+
+            this.settingsPopup = createMenuSettingsPopup({
+                onBackToMenu: onBackToMenuClick,
+                onInstructions: onInstructionsClick,
+                onClose: () => {
+                    this.settingsPopup = null;
+                    this.group.getLayer()?.draw();
+                },
+            });
+
+            this.group.add(this.settingsPopup);
+            this.group.getLayer()?.draw();
+        });
+
+        // Add all elements to the main group
+        this.group.add(settingsGroup);
         
         // click event → goes to minigame 2 screen
         minigame2Group.on("click", () => this.onGoToMinigame2());

@@ -153,6 +153,9 @@ export class GameScreenController extends ScreenController {
     this.currentOrder = order;
     this.view.displayOrder(order);
   }
+  private handleInstructionsClick(){
+        this.screen?.switchToScreen({type:"tutorial"});
+  }
 
   endGame() {
     this.view.hide();

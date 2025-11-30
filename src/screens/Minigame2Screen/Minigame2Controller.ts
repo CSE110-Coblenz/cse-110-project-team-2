@@ -19,7 +19,10 @@ export class Minigame2Controller extends ScreenController {
     constructor(switcher: ScreenSwitcher, audio: AudioManager) {
         super();
         this.model = new Minigame2Model();
-        this.view = new Minigame2View();
+        this.view = new Minigame2View(    
+            () => this.handleBackToMenuClick(),
+            () => this.handleInstructionsClick()
+        );
         this.switcher = switcher;
         this.audio = audio;
 
@@ -84,6 +87,14 @@ export class Minigame2Controller extends ScreenController {
             clearInterval(this.gameTimer);
             this.gameTimer = null;
         }
+    }
+
+    private handleBackToMenuClick() {
+        //goes to difficulty selection first
+        this.switcher?.switchToScreen({ type: "menu" });
+    }
+    private handleInstructionsClick(): void {
+        this.switcher?.switchToScreen({ type: "tutorial" });
     }
 
     getView(): Minigame2View {

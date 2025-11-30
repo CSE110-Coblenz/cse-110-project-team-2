@@ -2,11 +2,16 @@ import Konva from "konva";
 import type { View } from "../../types";
 import { STAGE_WIDTH, STAGE_HEIGHT, SCREEN_BACKGROUNDS, SCREEN_OVERLAY } from "../../constants";
 import { FONTS } from "../../fonts";
+import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
 export class TutorialScreenView implements View {
   private group: Konva.Group;
+  private settingsPopup: Konva.Group | null = null;
 
-  constructor(onBackToMenuClick: () => void, onWatchTutorialClick: () => void) {
+  constructor(onBackToMenuClick: () => void,
+              onWatchTutorialClick: () => void,
+              onInstructionsClick: () => void
+              ) {
     this.group = new Konva.Group({ visible: false });
 
     // background
@@ -141,31 +146,59 @@ export class TutorialScreenView implements View {
     // no demo yet
     tutorialGroup.on("click", onWatchTutorialClick);
 
-    // Back to main menu button (top-right corner)
-    const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
-    const backBtn = new Konva.Rect({
-      width: 160,
-      height: 50,
-      fill: "#d84315",
-      cornerRadius: 8,
-      stroke: "#b71c1c",
-      strokeWidth: 2,
-    });
-    const backText = new Konva.Text({
-      x: 80,
-      y: 25,
-      text: "Back to Menu",
-      fontFamily: FONTS.BUTTON,
-      fontSize: 16,
-      fill: "white",
+
+    // SETTINGS BUTTON (top-right corner)
+    const settingsGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
+
+    const settingsBtn = new Konva.Rect({
+        width: 160,
+        height: 50,
+        fill: "#d84315",
+        cornerRadius: 8,
+        stroke: "#b71c1c",
+        strokeWidth: 2,
     });
 
-    backText.offsetX(backText.width() / 2);
-    backText.offsetY(backText.height() / 2);
-    backGroup.add(backBtn, backText);
-    backGroup.on("click", onBackToMenuClick);
+    const settingsText = new Konva.Text({
+        x: 80,
+        y: 25,
+        text: "⚙︎  |  𝓲",
+        fontFamily: FONTS.BUTTON,
+        fontSize: 30,
+        fill: "white",
+    });
+    settingsText.offsetX(settingsText.width() / 2);
+    settingsText.offsetY(settingsText.height() / 2);
 
-    this.group.add(bg, overlay, title, titleOutline, block, blockText, tutorialGroup, backGroup);
+    settingsGroup.add(settingsBtn, settingsText);
+
+    // clicking opens/closes popup
+    settingsGroup.on("click tap", () => {
+        if (this.settingsPopup) {
+            this.settingsPopup.destroy();
+            this.settingsPopup = null;
+            this.group.getLayer()?.draw();
+            return;
+        }
+
+        this.settingsPopup = createMenuSettingsPopup({
+            onBackToMenu: onBackToMenuClick,
+            onInstructions: onInstructionsClick,
+            onClose: () => {
+                this.settingsPopup = null;
+                this.group.getLayer()?.draw();
+            },
+        });
+
+        this.group.add(this.settingsPopup);
+        this.group.getLayer()?.draw();
+    });
+
+    // Add all elements to the main group
+    this.group.add(bg, overlay, title,titleOutline, tutorialGroup, block, blockText, titleOutline, settingsGroup);
+
+  
+  
   }
 
 
