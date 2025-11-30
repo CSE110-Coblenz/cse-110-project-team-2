@@ -1,16 +1,16 @@
 import { ScreenController, ScreenSwitcher } from "../../types";
 import { Minigame1View } from "./Minigame1View";
 import { AudioManager } from "../../audio/AudioManager";
-import { ResultStore } from "../../data/ResultStore";
-import type { OrderResult } from "../../data/OrderResult";
-import { TOPPINGS, ToppingType } from "../../constants";
 
 export class Minigame1Controller extends ScreenController {
     private view: Minigame1View
 
-    constructor(private screenSwitcher: ScreenSwitcher, private audio: AudioManager, private resultStore: ResultStore) {  
+    constructor(private screenSwitcher: any, private audio: AudioManager) {  
         super();
-        this.view = new Minigame1View();
+        this.view = new Minigame1View(
+            () => this.handleBackToMenuClick(),
+            () => this.handleInstructionsClick()
+        );
 
         this.view.onGoToMinigame2 = () => {
             this.screenSwitcher.switchToScreen({ type: "minigame2" });
@@ -19,10 +19,19 @@ export class Minigame1Controller extends ScreenController {
         this.view.onBackToGame = () => {
             this.screenSwitcher.switchToScreen({ type: "game" });
         }
+
     }
 
     getView(): Minigame1View {
         return this.view;
+    }
+
+    private handleBackToMenuClick(): void {
+        this.screenSwitcher.switchToScreen({ type: "menu" });
+      }
+    
+    private handleInstructionsClick(): void {
+        this.screenSwitcher.switchToScreen({ type: "tutorial" });
     }
 
     show(): void {
@@ -33,7 +42,6 @@ export class Minigame1Controller extends ScreenController {
     hide(): void {
         this.view.hide();
     }   
-
     startGame(): void {
         // Get all stored results
         const allResults = this.resultStore.getAll()

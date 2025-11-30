@@ -1,6 +1,3 @@
-import type { Order } from "../types";
-import { ToppingType } from "../constants";
-
 export interface OrderResult {
   orderNumber: number;
   success: boolean;

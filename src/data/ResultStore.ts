@@ -4,15 +4,9 @@ import type { OrderResult } from "./OrderResult";
 const STORAGE_KEY = "slice_by_slice_order_results";
 const SESSION_FLAG = "slice_by_slice_session_active";
 
-type StoredData = {
-    results: OrderResult[];
-    totalTips: number;
-};
-
 export class ResultStore {
     // In-memory storage of results
     private results: OrderResult[] = [];
-    private totalTips: number = 0;
 
     constructor() {
         if(typeof window !== "undefined") {
@@ -34,17 +28,9 @@ export class ResultStore {
             const storedResults = window.localStorage.getItem(STORAGE_KEY);
             if (storedResults) {
                 try {
-                    const parsed = JSON.parse(storedResults);  
-                    if (Array.isArray(parsed)) {
-                        this.results = parsed as OrderResult[];
-                        this.totalTips = 0;
-                    } else {
-                        this.results = (parsed.results ??[]) as OrderResult[];
-                        this.totalTips = Number(parsed.totalTips ?? 0);
-                    } 
+                    this.results = JSON.parse(storedResults) as OrderResult[];
                 } catch {
                     this.results = [];
-                    this.totalTips = 0;
                 }
             }
         }
@@ -56,18 +42,6 @@ export class ResultStore {
         this.save();
     }
 
-    // Award tips
-    addTips(amount: number): void {
-        if(!Number.isFinite(amount)) return;
-        this.totalTips += amount;
-        this.save();
-    }
-
-    // Get total tips
-    getTotalTips(): number {
-        return this.totalTips;
-    }
-
     // Retrieve all stored results
     getAll(): OrderResult[] {
         return this.results;
@@ -76,18 +50,13 @@ export class ResultStore {
     // Clear all stored results
     clear(): void {
         this.results = [];
-        this.totalTips = 0;
         this.save();
     }
     
     // Save results to localStorage
     private save(): void {
         if(typeof window !== "undefined") {
-            const payload: StoredData = {
-                results: this.results,
-                totalTips: this.totalTips,
-            };
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.results));
         }
     }
 }
