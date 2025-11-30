@@ -56,6 +56,7 @@ export class GameScreenController extends ScreenController {
     this.model.setSliceNum(0);
 
     this.view.resetForPizzaNum(numPizza);
+    this.view.clearSelectionWarning();
   }
 
   private handleSliceNumSelected(slices: number) {
@@ -66,6 +67,7 @@ export class GameScreenController extends ScreenController {
 
     this.model.setSliceNum(slices);
     this.view.resetForSliceNum(slices);
+    this.view.clearSelectionWarning();
   }
 
   private handleTongsRemove(type: ToppingType) {
@@ -84,7 +86,23 @@ export class GameScreenController extends ScreenController {
   private handleSubmit(): void {
     const order = this.currentOrder;
     if (!order) return;
-    if (this.model.pizzaNum === 0 || this.model.sliceNum === 0) return;
+    //if the user hasn't selected pizza or slice num yet
+    if (this.model.pizzaNum === 0 || this.model.sliceNum === 0) {
+      if (this.model.pizzaNum === 0 && this.model.sliceNum === 0) {
+        this.view.showSelectionWarning(
+          "Select how many pizzas and a pizza size before submitting!"
+        );
+      } else if (this.model.pizzaNum === 0) {
+        this.view.showSelectionWarning(
+          "Select how many pizzas before submitting!"
+        );
+      } else if (this.model.sliceNum === 0) {
+        this.view.showSelectionWarning(
+          "Select a pizza size (number of slices) before submitting!"
+        );
+      }
+      return;
+    }
 
     const evalResult = this.model.evaluateOrder(order);
 
@@ -126,6 +144,7 @@ export class GameScreenController extends ScreenController {
   startGame(difficulty: Difficulty, order?: Order): void {
     this.currentDifficulty = difficulty;
     this.view.setDifficulty(difficulty);
+    this.view.resetSelectionWarning();
     if (order) this.displayOrder(order);
     this.view.show();
   }
