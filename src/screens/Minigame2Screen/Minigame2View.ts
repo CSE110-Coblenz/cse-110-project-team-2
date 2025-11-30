@@ -15,7 +15,6 @@ export class Minigame2View {
     private lastPuddleTime = 0;
     private onPuddleHit?: () => void;
     private onResultsButtonClick?: () => void;
-    private summaryNodes: Konva.Node[] = [];
 
     private settingsPopup: Konva.Group | null = null;
     private onBackToMenuClick: () => void;
@@ -302,16 +301,7 @@ export class Minigame2View {
         this.group.getLayer()?.draw();
     }
 
-    // helper to clear previous summary display
-    clearSummary(): void {
-        if(this.summaryNodes.length === 0) return;
-        this.summaryNodes.forEach(node => node.destroy());  
-        this.summaryNodes = [];
-        this.group.getLayer()?.draw();
-    }
-
     showSummary(obstaclesHit: number, tip: number, review: string): void {
-       this.clearSummary();
         // background overlay
         const overlay = new Konva.Rect({
             x: 0,
@@ -424,10 +414,6 @@ export class Minigame2View {
         buttonGroup.add(resultsButton, buttonLabel);
         this.group.add(buttonGroup);
 
-        this.group.add(overlay, popup, titleText, summaryText, tipText, reviewText, buttonGroup);
-        this.summaryNodes = [overlay, popup, titleText, summaryText, tipText, reviewText, buttonGroup];
-
-        this.group.getLayer()?.draw();
         // Michelle next steps: add hover effect?
     }
 
