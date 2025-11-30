@@ -54,7 +54,7 @@ export class ResultScreenController extends ScreenController{
             wrongOrders.add(new Konva.Text({
                 x: 20,
                 y, 
-                text: `Day ${result.day} - Order #${result.orderNumber}`,
+                // text: `Day ${result.day} - Order #${result.orderNumber}`,
                 fontSize: 20,
                 fill: "black"
             }));

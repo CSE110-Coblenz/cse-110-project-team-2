@@ -8,7 +8,7 @@ import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
 export class Minigame1View implements View {
     private group: Konva.Group;
-    private content: Konva.Group;
+    // private content: Konva.Group;
     private pizzaGroup = new Konva.Group();
     // map has key of strings and value of numbers
     // map key is `${sideIndex}-${subIndex}` where sideIndex is 0 for A (left) and 1 for B (right)
@@ -30,7 +30,7 @@ export class Minigame1View implements View {
         onInstructionsClick: () => void
         ) {
             this.group = new Konva.Group({ visible: false, listening: true });
-            this.drawBackground()
+            // this.drawBackground()
             this.group.add(this.pizzaGroup);
 
             // Title
