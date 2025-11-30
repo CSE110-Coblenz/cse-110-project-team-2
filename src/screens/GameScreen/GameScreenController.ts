@@ -4,6 +4,7 @@ import { ToppingType, ORDERS_PER_DAY } from "../../constants";
 import { ScreenController, Difficulty, Order } from "../../types";
 import { ScreenSwitcher } from "../../types";
 import { ResultStore } from "../../data/ResultStore";
+import type { OrderResult, PlacedTopping } from "../../data/OrderResult";
 
 export class GameScreenController extends ScreenController {
   private model: GameScreenModel;
@@ -106,20 +107,34 @@ export class GameScreenController extends ScreenController {
 
     const evalResult = this.model.evaluateOrder(order);
 
+    const { success, lines, expectedTotal, currentTotal, expectedPizzaNum } =
+      evalResult;
+
+    //const pizzaCount = this.model.pizzaNum;
+    const screenshotDataUrl = this.view.capturePizzaImage();
+
+    // keeps track if this is the last order of the day
+    const isLastOrderOfDay = this.orderNum >= ORDERS_PER_DAY;
+
     this.resultStore.add({
       orderNumber: this.orderNum,
-      success: evalResult.success,
-      details: evalResult.lines.join("\n"),
-      expectedTotal: evalResult.expectedTotal,
-      currentTotal: evalResult.currentTotal,
-      expectedPizzaNum: evalResult.expectedPizzaNum,
+      success,
+      details: lines.join("\n"),
+      expectedTotal,
+      currentTotal,
+      expectedPizzaNum,
       currentPizzaNumber: this.model.pizzaNum,
+      slicesUsed: this.model.sliceNum,
+      order,
+      tipsEarned: 0,
+      screenshotDataUrl,
     });
 
     if (evalResult.success) {
-      this.orderNum += 1;
-      if (this.orderNum > ORDERS_PER_DAY) this.orderNum = 1;
-      this.view.updateOrderNumber(this.orderNum);
+      if(!isLastOrderOfDay) {
+        this.orderNum += 1;
+        this.view.updateOrderNumber(this.orderNum);
+      }
 
       this.clearAllToppingsVisual();
       this.model.resetAll();
@@ -130,9 +145,21 @@ export class GameScreenController extends ScreenController {
       evalResult.lines.join("\n"),
       evalResult.success,
       (success) => {
-        if (success) {
-          this.screen?.switchToScreen({
-            type: "order",
+        if (!success) {
+          return;
+        }
+        
+        // if last order of the day, go to minigame1 screen
+        if (isLastOrderOfDay) {
+          this.orderNum = 1; // reset for next day
+          this.view.updateOrderNumber(this.orderNum);
+          this.screen?.switchToScreen({ 
+            type: "minigame1",
+          }); 
+        } else {
+          // proceed to next order
+          this.screen?.switchToScreen({ 
+            type: "order", 
             mode: this.currentDifficulty,
             returnToGame: true,
           });
