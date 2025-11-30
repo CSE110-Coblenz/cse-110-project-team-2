@@ -1,4 +1,3 @@
-import { Order } from "../types";
 import type { OrderResult } from "./OrderResult";
 
 const STORAGE_KEY = "slice_by_slice_order_results";
