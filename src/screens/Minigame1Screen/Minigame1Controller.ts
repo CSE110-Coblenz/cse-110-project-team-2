@@ -1,11 +1,14 @@
 import { ScreenController, ScreenSwitcher } from "../../types";
 import { Minigame1View } from "./Minigame1View";
 import { AudioManager } from "../../audio/AudioManager";
+import { ResultStore } from "../../data/ResultStore";
+import type { OrderResult } from "../../data/OrderResult";
+import { TOPPINGS,ToppingType } from "../../constants";
 
 export class Minigame1Controller extends ScreenController {
     private view: Minigame1View
 
-    constructor(private screenSwitcher: any, private audio: AudioManager) {  
+    constructor(private screenSwitcher: any, private audio: AudioManager, private resultStore: ResultStore) {  
         super();
         this.view = new Minigame1View(
             () => this.handleBackToMenuClick(),

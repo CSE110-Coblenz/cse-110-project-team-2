@@ -801,6 +801,48 @@ export class GameScreenView implements View {
     this.group.add(backgroundGroup);
   }
 
+  // capture an image of the current pizza 
+  capturePizzaImage(): string | undefined {
+    const layer = this.group.getLayer();
+    if(!layer) return; 
+
+    const radius = this.rOuter || 150;
+    const margin = 20;
+
+    let leftX: number;
+    let rightX: number;
+
+    if(this.model.pizzaNum === 2) {
+        leftX = PIZZA.pizzaX1;
+        rightX = PIZZA.pizzaX2;
+    } else {
+        const centerX = PIZZA.pizzaX;
+        leftX = centerX;
+        rightX = centerX;
+    }
+
+    const minX = leftX - radius - margin;
+    const maxX = rightX + radius + margin;
+    const x = minX
+    const width = maxX - minX;
+
+    const y = PIZZA.pizzaY - radius - margin;
+    const height = radius * 2 + margin * 2;
+
+    try {
+        return this.group.toDataURL({
+            x,
+            y,
+            width,
+            height,
+            pixelRatio: 1,
+        });
+    } catch (e) {
+        console.error("Error capturing pizza image:", e);
+        return undefined
+    }
+  }
+
   setDifficulty(d: Difficulty): void {
     this.currentDifficulty = d;
   }
