@@ -117,15 +117,17 @@ export class Minigame2View {
       y: 30,
       text: "Obstacles hit: 0",
       fontSize: 30,
+      fontFamily: FONTS.BODY,
       fill: "black",
     });
 
     // timer display that counts down from 30 seconds
     this.timerText = new Konva.Text({
-        x: STAGE_WIDTH - 200,
+        x: STAGE_WIDTH - 230,
         y: 30,
         text: "Time left: 30",
         fontSize: 30,
+        fontFamily: FONTS.BODY,
         fill: "black",
     });
     this.group.add(this.timerText, this.obstacleText);
@@ -336,6 +338,7 @@ export class Minigame2View {
             text: "🍕 Delivery Complete! 🍕",
             fontSize: 30,
             fontStyle: "bold",
+            fontFamily: FONTS.HEADER,
             fill: "#333",
         });
 
@@ -347,6 +350,7 @@ export class Minigame2View {
             align: "center",
             text: `Obstacles hit: ${obstaclesHit}`,
             fontSize: 22,
+            fontFamily: FONTS.BODY,
             fill: "#555",
         });
 
@@ -359,6 +363,7 @@ export class Minigame2View {
             text: tip > 0 ? `💰 Tip earned: $${tip.toFixed(2)}` : `💸 No tip earned`,
             fontSize: 26,
             fontStyle: "bold",
+            fontFamily: FONTS.HEADER,
             fill: tip > 0 ? "#2e7d32" : "#c62828",
         });
 
@@ -370,6 +375,7 @@ export class Minigame2View {
             align: "center",
             text: `Customer Review: "${review}"`,
             fontSize: 18,
+            fontFamily: FONTS.BODY,
             fill: "#333",
         });
 
@@ -403,6 +409,7 @@ export class Minigame2View {
             text: "Results",
             fontSize: 22,
             fontStyle: "bold",
+            fontFamily: FONTS.BUTTON,
             fill: "white",
         });
 
