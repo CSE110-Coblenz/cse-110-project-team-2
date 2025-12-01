@@ -85,11 +85,29 @@ export class Minigame1Controller extends ScreenController {
 
         // render pair and evaluate player's choice
         this.view.renderPair(a, b, topping, (choice: "A" | "B" | "Equivalent") => {
-            const aCount = a.order!.toppingsCounts?.[topping] ?? 0;
-            const bCount = b.order!.toppingsCounts?.[topping] ?? 0;
+            const aOrder = a.order!;
+            const bOrder = b.order!;
+
+            const aCount = aOrder.toppingsCounts?.[topping] ?? 0;
+            const bCount = bOrder.toppingsCounts?.[topping] ?? 0;
+
+            const aTotalSlices = (a.currentPizzaNumber ?? 1) * (a.slicesUsed ?? 1);
+            const bTotalSlices = (b.currentPizzaNumber ?? 1) * (b.slicesUsed ?? 1);
+
             let correct: "A" | "B" | "Equivalent" = "Equivalent";
-            if (aCount > bCount) correct = "A";
-            else if (bCount > aCount) correct = "B";
+
+            if(aTotalSlices > 0 && bTotalSlices > 0) {
+                const left = aCount * bTotalSlices;
+                const right = bCount * aTotalSlices;
+
+                if (left > right) {
+                    correct = "A";
+                } else if (right > left) {
+                    correct = "B";
+                } else {
+                    correct = "Equivalent";
+                }
+            }
 
             const isCorrect = choice === correct;
 
