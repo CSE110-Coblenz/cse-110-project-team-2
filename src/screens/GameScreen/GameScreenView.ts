@@ -21,6 +21,7 @@ export class GameScreenView implements View {
   private orderNumber: Konva.Text;
   private rOuter = 0;
   private currentDifficulty: Difficulty = "proper";
+  private selectionWarning: Konva.Text;
 
   constructor(
     private model: GameScreenModel,
@@ -44,7 +45,7 @@ export class GameScreenView implements View {
     basePizza.src = "/pizza.png";
     basePizza.onload = () => {
       this.rOuter = (basePizza.width / 2) * 0.8 - 5;
-      console.log(this.rOuter)
+      console.log(this.rOuter);
     };
 
     this.drawBackground();
@@ -56,8 +57,8 @@ export class GameScreenView implements View {
       fontSize: 36,
       fill: "white",
       align: "center",
-      fontFamily:FONTS.SUBHEADER,
-      x: 150,
+      fontFamily: FONTS.SUBHEADER,
+      x: 140,
       y: 440,
     });
     sliceText.offsetX(sliceText.width() / 2);
@@ -72,14 +73,32 @@ export class GameScreenView implements View {
       fontSize: 36,
       fill: "white",
       align: "center",
-      fontFamily:FONTS.SUBHEADER,
-      x: 150,
+      fontFamily: FONTS.SUBHEADER,
+      x: 140,
       y: 270,
     });
     numPizzaText.offsetX(numPizzaText.width() / 2);
     this.drawPizzaButton(100, 320, 1);
     this.drawPizzaButton(100, 350, 2);
     this.group.add(numPizzaText);
+
+
+    //selection warning text
+    this.selectionWarning = new Konva.Text({
+      x: 600,
+      y: 20,
+      width: 250,
+      text: "Select how many pizzas and a pizza size to get started!",
+      fontSize: 20,
+      fontFamily: FONTS.BODY,
+      fill: "red",
+      fontStyle:"bold",
+      align: "center",
+      lineHeight: 1.4,
+      visible: false,
+      listening: false,
+    });
+    this.group.add(this.selectionWarning);
 
     //Topping bins
     this.drawTopping(450, 170, "Mushroom", "mushroom.png", 0.75);
@@ -145,7 +164,7 @@ export class GameScreenView implements View {
       fontSize: 36,
       fill: "black",
       align: "center",
-      fontFamily:FONTS.HEADER,
+      fontFamily: FONTS.HEADER,
       x: 160,
       y: 20,
     });
@@ -158,10 +177,10 @@ export class GameScreenView implements View {
       width: 250,
       text: "",
       fontSize: 20,
-      fontFamily:FONTS.BODY,
+      fontFamily: FONTS.BODY,
       fill: "black",
       align: "center",
-      lineHeight:1.6
+      lineHeight: 1.6,
     });
     this.group.add(this.orderDisplay);
 
@@ -183,7 +202,7 @@ export class GameScreenView implements View {
       y: 67.5,
       text: "Submit",
       fontSize: 36,
-      fontFamily:FONTS.BUTTON,
+      fontFamily: FONTS.BUTTON,
       fill: "white",
     });
     submitText.offsetX(submitText.width() / 2);
@@ -211,7 +230,7 @@ export class GameScreenView implements View {
       y: 67.5,
       text: "Minigame 1",
       fontSize: 28,
-      fontFamily:FONTS.BUTTON,
+      fontFamily: FONTS.BUTTON,
       fill: "white",
       align: "center",
     });
@@ -222,7 +241,7 @@ export class GameScreenView implements View {
     this.group.add(minigameGroup);
 
     //receipt with order in it
-    const orderCount = new Konva.Group({ x: STAGE_WIDTH - 550, y: 20 });
+    const orderCount = new Konva.Group({ x: STAGE_WIDTH - 950, y: 20 });
     const orderRect = new Konva.Rect({
       width: 190,
       height: 50,
@@ -236,7 +255,7 @@ export class GameScreenView implements View {
       y: 25,
       text: `Order Number: 1 / ${ORDERS_PER_DAY}`,
       fontSize: 16,
-      fontFamily:FONTS.BODY,
+      fontFamily: FONTS.BODY,
       fill: "white",
     });
     this.orderNumber.offsetX(this.orderNumber.width() / 2);
@@ -255,10 +274,10 @@ export class GameScreenView implements View {
       strokeWidth: 2,
     });
     const backText = new Konva.Text({
-      x: 80,
+      x: 70,
       y: 25,
       text: "Back to Menu",
-      fontFamily:FONTS.BUTTON,
+      fontFamily: FONTS.BUTTON,
       fontSize: 16,
       fill: "white",
     });
@@ -271,11 +290,10 @@ export class GameScreenView implements View {
     this.show();
   }
 
-
   resetForPizzaNum(numPizza: number): void {
     this.clearSlicesVisual();
     this.pizzaGroup.destroyChildren();
-    this.sliceArcs.forEach(a => a.destroy());
+    this.sliceArcs.forEach((a) => a.destroy());
     this.sliceArcs = [];
 
     if (numPizza === 1) {
@@ -300,12 +318,12 @@ export class GameScreenView implements View {
   clearSlicesVisual() {
     this.pizzaGroup.find("Line").forEach((node) => node.destroy());
     this.pizzaGroup.find(".slice").forEach((node) => node.destroy());
-    this.sliceArcs.forEach(a => a.destroy());
+    this.sliceArcs.forEach((a) => a.destroy());
     this.sliceArcs = [];
   }
 
   destroyToppingNodes(nodes: Konva.Group[]) {
-    nodes.forEach(n => n.destroy());
+    nodes.forEach((n) => n.destroy());
     this.group.getLayer()?.batchDraw();
   }
 
@@ -317,6 +335,23 @@ export class GameScreenView implements View {
 
   updateOrderNumber(orderNum: number) {
     this.orderNumber.text(`Order Number: ${orderNum} / ${ORDERS_PER_DAY}`);
+    this.group.getLayer()?.batchDraw();
+  }
+
+  //pizza/slice select warnings
+  showSelectionWarning(message: string): void {
+    this.selectionWarning.text(message);
+    this.selectionWarning.visible(true);
+    this.group.getLayer()?.batchDraw();
+  }
+
+  clearSelectionWarning(): void {
+    this.selectionWarning.visible(false)
+    this.group.getLayer()?.batchDraw();
+  }
+  resetSelectionWarning(): void {
+    this.selectionWarning.visible(true);
+    this.showSelectionWarning("Select how many pizzas and a pizza size to get started!")
     this.group.getLayer()?.batchDraw();
   }
 
@@ -372,24 +407,24 @@ export class GameScreenView implements View {
 
     const title = new Konva.Text({
       x: panel.x() + panel.width() / 2,
-      y: panel.y() + 10,
+      y: panel.y() + 12,
       text: isSuccess ? "Correct!" : "Incorrect",
       fontSize: 30,
       fill: isSuccess ? "green" : "red",
       align: "center",
-      fontFamily:FONTS.HEADER,
+      fontFamily: FONTS.HEADER,
     });
     title.offsetX(title.width() / 2);
 
     const body = new Konva.Text({
       x: panel.x() + panel.width() / 10,
-      y: panel.y() + 60,
+      y: panel.y() + 62,
       text: lines,
       fontSize: 24,
       fill: "black",
       align: "center",
-      fontFamily:FONTS.BODY,
-      lineHeight:1.6
+      fontFamily: FONTS.BODY,
+      lineHeight: 1.6,
     });
 
     const closeButton = new Konva.Group({ x: STAGE_WIDTH / 2 - 60, y: 400 });
@@ -403,7 +438,7 @@ export class GameScreenView implements View {
     });
     const closeText = new Konva.Text({
       x: 60,
-      y: 24,
+      y: 25,
       text: "Close",
       fontSize: 18,
       fill: "white",
@@ -425,9 +460,6 @@ export class GameScreenView implements View {
     this.group.getLayer()?.batchDraw();
   }
 
-
-
-
   private drawPizzaButton(cx: number, cy: number, numPizza: number): void {
     const button = new Konva.Group({ x: cx, y: cy });
 
@@ -441,10 +473,10 @@ export class GameScreenView implements View {
       text: numPizza + " Pizza",
       fontSize: 20,
       fill: "white",
-      width: rect.width(),
-      align: "center",
+      x: rect.width() / 2 - 10,
+      align: "left",
       y: rect.height() / 2,
-      fontFamily:FONTS.BODY,
+      fontFamily: FONTS.BODY,
     });
 
     button.add(rect, text);
@@ -491,10 +523,9 @@ export class GameScreenView implements View {
       text: slices + " slices",
       fontSize: 20,
       fill: "white",
-      width: rect.width(),
-      align: "center",
+      x: rect.width() / 2 - 10,
       y: rect.height() / 2,
-      fontFamily:FONTS.BODY,
+      fontFamily: FONTS.BODY,
     });
 
     button.add(rect, text);
@@ -571,7 +602,7 @@ export class GameScreenView implements View {
       align: "center",
       y: 40,
       x: 0,
-      fontFamily:FONTS.SUBHEADER,
+      fontFamily: FONTS.SUBHEADER,
     });
 
     const tin = new Image();
