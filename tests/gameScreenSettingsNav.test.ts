@@ -1,82 +1,94 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// mock results store
-/*vi.mock("../src/data/ResultStore", () => {
-  return {
-    ResultStore: class {
-      add = vi.fn();
-      getAll = vi.fn().mockReturnValue([]);
-    },
-  };
-});*/
-
-// mock game screen view
+//mock GameScreenView 
+//mock GameScreenView 
 vi.mock("../src/screens/GameScreen/GameScreenView", () => {
-  return {
-    GameScreenView: class {
+    return {
+      GameScreenView: class {
+        // test only triggers
         public triggerSettingsBackToMenu!: () => void;
         public triggerSettingsInstructions!: () => void;
+  
+        constructor(
+          onBackToMenuClick: () => void,
+          _resultStore: any,
+          instructionsArg: any 
+        ) {
+          // instance fields to the callbacks the controller passes in
+          this.triggerSettingsBackToMenu = onBackToMenuClick;
+  
+          if (typeof instructionsArg === "function") {
 
-        public model = {};
-        public onOrderSuccess: (d?: any) => void = () => {};
-        public onGoToMinigame1: () => void = () => {};
+            // controller passed a plain callback
+            this.triggerSettingsInstructions = instructionsArg;
+          } else if (
+            instructionsArg &&
+            typeof instructionsArg.onInstructionsClick === "function"
+          ) {
+            
+            // controller passed
+            this.triggerSettingsInstructions = instructionsArg.onInstructionsClick;
+          } else {
+            // fallback to no-op
+            this.triggerSettingsInstructions = () => {};
+          }
+        }
+  
+        show = vi.fn();
+        hide = vi.fn();
+        displayOrder = vi.fn();
+        setDifficulty = vi.fn();
+      },
+    };
+  });
 
-      constructor(
-            onBackToMenuClick: () => void,
-            onInstructionsClick: () => void,
-            _resultStore: any
-
-      ) {
-            this.triggerSettingsBackToMenu = onBackToMenuClick;
-            this.triggerSettingsInstructions = onInstructionsClick;
-      }
-
-      show = vi.fn();
-      hide = vi.fn();
-      getGroup = vi.fn();
-
-    },
-  };
-});
-
-// Import real controller and ResultStore (they'll see mocks)
+// Import after mocking
 import { GameScreenController } from "../src/screens/GameScreen/GameScreenController";
 import { ResultStore } from "../src/data/ResultStore";
 
 describe("GameScreenController settings popup navigation", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    let mockScreenSwitcher: any;
+    let fakeResultStore: ResultStore;
 
-  it("navigates to menu when 'Back to Menu' is selected from settings popup", () => {
-        const mockScreenSwitcher = { switchToScreen: vi.fn() } as any;
-        const resultStore = new ResultStore();
+    beforeEach(() => {
+        mockScreenSwitcher = { switchToScreen: vi.fn() } as any;
+        fakeResultStore = new ResultStore();
+        vi.clearAllMocks();
+    });
 
-        const controller = new GameScreenController(mockScreenSwitcher, resultStore);
-        const view = controller.getView() as unknown as {
-        triggerSettingsBackToMenu: () => void;
-        };
+    it("navigates to menu when 'Back to Menu' is selected", () => {
+            const controller = new GameScreenController(
+            mockScreenSwitcher,
+            fakeResultStore
+        );
+
+        const view = controller.getView() as any;
 
         expect(typeof view.triggerSettingsBackToMenu).toBe("function");
 
+        // Simulate clicking “Back to Menu”
         view.triggerSettingsBackToMenu();
 
-        expect(mockScreenSwitcher.switchToScreen).toHaveBeenCalledWith({ type: "menu" });
+        expect(mockScreenSwitcher.switchToScreen).toHaveBeenCalledWith({
+        type: "menu",
+        });
     });
 
-    it("navigates to tutorial when 'Instructions' is selected", () => {
-        const mockScreenSwitcher = { switchToScreen: vi.fn() } as any;
-        const resultStore = new ResultStore();
+  it("navigates to tutorial when 'Instructions' is selected", () => {
+            const controller = new GameScreenController(
+            mockScreenSwitcher,
+            fakeResultStore
+        );
 
-        const controller = new GameScreenController(mockScreenSwitcher, resultStore);
-        const view = controller.getView() as unknown as {
-            triggerSettingsInstructions: () => void;
-        };
+        const view = controller.getView() as any;
 
         expect(typeof view.triggerSettingsInstructions).toBe("function");
-    // simulates clicking "instructions" inside popup
+
+        // Simulate clicking “Instructions”
         view.triggerSettingsInstructions();
 
-        expect(mockScreenSwitcher.switchToScreen).toHaveBeenCalledWith({ type: "tutorial" });
+        expect(mockScreenSwitcher.switchToScreen).toHaveBeenCalledWith({
+            type: "tutorial",
+        });
     });
 });
