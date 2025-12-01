@@ -1,6 +1,5 @@
 import { ScreenController } from "../../types";
 import type { ScreenSwitcher } from "../../types";
-import { AudioManager } from "../../audio/AudioManager";
 import { OrderScreenView } from "./OrderScreenView";
 import { OrderScreenModel } from "./OrderScreenModel";
 import type { Difficulty, Order } from "../../types";
@@ -10,12 +9,10 @@ export class OrderScreenController extends ScreenController {
     private model: OrderScreenModel;
     private screenSwitcher: ScreenSwitcher;
     private currentMode?: Difficulty;
-    private audio?: AudioManager;
 
-    constructor(screenSwitcher: ScreenSwitcher, audio?: AudioManager) {
+    constructor(screenSwitcher: ScreenSwitcher) {
         super();
         this.screenSwitcher = screenSwitcher;
-        this.audio = audio;
         this.model = new OrderScreenModel();
         this.view = new OrderScreenView(this.model, () => this.handleAccept());
     }
@@ -34,7 +31,6 @@ export class OrderScreenController extends ScreenController {
             if (Math.random() < 0.5) this.model.generateRandomProperOrder();
             else (this.model as any).generateRandomImproperOrder?.();
         }
-        this.audio?.playSfx?.("phonering");
 
         if ((this.view as any).refresh) (this.view as any).refresh();
     }

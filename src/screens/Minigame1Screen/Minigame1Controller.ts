@@ -3,12 +3,12 @@ import { Minigame1View } from "./Minigame1View";
 import { AudioManager } from "../../audio/AudioManager";
 import { ResultStore } from "../../data/ResultStore";
 import type { OrderResult } from "../../data/OrderResult";
-import { TOPPINGS, ToppingType } from "../../constants";
+import { TOPPINGS,ToppingType } from "../../constants";
 
 export class Minigame1Controller extends ScreenController {
     private view: Minigame1View
 
-    constructor(private screenSwitcher: ScreenSwitcher, private audio: AudioManager, private resultStore: ResultStore) {  
+    constructor(private screenSwitcher: any, private audio: AudioManager, private resultStore: ResultStore) {  
         super();
         this.view = new Minigame1View(
             () => this.handleBackToMenuClick(),
@@ -45,31 +45,40 @@ export class Minigame1Controller extends ScreenController {
     hide(): void {
         this.view.hide();
     }   
-
     startGame(): void {
-        // pick two orders from the most recent day that have order data
-        const all = this.resultStore.getAll();
-        // find the latest day value
-        const days = all.map(r => r.day);
-        const latestDay = Math.max(...days);
-        const todays = all.filter(r => r.day === latestDay && r.order && r.order.toppingsCounts);
+        // Get all stored results
+        const allResults = this.resultStore.getAll()
+
+        // Only keep results that:
+        // - have screenshots
+        // - were orders completed successfully
+        // - have topping counts available
+        const screenShotResults: OrderResult[] = allResults.filter(
+            (r: OrderResult) => 
+                !!r.screenshotDataUrl &&
+                r.success &&
+                !!r.order &&
+                r.order.toppingsCounts
+        );
 
         // NOTE: This won't be needed in the actual game because the player won't be able to go to the minigame manually. I think.
-        if (todays.length < 2) {
+        if (allResults.length < 2) {
             this.view.showMessage("Not enough completed orders for today to play this minigame.");
             this.show();
             return;
         }
 
+        const pool = screenShotResults;
+
         // pick two random distinct orders
-        const aIndex = Math.floor(Math.random() * todays.length);
-        let bIndex = Math.floor(Math.random() * todays.length);
-        while (bIndex === aIndex && todays.length > 1) {
-            bIndex = Math.floor(Math.random() * todays.length);
+        const aIndex = Math.floor(Math.random() * pool.length);
+        let bIndex = Math.floor(Math.random() * pool.length);
+        while (bIndex === aIndex && pool.length > 1) {
+            bIndex = Math.floor(Math.random() * pool.length);
         }
 
-        const a = todays[aIndex];
-        const b = todays[bIndex];
+        const a = pool[aIndex];
+        const b = pool[bIndex];
 
         // pick a random topping to ask about
         const topping = TOPPINGS[Math.floor(Math.random() * TOPPINGS.length)] as ToppingType;

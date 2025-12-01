@@ -25,6 +25,8 @@ Goal: Build the fundamental structure of the game.
 ### Sprint 2: Gameplay Expansion
 Goal: Implement the main gameplay and logic that was blocked by the setup phase.
 
+### Sprint 3: Finalizing Design
+Goal: Finalize the main gameplay and implement UI and other fun engaging aspects.
 
 ## Installations
 

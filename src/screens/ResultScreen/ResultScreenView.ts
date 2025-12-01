@@ -1,10 +1,11 @@
+
 import Konva from "konva";
 import {STAGE_WIDTH, STAGE_HEIGHT} from "../../constants";
 import {View} from "../../types"; 
 import {Group} from "konva/lib/Group";
 import { FONTS } from "../../fonts";
 
-export class ResultsScreenView implements View {
+export class ResultScreenView implements View {
   private group: Konva.Group;
 
   //Text Fields to be updated
@@ -79,8 +80,8 @@ export class ResultsScreenView implements View {
     const rowGap = 40;
 
     //Rows of stats
-    this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "Orders received:");
-    this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "Orders correct:");
+    this.ordersReceived = this.makeRow(card.x() + 26, startY + rowGap * 0, "# attempts:");
+    this.ordersCorrect = this.makeRow(card.x() + 26, startY + rowGap * 1, "# correct attempts:");
     this.percentCorrect = this.makeRow(card.x() + 26, startY + rowGap * 2,"% correct:");
     this.tipsReceived = this.makeRow(card.x() + 26, startY + rowGap * 3, "Tips received:");
 

@@ -22,6 +22,7 @@ export const ORDER_BG_COLOR = "#fff3e0";
 export const ORDER_TITLE_COLOR = "#6d4c41";
 export const ORDER_BUTTON_FILL = "#43a047";
 export const ORDER_BUTTON_STROKE = "#2e7d32";
+export const GAME_BG_COLOR = "#F5C753"
 export const ORDERS_PER_DAY:number = 5
 
 export const TITLE_COLOR = "#AB321B";
@@ -49,16 +50,3 @@ export const SCREEN_BACKGROUNDS = {
 export const SCREEN_OVERLAY = {
     COLOR: "rgba(228,202,192,0.50)",
 }
-
-// Order phrasing templates. Use the placeholder LIST which will be replaced with the toppings list.
-export const ORDER_PHRASES = [
-    "I heard this place has the best pizza. Can I get LIST?",
-    "Hey! I’ll take LIST, please.",
-    "Can I order LIST? I’ve been craving this all day.",
-    "I’m starving—hook me up with LIST.",
-    "Could I grab LIST? Thanks!",
-    "Let’s gooo, pizza time! I’ll take LIST.",
-    "I have journeyed far for your pizza. Grant me LIST.",
-] as const;
-
-export type OrderPhrase = typeof ORDER_PHRASES[number];

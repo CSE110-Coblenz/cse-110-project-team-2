@@ -2,6 +2,7 @@ import { Order } from "../types";
 import type { OrderResult } from "./OrderResult";
 
 const STORAGE_KEY = "slice_by_slice_order_results";
+const SESSION_FLAG = "slice_by_slice_session_active";
 
 type StoredData = {
     results: OrderResult[];
@@ -14,8 +15,22 @@ export class ResultStore {
     private totalTips: number = 0;
 
     constructor() {
-        // Load existing results from localStorage
         if(typeof window !== "undefined") {
+            // === Detect tab close using sessionStorage ===
+            const hadSession = !!sessionStorage.getItem(SESSION_FLAG);
+
+            // If sessionStorage missing -> previous tab was closed -> clear results
+            if(!hadSession) {
+                try {
+                    window.localStorage.removeItem(STORAGE_KEY);
+                } catch (e) {
+                    console.error("Failed to clear stored results on new session:", e);
+                }
+            }
+
+            // Mark session as active
+            sessionStorage.setItem(SESSION_FLAG, "1");
+
             const storedResults = window.localStorage.getItem(STORAGE_KEY);
             if (storedResults) {
                 try {

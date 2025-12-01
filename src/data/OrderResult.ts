@@ -1,9 +1,8 @@
-import type { Order } from "../types";
 import { ToppingType } from "../constants";
+import type { Order } from "../types";
 
 export interface OrderResult {
   orderNumber: number;
-  day: number;
   success: boolean;
   details: string;
   expectedTotal: number;
@@ -16,12 +15,20 @@ export interface OrderResult {
   // Optional full order data (toppings, fraction, etc.) so minigames
   // and results screens can inspect exact order contents.
   order?: Order;
+  screenshotDataUrl?: string;
 }
 
 export interface PlacedTopping {
   type: ToppingType;
   x: number;
   y: number;
+  pizzaIndex: 0 | 1;
+}
+
+export interface SavedTopping {
+  type: ToppingType;
+  offsetX: number
+  offsetY: number;
   pizzaIndex: 0 | 1;
 }
 
