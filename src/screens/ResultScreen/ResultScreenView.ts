@@ -70,7 +70,8 @@ export class ResultScreenView implements View {
       text: "End of Day Results",
       fontSize: 28,
       fontStyle: "bold",
-      fill: "black"
+      fill: "black",
+      fontFamily: FONTS.HEADER,
     });
     this.group.add(title);
 
@@ -97,8 +98,8 @@ export class ResultScreenView implements View {
 
   //Creates a data row label and value
   private makeRow(x: number, y: number, label: string): Konva.Text { 
-    const lbl = new Konva.Text({x, y, text: label, fontSize: 22, fill: "black"});
-    const val = new Konva.Text({x: x + 260, y, text: "-", fontSize: 22, fill: "black"});
+    const lbl = new Konva.Text({x, y, text: label, fontSize: 22, fill: "black", fontFamily: FONTS.BODY});
+    const val = new Konva.Text({x: x + 260, y, text: "-", fontSize: 22, fill: "black", fontFamily: FONTS.BODY});
     this.group.add(lbl);
     this.group.add(val);
     return val;
@@ -108,7 +109,7 @@ export class ResultScreenView implements View {
   private makeButton(x: number, y: number, text: string, onClick: () => void): Konva.Group {
     const g  = new Konva.Group({x, y, listening: true});
     const rect = new Konva.Rect({width: 200, height: 48, fill: "red", stroke: "black", strokeWidth: 3, cornerRadius: 10});
-    const label = new Konva.Text({text, fontSize: 18, fill: "white", x: 12, y: 12});
+    const label = new Konva.Text({text, fontSize: 18, fill: "white", x: 12, y: 12, fontFamily: FONTS.BUTTON});
     const hit = new Konva.Rect({width: 200, height: 48, fill: "rgba(0, 0, 0, 0.001)", listening: true});
     g.add(rect, label, hit);
     g.on("mouseenter", () => (document.body.style.cursor = "pointer"));
@@ -134,6 +135,94 @@ export class ResultScreenView implements View {
     this.tipsReceived.text("$" + (stats.tipsReceived ?? 0).toFixed(2));
     this.group.draw();
   }
+
+   showRecommendationPopup = (message: string, parent: Konva.Group) => {
+          const overlay = new Konva.Rect({
+              x: 0,
+              y: 0,
+              width: STAGE_WIDTH,
+              height: STAGE_HEIGHT,
+              fill: "rgba(0,0,0,0.4)",
+              listening: true,
+          });
+  
+          const bowW = 520;
+          const bowH = 320;
+          const boxX = (STAGE_WIDTH - bowW) / 2;
+          const boxY = (STAGE_HEIGHT - bowH) / 2;
+  
+          const panel = new Konva.Rect({
+              x: boxX,
+              y: boxY,
+              width: bowW,
+              height: bowH,
+              fill: "#fef3c7",
+              stroke: "black",
+              strokeWidth: 2,
+              cornerRadius: 12,
+          });
+  
+          const title = new Konva.Text({
+              x: boxX,
+              y: boxY + 16,
+              width: bowW,
+              align: "center",
+              text: "Study Recommendations",
+              fontSize: 24,
+              fontStyle: "bold",
+              fill: "black",
+          });
+  
+          const body = new Konva.Text({
+              x: boxX + 20,
+              y: boxY + 60,
+              width: bowW - 40,
+              text: message,
+              fontSize: 18,
+              fill: "black",
+          });
+  
+          const closeGroup = new Konva.Group({
+              x: boxX + bowW - 110,
+              y: boxY + bowH - 50,
+              listening: true,
+          });
+  
+          const closeRect = new Konva.Rect({
+              width: 100,
+              height: 40,
+              fill: "#e5e7eb",
+              stroke: "black",
+              strokeWidth: 2,
+              cornerRadius: 8,
+          });
+  
+          const closeText = new Konva.Text({
+              x: 0,
+              y: 10,  
+              align: "center",
+              text: "Close",
+              fontSize: 18,
+              fill: "black",
+          });
+  
+          closeGroup.add(closeRect, closeText);
+  
+          const destroyAll = () => {
+              overlay.destroy();
+              panel.destroy();
+              title.destroy();
+              body.destroy();
+              closeGroup.destroy();
+              parent.getLayer()?.draw();
+          };
+          
+          closeGroup.on("click", destroyAll);
+          overlay.on("click", destroyAll);
+  
+          parent.add(overlay, panel, title, body, closeGroup);
+          parent.getLayer()?.draw();
+      }
 
   getGroup(): Konva.Group {
     return this.group;

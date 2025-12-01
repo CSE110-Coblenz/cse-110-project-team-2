@@ -3,7 +3,6 @@ import { STAGE_WIDTH, STAGE_HEIGHT, TOPPINGS, ToppingType } from "../../constant
 import { View } from "../../types";
 import type { OrderResult } from "../../data/OrderResult";
 import { PIZZA } from "../../constants";
-import type { Order } from "../../types";
 import { FONTS } from "../../fonts";
 import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
@@ -42,6 +41,7 @@ export class Minigame1View implements View {
                 fontSize: 32,
                 fontStyle: "bold",
                 fill: "black",
+                fontFamily: FONTS.HEADER,
         }));
 
         // content group for dynamic UI components
@@ -72,6 +72,7 @@ export class Minigame1View implements View {
             text: "Minigame 2",
             fontSize: 14,
             fill: "black",
+            fontFamily: FONTS.BUTTON,
         });
         minigame2Group.add(minigame2Btn, minigame2Text);
 
@@ -154,8 +155,9 @@ export class Minigame1View implements View {
             x: 40,
             y: 300,
             text: `Which pizza has more \n${topping.toLowerCase()}?`,
-            fontSize: 22,
-            fill: "white"
+            fontSize: 18,
+            fill: "white",
+            fontFamily: FONTS.HEADER,
         });
         this.content.add(question);
 
@@ -278,7 +280,8 @@ export class Minigame1View implements View {
             text: isCorrect ? "Correct!" : "Incorrect",
             fontSize: 28,
             fill: isCorrect ? "green" : "red",
-            align: "center"
+            align: "center",
+            fontFamily: FONTS.HEADER
         });
         title.offsetX(title.width() / 2);
         const body = new Konva.Text({
@@ -286,7 +289,8 @@ export class Minigame1View implements View {
             y: panelY + 80,
             text: details ?? "",
             fontSize: 18,
-            fill: "black"
+            fill: "black",
+            fontFamily: FONTS.BODY
         });
 
         const back = this.makeButton(panelX + panelW / 2 - 60, panelY + panelH - 70, "Continue", () => {
@@ -383,7 +387,7 @@ export class Minigame1View implements View {
     private makeButton(x: number, y: number, label: string, onClick: () => void) {
         const g = new Konva.Group({ x, y, listening: true });
         const rect = new Konva.Rect({ x: 0, y: 0, width: 120, height: 40, fill: "#e5e7eb", stroke: "black", strokeWidth: 2, cornerRadius: 8 });
-        const text = new Konva.Text({ x: 10, y: 10, text: label, fontSize: 16, fill: "black" });
+        const text = new Konva.Text({ x: 10, y: 10, text: label, fontSize: 16, fill: "black", fontFamily: FONTS.BUTTON });
         g.add(rect, text);
         g.on("click", onClick);
         g.on("mouseenter", () => document.body.style.cursor = "pointer");

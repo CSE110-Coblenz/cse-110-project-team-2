@@ -3,7 +3,7 @@ import { Minigame1View } from "./Minigame1View";
 import { AudioManager } from "../../audio/AudioManager";
 import { ResultStore } from "../../data/ResultStore";
 import type { OrderResult } from "../../data/OrderResult";
-import { TOPPINGS, ToppingType } from "../../constants";
+import { getScreenShotResults, pickRandomPair, pickRandomTopping, evaluateChoice, Minigame1Choice } from "./Minigame1Model";
 
 export class Minigame1Controller extends ScreenController {
     private view: Minigame1View
@@ -54,13 +54,7 @@ export class Minigame1Controller extends ScreenController {
         // - have screenshots
         // - were orders completed successfully
         // - have topping counts available
-        const screenShotResults: OrderResult[] = allResults.filter(
-            (r: OrderResult) => 
-                !!r.screenshotDataUrl &&
-                r.success &&
-                !!r.order &&
-                r.order.toppingsCounts
-        );
+        const screenShotResults: OrderResult[] = getScreenShotResults(allResults);
 
         // NOTE: This won't be needed in the actual game because the player won't be able to go to the minigame manually. I think.
         if (allResults.length < 2) {
@@ -72,45 +66,19 @@ export class Minigame1Controller extends ScreenController {
         const pool = screenShotResults;
 
         // pick two random distinct orders
-        const aIndex = Math.floor(Math.random() * pool.length);
-        let bIndex = Math.floor(Math.random() * pool.length);
-        while (bIndex === aIndex && pool.length > 1) {
-            bIndex = Math.floor(Math.random() * pool.length);
-        }
-
-        const a = pool[aIndex];
-        const b = pool[bIndex];
+        const { a, b } = pickRandomPair(pool);
 
         // pick a random topping to ask about
-        const topping = TOPPINGS[Math.floor(Math.random() * TOPPINGS.length)] as ToppingType;
+        const topping = pickRandomTopping();
 
         // render pair and evaluate player's choice
         this.view.renderPair(a, b, topping, (choice: "A" | "B" | "Equivalent") => {
-            const aOrder = a.order!;
-            const bOrder = b.order!;
-
-            const aCount = aOrder.toppingsCounts?.[topping] ?? 0;
-            const bCount = bOrder.toppingsCounts?.[topping] ?? 0;
-
-            const aTotalSlices = (a.currentPizzaNumber ?? 1) * (a.slicesUsed ?? 1);
-            const bTotalSlices = (b.currentPizzaNumber ?? 1) * (b.slicesUsed ?? 1);
-
-            let correct: "A" | "B" | "Equivalent" = "Equivalent";
-
-            if(aTotalSlices > 0 && bTotalSlices > 0) {
-                const left = aCount * bTotalSlices;
-                const right = bCount * aTotalSlices;
-
-                if (left > right) {
-                    correct = "A";
-                } else if (right > left) {
-                    correct = "B";
-                } else {
-                    correct = "Equivalent";
-                }
-            }
-
-            const isCorrect = choice === correct;
+            const { isCorrect, aCount, bCount } = evaluateChoice(
+                a,
+                b,
+                topping,
+                choice as Minigame1Choice
+            );
 
             // Tip logic 
             let details = `A: ${aCount}, B: ${bCount}`;
