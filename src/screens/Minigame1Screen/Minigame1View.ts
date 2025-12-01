@@ -50,7 +50,7 @@ export class Minigame1View implements View {
 
         // Button to go to Minigame 2
         const minigame2Group = new Konva.Group({
-            x: STAGE_WIDTH / 2 - 60,
+            x: STAGE_WIDTH - 140,
             y: STAGE_HEIGHT / 2 - 20,
             listening: true,
         });
