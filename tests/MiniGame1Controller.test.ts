@@ -111,21 +111,14 @@ vi.mock('konva', () => {
     return {default: Konva };
 });
 
-vi.mock("../src/screens/MiniGame1Screen/MiniGame1Model", () => ({
-    getScreenShotResults: vi.fn(),
-    pickRandomPair: vi.fn(),
-    pickRandomTopping: vi.fn(),
-    evaluateChoice: vi.fn(),
-}));
 
 import * as MiniGame1Model from "../src/screens/Minigame1Screen/Minigame1Model";
 import { Minigame1Controller } from "../src/screens/Minigame1Screen/Minigame1Controller";
 
-const mockedModel = vi.mocked(MiniGame1Model);
-const getScreenShotResultsMock = mockedModel.getScreenShotResults;
-const pickRandomPairMock = mockedModel.pickRandomPair;
-const pickRandomToppingMock = mockedModel.pickRandomTopping;
-const evaluateChoiceMock = mockedModel.evaluateChoice;
+const getScreenShotResultsMock = vi.spyOn(MiniGame1Model, "getScreenShotResults");
+const pickRandomPairMock = vi.spyOn(MiniGame1Model, "pickRandomPair");
+const pickRandomToppingMock = vi.spyOn(MiniGame1Model, "pickRandomTopping");
+const evaluateChoiceMock = vi.spyOn(MiniGame1Model, "evaluateChoice");
 
 
 beforeEach(() => {
