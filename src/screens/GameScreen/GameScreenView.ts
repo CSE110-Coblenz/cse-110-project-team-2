@@ -12,6 +12,8 @@ import { PIZZA } from "../../constants";
 import { FONTS } from "../../fonts";
 import type { GameScreenModel } from "./GameScreenModel";
 
+import { createMenuSettingsPopup } from "../../BackButtonPopup";
+
 export class GameScreenView implements View {
   group: Konva.Group;
   pizzaGroup = new Konva.Group();
@@ -22,11 +24,13 @@ export class GameScreenView implements View {
   private rOuter = 0;
   private currentDifficulty: Difficulty = "proper";
   private selectionWarning: Konva.Text;
+  private settingsPopup: Konva.Group | null = null;
 
   constructor(
     private model: GameScreenModel,
     private callbacks: {
       onBackToMenuClick: () => void;
+      onInstructionsClick: () => void;
       onGoToMinigame1: () => void;
       onPizzaNumSelected: (num: number) => void;
       onSliceNumSelected: (slices: number) => void;
@@ -263,32 +267,58 @@ export class GameScreenView implements View {
     orderCount.add(orderRect, this.orderNumber);
     this.group.add(orderCount);
 
-    //back button
-    const backGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
-    const backBtn = new Konva.Rect({
-      width: 160,
-      height: 50,
-      fill: "#d84315",
-      cornerRadius: 8,
-      stroke: "#b71c1c",
-      strokeWidth: 2,
-    });
-    const backText = new Konva.Text({
-      x: 70,
-      y: 25,
-      text: "Back to Menu",
-      fontFamily: FONTS.BUTTON,
-      fontSize: 16,
-      fill: "white",
-    });
-    backText.offsetX(backText.width() / 2);
-    backText.offsetY(backText.height() / 2);
-    backGroup.add(backBtn, backText);
-    backGroup.on("click", this.callbacks.onBackToMenuClick);
-    this.group.add(backGroup);
+    // SETTINGS BUTTON (top-right corner)
+    const settingsGroup = new Konva.Group({ x: STAGE_WIDTH - 180, y: 20 });
 
-    this.show();
-  }
+    const settingsBtn = new Konva.Rect({
+        width: 160,
+        height: 50,
+        fill: "#d84315",
+        cornerRadius: 8,
+        stroke: "#b71c1c",
+        strokeWidth: 2,
+    });
+
+    const settingsText = new Konva.Text({
+        x: 80,
+        y: 25,
+        text: "⚙︎  |  𝓲",
+        fontFamily: FONTS.BUTTON,
+        fontSize: 30,
+        fill: "white",
+    });
+    settingsText.offsetX(settingsText.width() / 2);
+    settingsText.offsetY(settingsText.height() / 2);
+
+    settingsGroup.add(settingsBtn, settingsText);
+
+    // clicking opens/closes popup
+    settingsGroup.on("click tap", () => {
+        if (this.settingsPopup) {
+            this.settingsPopup.destroy();
+            this.settingsPopup = null;
+            this.group.getLayer()?.draw();
+            return;
+        }
+
+        this.settingsPopup = createMenuSettingsPopup({
+            onBackToMenu: this.callbacks.onBackToMenuClick,
+            onInstructions: this.callbacks.onInstructionsClick,
+            onClose: () => {
+                this.settingsPopup = null;
+                this.group.getLayer()?.draw();
+            },
+        });
+
+        this.group.add(this.settingsPopup);
+        this.group.getLayer()?.draw();
+    });
+
+  
+    this.group.add(settingsGroup);
+
+    this.show()
+}
 
   resetForPizzaNum(numPizza: number): void {
     this.clearSlicesVisual();

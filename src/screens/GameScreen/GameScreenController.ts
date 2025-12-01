@@ -25,6 +25,8 @@ export class GameScreenController extends ScreenController {
 
     this.view = new GameScreenView(this.model, {
       onBackToMenuClick: () => this.handleBackToMenuClick(),
+      onInstructionsClick: () => this.handleInstructionsClick(),
+      
       onGoToMinigame1: () => {
         this.screen?.switchToScreen({ type: "minigame1" });
       },
