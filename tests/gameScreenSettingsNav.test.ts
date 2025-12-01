@@ -1,46 +1,43 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 //mock GameScreenView 
-//mock GameScreenView 
 vi.mock("../src/screens/GameScreen/GameScreenView", () => {
     return {
-      GameScreenView: class {
-        // test only triggers
-        public triggerSettingsBackToMenu!: () => void;
-        public triggerSettingsInstructions!: () => void;
-  
-        constructor(
-          onBackToMenuClick: () => void,
-          _resultStore: any,
-          instructionsArg: any 
-        ) {
-          // instance fields to the callbacks the controller passes in
-          this.triggerSettingsBackToMenu = onBackToMenuClick;
-  
-          if (typeof instructionsArg === "function") {
-
-            // controller passed a plain callback
-            this.triggerSettingsInstructions = instructionsArg;
-          } else if (
-            instructionsArg &&
-            typeof instructionsArg.onInstructionsClick === "function"
-          ) {
+        GameScreenView: class {
+            public triggerSettingsBackToMenu: () => void;
+            public triggerSettingsInstructions: () => void;
             
-            // controller passed
-            this.triggerSettingsInstructions = instructionsArg.onInstructionsClick;
-          } else {
-            // fallback to no-op
-            this.triggerSettingsInstructions = () => {};
-          }
-        }
-  
-        show = vi.fn();
-        hide = vi.fn();
-        displayOrder = vi.fn();
-        setDifficulty = vi.fn();
-      },
-    };
-  });
+            //mock the constructor
+            constructor(
+                _model: any,
+                callbacks: {
+                onBackToMenuClick?: () => void;
+                onInstructionsClick?: () => void;
+                onGoToMinigame1?: () => void;
+                onPizzaNumSelected?: (n: number) => void;
+                onSliceNumSelected?: (s: number) => void;
+                onToppingDragEnd?: (...args: any[]) => void;
+                onTongsRemove?: (t: any) => void;
+                onSubmit?: () => void;
+                }
+            ) {
+                // manually triggers the callbacks
+                this.triggerSettingsBackToMenu =
+                callbacks.onBackToMenuClick ?? (() => {});
+                this.triggerSettingsInstructions =
+                callbacks.onInstructionsClick ?? (() => {});
+            }
+    
+            show = vi.fn();
+            hide = vi.fn();
+            displayOrder = vi.fn();
+            setDifficulty = vi.fn();
+            getGroup = vi.fn(() => ({
+            getLayer: () => ({ batchDraw: vi.fn() }),
+            }));
+        },
+      };
+    });
 
 // Import after mocking
 import { GameScreenController } from "../src/screens/GameScreen/GameScreenController";
