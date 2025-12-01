@@ -8,7 +8,7 @@ import { getScreenShotResults, pickRandomPair, pickRandomTopping, evaluateChoice
 export class Minigame1Controller extends ScreenController {
     private view: Minigame1View
 
-    constructor(private screenSwitcher: ScreenSwitcher, private audio: AudioManager, private resultStore: ResultStore) {  
+    constructor(private screenSwitcher: any, private audio: AudioManager, private resultStore: ResultStore) {  
         super();
         this.view = new Minigame1View(
             () => this.handleBackToMenuClick(),
@@ -45,7 +45,6 @@ export class Minigame1Controller extends ScreenController {
     hide(): void {
         this.view.hide();
     }   
-
     startGame(): void {
         // Get all stored results
         const allResults = this.resultStore.getAll()

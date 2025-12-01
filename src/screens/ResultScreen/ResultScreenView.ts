@@ -1,3 +1,4 @@
+
 import Konva from "konva";
 import {STAGE_WIDTH, STAGE_HEIGHT} from "../../constants";
 import {View} from "../../types"; 
