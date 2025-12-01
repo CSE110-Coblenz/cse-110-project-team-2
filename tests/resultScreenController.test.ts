@@ -1,309 +1,310 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-(globalThis as any).window = (globalThis as any). window ?? {};
-
-class FakeImage {
-    src: string = "";
-    width = 100;
-    height = 100;
-    onload: (() => void) | null = null;
-}
-(globalThis as any).window.Image = FakeImage;
-
+// --- Konva Mock ---
 vi.mock("konva", () => {
-    class BaseNode {
+    const listenersKey = Symbol("listeners");
+
+    let LayerRef: any;
+
+    class Shape {
         attrs: Record<string, any>;
         parent: any = null;
-        _handers: Record<string, (evt: any) => void> = {};
+        children: any[] = [];
+        private _visible = true;
+        [listenersKey]: Record<string, (evt: any) => void> = {};
 
         constructor(attrs: Record<string, any> = {}) {
-            this.attrs = { ...attrs };
-        }
-
-        destroy() {
-            if(this.parent && this.parent.children) {
-                this.parent.children = this.parent.children.filter((c: any) => c !== this);
+            this.attrs = {...attrs};
+            if(attrs.visible !== undefined) {
+                this._visible = !!attrs.visible;
             }
         }
-
-        setAttr(key: string, value: any) {
-            this.attrs[key] = value;
-        }
-
-        getAttr(key: string) {
-            return this.attrs[key];
-        }
-
-        x(value?: number) {
-            if(typeof value === "number") {
-                this.attrs.x = value;
-            }
-            return this.attrs.x ?? 0;
-        }
-
-        y(value?: number) {
-            if(typeof value === "number") {
-                this.attrs.y = value;
-            }
-            return this.attrs.y ?? 0;
-        }
-
-        width(value?: number) {
-            if(typeof value === "number") {
-                this.attrs.width = value;
-            }
-            return this.attrs.width ?? 0;
-        }
-
-        height(value?: number) {
-            if(typeof value === "number") {
-                this.attrs.height = value;
-            }
-            return this.attrs.height ?? 0;
-        }
-
-        on(event: string, handler: (evt: any) => void) {
-            this._handers[event] = handler;
-        }
-
-        trigger(event: string, evt: any = {}) {
-            const h = this._handers[event];
-            if(h) h(evt);
-        }
-    }
-
-    class Group extends BaseNode {
-        children: any[] = [];
 
         add(...nodes: any[]) {
             for(const n of nodes) {
-                (n as any).parent = this;
+                if(!n) continue;
+                n.parent = this;
                 this.children.push(n);
             }
-            return this
-        }
-
-        getChildren() {
-            return this.children;
         }
 
         destroyChildren() {
             this.children = [];
         }
 
-        y(value?: number) {
-            if(typeof value === "number") {
-                this.attrs.y = value;
-            }
-            return this.attrs.y ?? 0;
+        on(event: string, handler: (evt: any) => void) {
+            this[listenersKey][event] = handler;
         }
 
-        visible(value?: boolean) {
-            if(typeof value === "boolean") {
-                this.attrs.visible = value;
-            }
-            return this.attrs.visible ?? true;
+        trigger(event: string, evt: any = {}) {
+            const h = this[listenersKey][event];
+            if(h) h(evt);
         }
 
-        draw() {    
-            // no-op
+        y(v?: number) {
+            if(v === undefined) return this.attrs.y;
+            this.attrs.y = v;
         }
 
-        getLayer() {
-            if((this as any).draw && typeof (this as any).draw === "function") {
-                return this;
+        x(v?: number) {
+            if(v === undefined) return this.attrs.x;
+            this.attrs.x = v;
+        }
+
+        visible(v?: boolean) {
+            if(v === undefined) return this._visible;
+            this._visible = !!v;
+        }
+
+        getLayer(): any {
+            let node: any = this;
+            while(node) {
+                if(LayerRef && node instanceof LayerRef) return node;
+                node = node.parent;
             }
-            if(this.parent && this.parent.draw) return this.parent;
             return null;
         }
     }
 
-    class Rect extends BaseNode {}
-    class Text extends BaseNode {
-        text(value?: string) {
-            if(typeof value === "string") {
-                this.attrs.text = value;
-            }
-            return this.attrs.text;
-        }
-    }
+    class Group extends Shape {}
 
-    class Image extends BaseNode {}
+    class Rect extends Shape {}
+    
+    class Text extends Shape {}
+
     class Layer extends Group {
-        draw() {
-            // no-op
+        draw = vi.fn();
+    }
+
+    LayerRef = Layer;
+    
+    return {
+        default: { Group, Rect, Text, Layer },
+    };
+});
+
+// --- Mock ResultScreenView ---
+import Konva from "konva";
+
+vi.mock("../src/screens/ResultScreen/ResultScreenView", () => {
+    class ResultScreenView {
+        public onViewWrongOrders: () => void = () => {};
+        public onEndGame: () => void = () => {};
+        public onNextDay: () => void = () => {};
+
+        public updateStats = vi.fn();
+        public showRecommendationPopup = vi.fn();
+
+        public group: any;
+
+        constructor() {
+            this.group = new (Konva as any).Group({visible: false});
+        }
+
+        getGroup() {
+            return this.group;
         }
     }
 
-    const konvaMock = {
-        Group,
-        Rect,
-        Text,
-        Image,
-        Layer,
-    };
+    return { ResultScreenView };
+});
+
+
+vi.mock("../src/screens/ResultScreen/ResultScreenModel", () => {
     return {
-        default: konvaMock,
-        ...konvaMock
+        computeStats: vi.fn(),
+        builderRecommendationMessage: vi.fn(),
+        getWrongOrderSummaries: vi.fn(),
     };
 });
+// import the mocked functions
+import { computeStats, builderRecommendationMessage, getWrongOrderSummaries } from "../src/screens/ResultScreen/ResultScreenModel";
 
-vi.mock("konva/lib/Group", () => {
-    const Konva = require("konva") as any;
-    return { Group: Konva.Group };
-});
-
-import Konva from "konva";
+// --- import the controller after mocking ---
 import { ResultScreenController } from "../src/screens/ResultScreen/ResultScreenController";
 
-class MockResultStore {
-    results: any[] = [];
-    totalTips: number = 0;
-    clear = vi.fn();
+type MockResultStore = {
+    getAll: ReturnType<typeof vi.fn>;
+    getTotalTips: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;    
+};
 
-    getAll() {
-        return this.results;
-    }
+type MockSwitcher = {
+    switchToScreen: ReturnType<typeof vi.fn>;
+};
 
-    getTotalTips() {
-        return this.totalTips;
-    }
+// --- Helper to create a controller with a mocked Layer, ResultStore, and Switcher ---
+function createController(overrides?: Partial<MockResultStore>, currentDifficulty: any = "proper") {
+    const layer = new (Konva as any).Layer();
+
+    const switcher: MockSwitcher = {
+        switchToScreen: vi.fn(),
+    };
+
+    const resultStore: MockResultStore = {
+        getAll: vi.fn().mockReturnValue([]),
+        getTotalTips: vi.fn().mockReturnValue(0),
+        clear: vi.fn(),
+    };
+
+    const store = { ...resultStore, ...overrides } as unknown as any;
+
+    const controller = new ResultScreenController(
+        layer,
+        switcher as any,
+        store,
+        currentDifficulty,
+    );
+
+    const view = controller.getView() as any;
+
+    return { controller, layer, switcher, store, view };
 }
 
+// -- Helper to locate specific groups and buttons within the mocked Konva tree ---
+function findWrongOrdersGroup(layer: any) {
+    const Text = (Konva as any).Text;
+    return layer.children.find((g: any) => 
+        g.children?.some(
+            (c: any) => c instanceof Text && c.attrs.text === "Wrong Orders",   
+        ),
+    );
+}
+
+function findButtonGroupByLabel(parent: any, label: string) {
+    const Text = (Konva as any).Text;
+    return parent.children.find(
+        (g: any) => g instanceof (Konva as any).Group && g.children?.some((c: any) => c instanceof Text && c.attrs.text === label),
+    );
+}
+
+function findTextNode(parent: any, text: string) {
+    const Text = (Konva as any).Text;
+    return parent.children.find(
+        (c: any) => c instanceof Text && c.attrs.text === text,
+    );
+}
+
+// --- Tests ---
 describe("ResultScreenController", () => {
-    let layer: any;
-    let switcher: {switchToScreen: ReturnType<typeof vi.fn> };
-    let store: MockResultStore;
-    let controller: ResultScreenController;
-    let view: any;
-    let updateStatsSpy: ReturnType<typeof vi.spyOn>;
-
     beforeEach(() => {
-        const Layer = (Konva as any).Layer;
-        layer = new Layer();
-        switcher = { switchToScreen: vi.fn() } as any;
-        
-        store = new MockResultStore();
-        store.results = [];
-        store.totalTips = 0;
-        store.clear.mockClear();
-
-        controller = new ResultScreenController(layer as any, switcher as any, store as any);
-
-        view = controller.getView() as any;
-
-        updateStatsSpy = vi.spyOn(view, "updateStats");
+        vi.clearAllMocks();
+        (getWrongOrderSummaries as any).mockReturnValue([]);
     });
 
-    it("shows the main view results view by default", () => {
-        const maingroup = view.getGroup();
-        expect(maingroup.visible()).toBe(true);
+    it("refreshFromStore calls computeStats and updates the view", () => {
+        const results = [{ dummy: 1 }] as any;
+        const totalTips = 42;
 
-        const children = layer.getChildren();
-        expect(children.length).toBe(2);
-    });
+        (computeStats as any).mockReturnValue({
+            ordersReceived: 10,
+            ordersCorrect: 7,
+            tipsReceived: 42,
+        });
 
-    it("refresheFromStore computes stats and passes them to the view", () => {
-        store.results = [
-            {success: true},
-            {success: false},
-            {success: true},
-        ] as any;
-        store.totalTips = 15;
+        const { controller, store, view } = createController({
+            getAll: vi.fn().mockReturnValue(results),
+            getTotalTips: vi.fn().mockReturnValue(totalTips),
+        } as any);
 
         controller.refreshFromStore();
 
-        expect(updateStatsSpy).toHaveBeenCalledTimes(1);
-        expect(updateStatsSpy).toHaveBeenCalledWith({
-            ordersReceived: 3,
-            ordersCorrect: 2,
-            tipsReceived: 15,
+        expect(store.getAll).toHaveBeenCalledTimes(1);
+        expect(store.getTotalTips).toHaveBeenCalledTimes(1);
+        expect(computeStats).toHaveBeenCalledWith(results, totalTips);
+        expect(view.updateStats).toHaveBeenCalledWith({
+            ordersReceived: 10,
+            ordersCorrect: 7,
+            tipsReceived: 42,
         });
     });
 
-    it("setStats forward stats to the view's updateStats", () => {
+    it("setStats forwards stats to view.updateStats", () => {
+        const { controller, view } = createController();
+
         const stats = {
-            ordersReceived: 10,
-            ordersCorrect: 7,
-            tipsReceived: 20,
+            ordersReceived: 5,
+            ordersCorrect: 4,
+            tipsReceived: 12,
         };
 
         controller.setStats(stats);
 
-        expect(updateStatsSpy).toHaveBeenCalledWith(stats);
+        expect(view.updateStats).toHaveBeenCalledWith(stats);
     });
 
-    it("onEndGame clears store and swithes to menu", () => {
-        view.onEndGame?.();
+    it("onEndGame clears store and switches to menu", () => {
+        const { view, store, switcher } = createController();
+
+        view.onEndGame();
 
         expect(store.clear).toHaveBeenCalledTimes(1);
-        expect(switcher.switchToScreen).toHaveBeenCalledWith({type: "menu"});
+        expect(switcher.switchToScreen).toHaveBeenCalledWith({ type: "menu" });
     });
 
-    it("onNextDay clears store and switches to order screen with corrrect difficulty", () => {
-        controller.setNextDayDifficulty("improper" as any);
+    it("onNextDay uses constructor difficulty and clears ResultStore, switching to order screen", () => {
+        const startingDifficulty = "improper";
+        const { view, store, switcher } = createController(undefined, startingDifficulty);
 
-        view.onNextDay?.();
+        view.onNextDay();
 
         expect(store.clear).toHaveBeenCalledTimes(1);
-        expect(switcher.switchToScreen).toHaveBeenCalledWith({ 
-            type: "order", 
-            mode: "improper",
+        expect(switcher.switchToScreen).toHaveBeenCalledWith({
+            type: "order",
+            mode: startingDifficulty,
         });
     });
 
-    it("onViewWrongOrders populates wrong orders and shows that screen", () => {
-        store.results = [
+    it("clicking 'Study Tips' button build recommendation message and shows popup", () => {
+        const results = [{a: 1}] as any;
+        const message = "Study fractions with denomianator 12.";
+        (builderRecommendationMessage as any).mockReturnValue(message);
+
+        const { layer, store, view } = createController(
             {
-                orderNumber: 1,
-                success: false,
-                details: "Pepperoni : expected 1/2 - current 1/4",
-            },
-            {
-                orderNumber: 2,
-                success: true,
-                details: "All good",
-            },
-        ] as any;
+                getAll: vi.fn().mockReturnValue(results),
+            } as any,
+            "proper",
+        );
 
-        const wrongOrdersContnent = (controller as any).wrongOrdersContent;
-        expect(wrongOrdersContnent).toBeDefined();
-        expect(typeof view.onViewWrongOrders).toBe("function");
+        const wrongOrdersGroup = findWrongOrdersGroup(layer);
+        expect(wrongOrdersGroup).toBeDefined();
 
-        // Simullate clicking "View Wrong Orders"
-        view.onViewWrongOrders!();
+        const studyTipsButton = findButtonGroupByLabel(wrongOrdersGroup, "Study Tips");
+        expect(studyTipsButton).toBeDefined();
 
-        const contentChildren = wrongOrdersContnent.getChildren();
-        expect(contentChildren.length).toBeGreaterThan(0);
+        studyTipsButton.trigger("click", { evt: {} });
 
-        const layerChildren = layer.getChildren();
-        const wrongOrdersScreen = layerChildren[0];
-        const mainGroup = view.getGroup();
-        
-        // Wrong orders screen should be visible, main hidden
-        expect(wrongOrdersScreen.visible()).toBe(true);
-        expect(mainGroup.visible()).toBe(false);
+        expect(store.getAll).toHaveBeenCalledTimes(1);
+        expect(builderRecommendationMessage).toHaveBeenCalledWith(results);
+        expect(view.showRecommendationPopup).toHaveBeenCalledTimes(1);
+
+        const [calledMessage, calledGroup] = (view.showRecommendationPopup as any).mock.calls[0];
+        expect(calledMessage).toBe(message);
+        expect(calledGroup).toBe(wrongOrdersGroup); 
     });
 
-    it("builderRecommendationMessage mentions common denominators for wrong orders", () => {
-        store.results = [
-            {
-                success: false,
-                details: "Pepperoni : expected 1/4 - current 0/4",
-            },
-            {
-                success: false,
-                details: "Mushrooms : expected 3/4 - current 2/4",
-            },
-            {
-                success: false,
-                details: "Olives : expected 1/8 - current 0/8",
-            },
-        ] as any;
-        
-        const message = (controller as any).builderRecommendationMessage() as string;
+    it("clicking 'Back' from wrong orders screen shows main results screen", () => {
+        const { layer, view } = createController();
 
-        expect(message).toContain("denominator of 4");
-        expect(message).not.toContain("denominator of 8");
+        const mainGroup = view.getGroup();
+        expect(mainGroup.visible()).toBe(true);
+
+        const wrongOrdersGroup = findWrongOrdersGroup(layer);
+        expect(wrongOrdersGroup).toBeDefined();
+        expect(wrongOrdersGroup.visible()).toBe(false);
+
+        view.onViewWrongOrders();
+
+        expect(mainGroup.visible()).toBe(false);
+        expect(wrongOrdersGroup.visible()).toBe(true);
+
+        const backButton = findButtonGroupByLabel(wrongOrdersGroup, "Back");
+        expect(backButton).toBeDefined();
+
+        backButton.trigger("click", { evt: {} });
+
+        expect(mainGroup.visible()).toBe(true);
+        expect(wrongOrdersGroup.visible()).toBe(false);
     });
 });

@@ -1,5 +1,11 @@
 import { it, describe, expect, beforeEach, vi } from 'vitest';
 
+function createView () {
+    const onBackToMenu = vi.fn();
+    const onGoToMinigame2 = vi.fn();
+    return new Minigame1View(onBackToMenu, onGoToMinigame2);
+}
+
 // Konva mock 
 vi.mock('konva', () => {
     class BaseNode {
@@ -68,9 +74,21 @@ vi.mock('konva', () => {
             return typeof text === "string" ? text.length * 8 : 100; 
         }
 
-        offSetX(v?: number) {
+        height(v?: number) {
+            if(v === undefined) {
+                return this.attrs.height ?? 20;
+            }
+            this.attrs.height = v;
+        }
+
+        offsetX(v?: number) {
             if(v === undefined) return this.attrs.offsetX;
             this.attrs.offsetX = v;
+        }
+
+        offsetY(v?: number) {
+            if(v === undefined) return this.attrs.offsetY;
+            this.attrs.offsetY = v;
         }
     }
 
@@ -97,12 +115,12 @@ vi.mock('konva', () => {
     return {default: Konva };
 });
 
-import { Minigame1View } from "../src/screens/MiniGame1Screen/MiniGame1View";
+import { Minigame1View } from "../src/screens/Minigame1Screen/Minigame1View";
 
 beforeEach(() => {
     class HTMLImageMock {
         width = 200;
-        heigth = 200;
+        height = 200;
         src = "";
         onload: null | (() => void) = null;
 
@@ -167,7 +185,7 @@ function findNodesByAttr(root: any, key: string, value: any): any[] {
 
 describe("MiniGame1View", () => {
     it("toggles instruction visibility with show() / hide()", () => {
-        const view = new Minigame1View();
+        const view = createView();
         const group: any = view.getGroup();
 
         expect(group.visible()).toBe(false);
@@ -182,7 +200,7 @@ describe("MiniGame1View", () => {
     it("shows message when no screenshots are available", () => {
         const showMessageSpy = vi.spyOn(Minigame1View.prototype, "showMessage");
 
-        const view = new Minigame1View();
+        const view = createView();
 
         const cb = vi.fn();
         const a = { screenshotDataUrl: undefined } as any;
@@ -200,7 +218,7 @@ describe("MiniGame1View", () => {
     });
 
     it("renders screenshot pairs and clicking left/right images calls the callback", async () => {
-        const view = new Minigame1View();
+        const view = createView();
         const group: any = view.getGroup();
 
         const cb = vi.fn();
@@ -226,7 +244,7 @@ describe("MiniGame1View", () => {
     });
 
     it("Equivalent button calls the callback with 'Equivalent'", async () => {
-        const view = new Minigame1View();
+        const view = createView();
         const group: any = view.getGroup();
 
         const cb = vi.fn();
@@ -245,7 +263,7 @@ describe("MiniGame1View", () => {
     });
 
     it("Minigame 2 button triggers onGoToMinigame2", () => {
-        const view = new Minigame1View();
+        const view = createView();
         const group: any = view.getGroup();
 
         const handler = vi.fn();
