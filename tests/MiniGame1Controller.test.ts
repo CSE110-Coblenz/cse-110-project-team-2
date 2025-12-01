@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { OrderResult} from "../src/data/OrderResult";  
-import type { Mock } from "vitest";
+
 
 // Konva mock 
 vi.mock('konva', () => {
@@ -118,15 +118,15 @@ vi.mock("../src/screens/MiniGame1Screen/MiniGame1Model", () => ({
     evaluateChoice: vi.fn(),
 }));
 
-// import the mock module so we can configure its functions
-import * as Minigame1Model from "../src/screens/Minigame1Screen/Minigame1Model";
-
+import * as MiniGame1Model from "../src/screens/Minigame1Screen/Minigame1Model";
 import { Minigame1Controller } from "../src/screens/Minigame1Screen/Minigame1Controller";
 
-const getScreenShotResultsMock = Minigame1Model.getScreenShotResults as unknown as Mock;
-const pickRandomPairMock = Minigame1Model.pickRandomPair as unknown as Mock;
-const pickRandomToppingMock = Minigame1Model.pickRandomTopping as unknown as Mock;
-const evaluateChoiceMock = Minigame1Model.evaluateChoice as unknown as Mock;
+const mockedModel = vi.mocked(MiniGame1Model);
+const getScreenShotResultsMock = mockedModel.getScreenShotResults;
+const pickRandomPairMock = mockedModel.pickRandomPair;
+const pickRandomToppingMock = mockedModel.pickRandomTopping;
+const evaluateChoiceMock = mockedModel.evaluateChoice;
+
 
 beforeEach(() => {
     class HTMLImageMock {
@@ -241,7 +241,7 @@ describe("MiniGame1Controller", () => {
 
         getScreenShotResultsMock.mockReturnValue([orderA, orderB]);
         pickRandomPairMock.mockReturnValue({ a: orderA, b: orderB });
-        pickRandomToppingMock.mockReturnValue("pepperoni");
+        pickRandomToppingMock.mockReturnValue("Pepperoni");
         evaluateChoiceMock.mockReturnValue({isCorrect: true, aCount: 3, bCount: 1, tipEarned: 2 });
 
         const { controller, resultStore, view } = createControllerWithDep({
