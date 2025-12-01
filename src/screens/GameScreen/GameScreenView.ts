@@ -62,10 +62,10 @@ export class GameScreenView implements View {
     });
     sliceText.offsetX(sliceText.width() / 2);
     this.group.add(sliceText);
-    this.drawSlicesButton(150, 485, SLICE_OPTIONS[0]);
-    this.drawSlicesButton(150, 521.67, SLICE_OPTIONS[1]);
-    this.drawSlicesButton(150, 558.33, SLICE_OPTIONS[2]);
-    this.drawSlicesButton(150, 595, SLICE_OPTIONS[3]);
+    this.drawSlicesButton(100, 485, SLICE_OPTIONS[0]);
+    this.drawSlicesButton(100, 521.67, SLICE_OPTIONS[1]);
+    this.drawSlicesButton(100, 558.33, SLICE_OPTIONS[2]);
+    this.drawSlicesButton(100, 595, SLICE_OPTIONS[3]);
 
     const numPizzaText = new Konva.Text({
       text: "# Pizzas",
@@ -77,8 +77,8 @@ export class GameScreenView implements View {
       y: 270,
     });
     numPizzaText.offsetX(numPizzaText.width() / 2);
-    this.drawPizzaButton(150, 320, 1);
-    this.drawPizzaButton(150, 350, 2);
+    this.drawPizzaButton(100, 320, 1);
+    this.drawPizzaButton(100, 350, 2);
     this.group.add(numPizzaText);
 
     //Topping bins
