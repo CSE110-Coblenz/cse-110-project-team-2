@@ -4,6 +4,7 @@ import { Minigame2View } from "./Minigame2View";
 import { ScreenController, ScreenSwitcher } from "../../types";
 import { MINIGAME2_DURATION } from "../../constants";
 import { AudioManager } from "../../audio/AudioManager";
+import { ResultStore } from "../../data/ResultStore";
 
 export class Minigame2Controller extends ScreenController {
     private model: Minigame2Model;
@@ -14,9 +15,10 @@ export class Minigame2Controller extends ScreenController {
     private movementSpeed = 2; // pixels per frame
     private movementAnimation: Konva.Animation | null = null;
     private audio: AudioManager; // Uses shared audio manager
+    private resultStore: ResultStore;
 
 
-    constructor(switcher: ScreenSwitcher, audio: AudioManager) {
+    constructor(switcher: ScreenSwitcher, audio: AudioManager, resultStore: ResultStore) {
         super();
         this.model = new Minigame2Model();
         this.view = new Minigame2View(    
@@ -25,6 +27,7 @@ export class Minigame2Controller extends ScreenController {
         );
         this.switcher = switcher;
         this.audio = audio;
+        this.resultStore = resultStore;
 
         //this.splashSound = new AudioManager("/audio/water-splash.mp3", 0.3, false);
         this.audio.registerSfx("splash", "/audio/water-splash.mp3");
@@ -41,6 +44,7 @@ export class Minigame2Controller extends ScreenController {
     }
 
     private handleResultsButtonClick(): void {
+        this.view.clearSummary();
         this.switcher?.switchToScreen({ type: "result", score: this.model.tip });
     }
 
@@ -104,6 +108,8 @@ export class Minigame2Controller extends ScreenController {
     startGame(): void {
         this.model.reset();
 
+        this.view.clearSummary();
+
         // set up initial view state
         this.view.updateObstacleCount(0);
         this.view.updateTimer(MINIGAME2_DURATION);
@@ -119,6 +125,9 @@ export class Minigame2Controller extends ScreenController {
         this.movementAnimation?.stop();
         
         this.model.calculateTip();
+        const tip = this.model.tip;
+        this.resultStore.addTips(tip);
+
         this.view.showSummary(this.model.getObstacleCount(), this.model.tip, this.model.review);
     }
 }

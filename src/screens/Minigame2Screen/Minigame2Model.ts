@@ -33,4 +33,3 @@ export function calculateTipFromObstacles(obstacleCount: number): { tip: number;
   }
   return TIP_TABLE.find(row => obstacleCount <= row.max) ?? TIP_TABLE[TIP_TABLE.length - 1]; // default to no tip
 } 
-
