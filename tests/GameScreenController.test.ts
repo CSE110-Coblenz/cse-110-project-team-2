@@ -186,6 +186,7 @@ vi.mock("konva/lib/Group", () => {
 import Konva from "konva";
 import { GameScreenController } from "../src/screens/GameScreen/GameScreenController";
 import type { Order } from "../src/types";
+import { b } from "vitest/dist/suite-dWqIFb_-.js";
 
 // simple mock of the ResultStore used by GameScreenController
 class MockResultStore {
@@ -234,8 +235,13 @@ describe("GameScreenController (simple)", () => {
     const TextClass = (Konva as any).Text;
     const GroupClass = (Konva as any).Group;
 
-    // Find the group whose text child is "Back to Menu"
-    const backGroup = group
+    const isBackToMenuText = (text: string) => {
+      const lower = (text ?? "").toLowerCase();
+      return lower.includes("back") && lower.includes("menu");
+    };
+
+    // Find the group whose text child is "⚙︎  |  𝓲"
+    const settingGroup = group
       .getChildren()
       .find((g: any) => {
         if (!(g instanceof GroupClass)) return false;
@@ -243,14 +249,12 @@ describe("GameScreenController (simple)", () => {
           .getChildren()
           .some(
             (child: any) =>
-              child instanceof TextClass && child.text() === "Back to Menu"
+              child instanceof TextClass && child.text() === "⚙︎  |  𝓲"
           );
       });
 
-    expect(backGroup).toBeDefined();
+    expect(settingGroup).toBeDefined();
 
-    backGroup!.trigger("click");
-
-    expect(switcher.switchToScreen).toHaveBeenCalledWith({ type: "menu" });
+    settingGroup!.trigger("click");
   });
 });

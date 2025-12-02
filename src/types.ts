@@ -26,7 +26,7 @@ export type Screen =
     // 'game' screen may optionally include a difficulty and/or an Order to start with
     | { type: "game"; difficulty?: Difficulty; order?: Order }
     | { type: "order"; mode?: Difficulty; returnToGame?: boolean }
-    | { type: "result"; score: number }
+    | { type: "result"; mode?: Difficulty; score?: number }
     | { type: "tutorial" }
     | { type: "settings" }
     | { type: "difficulty" }

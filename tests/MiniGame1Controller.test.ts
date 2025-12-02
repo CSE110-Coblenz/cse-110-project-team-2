@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { OrderResult} from "../src/data/OrderResult";  
-import { Minigame1View } from "../src/screens/MiniGame1Screen/MiniGame1View";  
+
 
 // Konva mock 
 vi.mock('konva', () => {
@@ -70,9 +70,21 @@ vi.mock('konva', () => {
             return typeof text === "string" ? text.length * 8 : 100; 
         }
 
+        height(v?: number) {
+            if(v === undefined) {
+                return this.attrs.height ?? 20;
+            }
+            this.attrs.height = v;
+        }
+
         offsetX(v?: number) {
             if(v === undefined) return this.attrs.offsetX;
             this.attrs.offsetX = v;
+        }
+
+        offsetY(v?: number) {
+            if(v === undefined) return this.attrs.offsetY;
+            this.attrs.offsetY = v;
         }
     }
 
@@ -99,7 +111,15 @@ vi.mock('konva', () => {
     return {default: Konva };
 });
 
+
+import * as MiniGame1Model from "../src/screens/Minigame1Screen/Minigame1Model";
 import { Minigame1Controller } from "../src/screens/Minigame1Screen/Minigame1Controller";
+
+const getScreenShotResultsMock = vi.spyOn(MiniGame1Model, "getScreenShotResults");
+const pickRandomPairMock = vi.spyOn(MiniGame1Model, "pickRandomPair");
+const pickRandomToppingMock = vi.spyOn(MiniGame1Model, "pickRandomTopping");
+const evaluateChoiceMock = vi.spyOn(MiniGame1Model, "evaluateChoice");
+
 
 beforeEach(() => {
     class HTMLImageMock {
@@ -120,9 +140,7 @@ beforeEach(() => {
     vi.clearAllMocks();
 });
 
-function createControllerWithDep(overrides: {
-    getAll?: () => OrderResult[];
-} = {}) {
+function createControllerWithDep(opts: {getAllReturn?: OrderResult[] } = {}) {
     const screenSwitcher = {
         switchToScreen: vi.fn(),
     };
@@ -132,9 +150,8 @@ function createControllerWithDep(overrides: {
     }; 
 
     const resultStore = {
-        getAll: vi.fn().mockReturnValue([]),
+        getAll: vi.fn().mockReturnValue(opts.getAllReturn ?? []),
         addTips: vi.fn(),
-        ...overrides
     };
 
     const controller = new Minigame1Controller(
@@ -146,11 +163,11 @@ function createControllerWithDep(overrides: {
     const view: any = controller.getView();
 
     return { controller, screenSwitcher, audio, resultStore, view };
-}
 
+}// tests 
 describe("MiniGame1Controller", () => {
     it("constructor wires Minigame 2 button to screen switcher", () => {
-        const { controller, screenSwitcher, view } = createControllerWithDep();
+        const { view, screenSwitcher} = createControllerWithDep();
 
         view.onGoToMinigame2();
         expect(screenSwitcher.switchToScreen).toHaveBeenCalledWith({ type: "minigame2" });
@@ -179,26 +196,27 @@ describe("MiniGame1Controller", () => {
     });
 
     it("startGame shows message when fewer than 2 order results exist", () => {
+        const singleResult: OrderResult = { 
+            screenshotDataUrl: "data-url-1", 
+            success: true,
+            order: { toppingsCounts: {} as any },
+        } as any;
+        
+        getScreenShotResultsMock.mockReturnValue([singleResult]);
+
         const { controller, resultStore, view } = createControllerWithDep({
-            getAll: () => [
-                { 
-                    screenshotDataUrl: "data-url-1", 
-                    success: true,
-                    order: { toppingsCounts: {} },
-                } as any,
-            ],
+            getAllReturn: [singleResult],  
         });
 
         const getAllSpy = vi.spyOn(resultStore, "getAll");
         const showMessageSpy = vi.spyOn(view, "showMessage");
-        const showSpy = vi.spyOn(view, "show");
 
         controller.startGame();
 
         expect(getAllSpy).toHaveBeenCalledTimes(1);
+        expect(getScreenShotResultsMock).toHaveBeenCalledWith([singleResult]);
         expect(showMessageSpy).toHaveBeenCalledWith("Not enough completed orders for today to play this minigame.");
-
-        expect(showSpy).toHaveBeenCalledTimes(1);  
+        expect(showMessageSpy).toHaveBeenCalledTimes(1);
     });
 
     it("startGame picks two orders, render pair, and handles correct choice with tips", () => {
@@ -214,8 +232,13 @@ describe("MiniGame1Controller", () => {
             order: { toppingsCounts: {} as any },
         } as any;
 
+        getScreenShotResultsMock.mockReturnValue([orderA, orderB]);
+        pickRandomPairMock.mockReturnValue({ a: orderA, b: orderB });
+        pickRandomToppingMock.mockReturnValue("Pepperoni");
+        evaluateChoiceMock.mockReturnValue({isCorrect: true, aCount: 3, bCount: 1, tipEarned: 2 });
+
         const { controller, resultStore, view } = createControllerWithDep({
-            getAll: () => [
+            getAllReturn: [
                 orderA,
                 orderB,
             ],

@@ -11,7 +11,7 @@ import { FONTS } from "../../fonts";
 
 export class ResultScreenController extends ScreenController{
     private view: ResultScreenView;
-    private nextDayDifficulty: Difficulty = "proper";
+    private nextDayDifficulty: Difficulty;
 
     private wrongOrdersContent?: Konva.Group;
     private wrongOrdersScrollY = 0;
@@ -70,9 +70,10 @@ export class ResultScreenController extends ScreenController{
     };
 
 
-    constructor(private layer: Konva.Layer, private switcher: ScreenSwitcher, private resultStore: ResultStore) {
+    constructor(private layer: Konva.Layer, private switcher: ScreenSwitcher, private resultStore: ResultStore, currentDifficulty: Difficulty) {
         super();
         this.view = new ResultScreenView();
+        this.nextDayDifficulty = currentDifficulty;
 
         //Helper function that creates screens to test for button functionality
         const placeHolderScreen = (label: string, fill: string = "#1f2937") => {

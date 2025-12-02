@@ -22,9 +22,6 @@ class App implements ScreenSwitcher {
 	private audio: AudioManager;
 
 	private currentDifficulty: Difficulty = "proper";
-	getCurrentDifficulty() {
-		return this.currentDifficulty;
-	}
   
 	private resultStore: ResultStore;
 	private menuController: MenuScreenController;
@@ -49,7 +46,7 @@ class App implements ScreenSwitcher {
 		this.difficultyController = new DifficultyScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
     	this.orderController = new OrderScreenController(this);
-    	this.resultsController = new ResultScreenController(this.layer, this, this.resultStore);
+    	this.resultsController = new ResultScreenController(this.layer, this, this.resultStore, this.currentDifficulty);
 		this.minigame1Controller = new Minigame1Controller(this, this.audio, this.resultStore);
     	this.minigame2Controller = new Minigame2Controller(this, this.audio);
 
@@ -89,20 +86,18 @@ class App implements ScreenSwitcher {
 			case "game":
 				// pass optional difficulty and order through to game controller
 				// default to "proper" if no difficulty provided
-				this.gameController.startGame(screen.difficulty??"proper", (screen as any).order);
+				const difficulty: Difficulty = screen.difficulty ?? this.currentDifficulty ?? "proper";
+				this.currentDifficulty = difficulty;
+				this.gameController.startGame(difficulty, (screen as any).order);
 				break;
 			case "tutorial":
 				this.tutorialController.show();
 				break;
             case "order":
-                if ((screen as any).mode) {
-					// If returnToGame is set, show the Order screen so the user
-					// can accept the prepared order. 
-					this.orderController.prepareForMode((screen as any).mode);
-					this.orderController.show();
-				} else {
-					this.orderController.show();
-				}
+                const mode: Difficulty = (screen as any).mode ?? this.currentDifficulty ?? "proper";
+				this.currentDifficulty = mode;
+				this.orderController.prepareForMode(mode);
+				this.orderController.show();
 				break;
             case "result":
                 this.resultsController.refreshFromStore();   
