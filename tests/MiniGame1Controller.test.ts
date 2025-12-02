@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { OrderResult} from "../src/data/OrderResult";  
 
-
 // Konva mock 
 vi.mock('konva', () => {
     class BaseNode {
@@ -288,6 +287,5 @@ describe("MiniGame1Controller", () => {
 
         randomSpy.mockRestore();
     });
-
 });
 
