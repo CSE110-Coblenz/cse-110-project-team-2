@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { OrderResult } from "../src/data/OrderResult";
-import { builderRecommendationMessage, computeStats, getWrongOrderSummaries } from "../src/screens/ResultScreen/ResultScreenModel";
+import { OrderResult } from "../data/OrderResult";
+import { builderRecommendationMessage, computeStats, getWrongOrderSummaries } from "../screens/ResultScreen/ResultScreenModel";
 
 describe("builderRecommendationMessage", () => {
     const makeResult = (overrides: Partial<OrderResult>): OrderResult => 

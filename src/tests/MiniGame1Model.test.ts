@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getScreenShotResults, pickRandomPair, pickRandomTopping, evaluateChoice, type Minigame1Choice } from "../src/screens/Minigame1Screen/Minigame1Model";
-import type { OrderResult } from "../src/data/OrderResult";
-import { TOPPINGS, type ToppingType } from "../src/constants";
+import { getScreenShotResults, pickRandomPair, pickRandomTopping, evaluateChoice, type Minigame1Choice } from "../screens/Minigame1Screen/Minigame1Model";
+import type { OrderResult } from "../data/OrderResult";
+import { TOPPINGS, type ToppingType } from "../constants";
 
 afterEach(() => {
     vi.restoreAllMocks();

@@ -184,8 +184,8 @@ vi.mock("konva/lib/Group", () => {
 
 // ---------- imports under test ----------
 import Konva from "konva";
-import { GameScreenController } from "../src/screens/GameScreen/GameScreenController";
-import type { Order } from "../src/types";
+import { GameScreenController } from "../screens/GameScreen/GameScreenController";
+import type { Order } from "../types";
 import { b } from "vitest/dist/suite-dWqIFb_-.js";
 
 // simple mock of the ResultStore used by GameScreenController

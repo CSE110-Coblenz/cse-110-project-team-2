@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 //mock GameScreenView 
-vi.mock("../src/screens/GameScreen/GameScreenView", () => {
+vi.mock("../screens/GameScreen/GameScreenView", () => {
     return {
         GameScreenView: class {
             public triggerSettingsBackToMenu: () => void;
@@ -40,8 +40,8 @@ vi.mock("../src/screens/GameScreen/GameScreenView", () => {
     });
 
 // Import after mocking
-import { GameScreenController } from "../src/screens/GameScreen/GameScreenController";
-import { ResultStore } from "../src/data/ResultStore";
+import { GameScreenController } from "../screens/GameScreen/GameScreenController";
+import { ResultStore } from "../data/ResultStore";
 
 describe("GameScreenController settings popup navigation", () => {
     let mockScreenSwitcher: any;

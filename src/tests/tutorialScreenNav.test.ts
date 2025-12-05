@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // mock tutorial screen view 
-vi.mock("../src/screens/TutorialScreen/TutorialScreenView", () => {
+vi.mock("../screens/TutorialScreen/TutorialScreenView", () => {
     return {
       TutorialScreenView: class {
         public triggerSettingsBackToMenu!: () => void;
@@ -27,7 +27,7 @@ vi.mock("../src/screens/TutorialScreen/TutorialScreenView", () => {
   });
   
   // import controller
-  import { TutorialScreenController } from "../src/screens/TutorialScreen/TutorialScreenController";
+  import { TutorialScreenController } from "../screens/TutorialScreen/TutorialScreenController";
   
 describe("TutorialScreenController settings popup navigation", () => {
     beforeEach(() => {

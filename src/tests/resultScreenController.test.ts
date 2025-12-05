@@ -86,7 +86,7 @@ vi.mock("konva", () => {
 // --- Mock ResultScreenView ---
 import Konva from "konva";
 
-vi.mock("../src/screens/ResultScreen/ResultScreenView", () => {
+vi.mock("../screens/ResultScreen/ResultScreenView", () => {
     class ResultScreenView {
         public onViewWrongOrders: () => void = () => {};
         public onEndGame: () => void = () => {};
@@ -110,7 +110,7 @@ vi.mock("../src/screens/ResultScreen/ResultScreenView", () => {
 });
 
 
-vi.mock("../src/screens/ResultScreen/ResultScreenModel", () => {
+vi.mock("../screens/ResultScreen/ResultScreenModel", () => {
     return {
         computeStats: vi.fn(),
         builderRecommendationMessage: vi.fn(),
@@ -118,10 +118,10 @@ vi.mock("../src/screens/ResultScreen/ResultScreenModel", () => {
     };
 });
 // import the mocked functions
-import { computeStats, builderRecommendationMessage, getWrongOrderSummaries } from "../src/screens/ResultScreen/ResultScreenModel";
+import { computeStats, builderRecommendationMessage, getWrongOrderSummaries } from "../screens/ResultScreen/ResultScreenModel";
 
 // --- import the controller after mocking ---
-import { ResultScreenController } from "../src/screens/ResultScreen/ResultScreenController";
+import { ResultScreenController } from "../screens/ResultScreen/ResultScreenController";
 
 type MockResultStore = {
     getAll: ReturnType<typeof vi.fn>;

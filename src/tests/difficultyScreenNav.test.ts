@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // Mock difficultyScreenView 
 
 // Mock DifficultyScreenView BEFORE importing the controller
-vi.mock("../src/screens/DifficultyScreen/DifficultyScreenView", () => {
+vi.mock("../screens/DifficultyScreen/DifficultyScreenView", () => {
     return {
       DifficultyScreenView: class {
         public triggerSettingsBackToMenu!: () => void;
@@ -29,7 +29,7 @@ vi.mock("../src/screens/DifficultyScreen/DifficultyScreenView", () => {
   });
   
   //import the controller from the mock view
-  import { DifficultyScreenController } from "../src/screens/DifficultyScreen/DifficultyScreenController";
+  import { DifficultyScreenController } from "../screens/DifficultyScreen/DifficultyScreenController";
   
   describe("DifficultyScreenController settings popup navigation", () => {
     beforeEach(() => {

@@ -193,9 +193,9 @@ vi.mock("konva/lib/Group", () => {
 
 // ---------- imports under test ----------
 import Konva from "konva";
-import { GameScreenView } from "../src/screens/GameScreen/GameScreenView";
-import { GameScreenModel } from "../src/screens/GameScreen/GameScreenModel";
-import type { Order } from "../src/types";
+import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
+import type { Order } from "../types";
 
 describe("GameScreenView (simple)", () => {
   let view: GameScreenView;
