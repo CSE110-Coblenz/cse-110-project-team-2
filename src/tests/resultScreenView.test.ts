@@ -154,7 +154,7 @@ vi.mock("konva/lib/Group", () => {
 });
 
 import Konva from "konva";
-import { ResultScreenView } from "../src/screens/ResultScreen/ResultScreenView";
+import { ResultScreenView } from "../screens/ResultScreen/ResultScreenView";
 
 describe("ResultScreenView", () => {
     let view: ResultScreenView;

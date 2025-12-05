@@ -1,68 +1,72 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// mock tutorial screen view 
-vi.mock("../src/screens/TutorialScreen/TutorialScreenView", () => {
+// Mock difficultyScreenView 
+
+// Mock DifficultyScreenView BEFORE importing the controller
+vi.mock("../screens/DifficultyScreen/DifficultyScreenView", () => {
     return {
-      TutorialScreenView: class {
+      DifficultyScreenView: class {
         public triggerSettingsBackToMenu!: () => void;
         public triggerSettingsInstructions!: () => void;
   
         constructor(
+            _onDifficultySelect: (difficulty: any) => void,
             onBackToMenuClick: () => void,
-            _onWatchTutorialClick: () => void,
             onInstructionsClick: () => void
-
         ) {
 
+          // manually triggers the callbacks
             this.triggerSettingsBackToMenu = onBackToMenuClick;
             this.triggerSettingsInstructions = onInstructionsClick;
         }
   
+        // minimal api
+        getGroup = vi.fn();
         show = vi.fn();
         hide = vi.fn();
-        getGroup = vi.fn();
-
       },
     };
   });
   
-  // import controller
-  import { TutorialScreenController } from "../src/screens/TutorialScreen/TutorialScreenController";
+  //import the controller from the mock view
+  import { DifficultyScreenController } from "../screens/DifficultyScreen/DifficultyScreenController";
   
-describe("TutorialScreenController settings popup navigation", () => {
+  describe("DifficultyScreenController settings popup navigation", () => {
     beforeEach(() => {
-          vi.clearAllMocks();
+        vi.clearAllMocks();
     });
   
-    it("navigates to menu when 'Back to Menu' is selected", () => {
+    // checks if the back to menu button works properly and navigates to menu screen
+    it("navigates to menu when 'Back to Menu' is selected ", () => {
         const mockScreenSwitcher = { switchToScreen: vi.fn() } as any;
     
-        const controller = new TutorialScreenController(mockScreenSwitcher);
+        const controller = new DifficultyScreenController(mockScreenSwitcher);
         const view = controller.getView() as unknown as {
             triggerSettingsBackToMenu: () => void;
+
         };
     
         expect(typeof view.triggerSettingsBackToMenu).toBe("function");
     
+        // simulates clicking "Back to Menu" from the popup
         view.triggerSettingsBackToMenu();
     
         expect(mockScreenSwitcher.switchToScreen).toHaveBeenCalledWith({ type: "menu" });
-
     });
   
-    it("navigates to tutorial when 'instructions' is selected", () => {
+    it("navigates to tutorial when 'Instructions' is selected", () => {
         const mockScreenSwitcher = { switchToScreen: vi.fn() } as any;
-    
-        const controller = new TutorialScreenController(mockScreenSwitcher);
+  
+        const controller = new DifficultyScreenController(mockScreenSwitcher);
         const view = controller.getView() as unknown as {
             triggerSettingsInstructions: () => void;
         };
-    
+  
         expect(typeof view.triggerSettingsInstructions).toBe("function");
-    
+  
+      // simulates clicking "instructions" inside popup
         view.triggerSettingsInstructions();
-    
-        // handleInstructionsClick goes to tutorial
+  
         expect(mockScreenSwitcher.switchToScreen).toHaveBeenCalledWith({ type: "tutorial" });
     });
   });

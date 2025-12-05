@@ -1,6 +1,6 @@
 import { describe, it, expect} from "vitest";
-import { calculateTipFromObstacles } from "../src/screens/Minigame2Screen/Minigame2Model";
-import { TIP_TABLE } from "../src/constants";
+import { calculateTipFromObstacles } from "../screens/Minigame2Screen/Minigame2Model";
+import { TIP_TABLE } from "../constants";
 
 describe("calculateTipFromObstacles", () => {
   it("returns correct tip and review for 0 obstacles", () => {
