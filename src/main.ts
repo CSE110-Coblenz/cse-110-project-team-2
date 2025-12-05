@@ -39,13 +39,14 @@ class App implements ScreenSwitcher {
 		this.stage.add(this.layer);
 
 		this.audio = new AudioManager("/audio/pizza-299710.mp3", 0.5);
+		this.audio.registerSfx("phonering", "/audio/phoneringing.mp3");
 
 		this.resultStore = new ResultStore(); 
 		this.menuController = new MenuScreenController(this, this.audio);
 		this.gameController = new GameScreenController(this, this.resultStore);
 		this.difficultyController = new DifficultyScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
-    	this.orderController = new OrderScreenController(this);
+    	this.orderController = new OrderScreenController(this, this.audio);
     	this.resultsController = new ResultScreenController(this.layer, this, this.resultStore, this.currentDifficulty);
 		this.minigame1Controller = new Minigame1Controller(this, this.audio, this.resultStore);
     	this.minigame2Controller = new Minigame2Controller(this, this.audio, this.resultStore);
