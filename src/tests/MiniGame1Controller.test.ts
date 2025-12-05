@@ -234,7 +234,7 @@ describe("MiniGame1Controller", () => {
         getScreenShotResultsMock.mockReturnValue([orderA, orderB]);
         pickRandomPairMock.mockReturnValue({ a: orderA, b: orderB });
         pickRandomToppingMock.mockReturnValue("Pepperoni");
-        evaluateChoiceMock.mockReturnValue({isCorrect: true, aCount: 3, bCount: 1, tipEarned: 2 });
+        evaluateChoiceMock.mockReturnValue({ isCorrect: true, correct: "A", aCount: 3, bCount: 1 });
 
         const { controller, resultStore, view } = createControllerWithDep({
             getAllReturn: [

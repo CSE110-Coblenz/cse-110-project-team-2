@@ -206,6 +206,7 @@ describe("GameScreenView (simple)", () => {
 
     view = new GameScreenView(model, {
       onBackToMenuClick: vi.fn(),
+      onInstructionsClick: vi.fn(),
       onGoToMinigame1: vi.fn(),
       onPizzaNumSelected: vi.fn(),
       onSliceNumSelected: vi.fn(),
