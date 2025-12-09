@@ -831,17 +831,24 @@ export class GameScreenView implements View {
     this.group.add(backgroundGroup);
   }
 
-  // capture an image of the current pizza 
+  // Capture a PNG data URL of the current pizza drawn on the Konva layer.
+  // Returns a base64 image string, or undefined on error.
   capturePizzaImage(): string | undefined {
+    // Get the Konva layer containing this group's content.
     const layer = this.group.getLayer();
     if(!layer) return; 
 
+    // The outer pizza radius, with fallback of 150 if undefined.
     const radius = this.rOuter || 150;
+    // Extra spacing around the bounding box so the pizza isn't clipped.
     const margin = 20;
 
     let leftX: number;
     let rightX: number;
 
+    // Determine which X positions to use based on number of pizzas.
+    // If there are two pizzas, capture both (left and right).
+    // if one pizza, both values point to the same center.
     if(this.model.pizzaNum === 2) {
         leftX = PIZZA.pizzaX1;
         rightX = PIZZA.pizzaX2;
@@ -851,24 +858,34 @@ export class GameScreenView implements View {
         rightX = centerX;
     }
 
+    // Calculate the bounding box for the pizza(s).
     const minX = leftX - radius - margin;
     const maxX = rightX + radius + margin;
+
+    // The x-coordinate of the cropping area. 
     const x = minX
+
+    // The width of the capture region, covering the full horizontal span of the pizza(s).
     const width = maxX - minX;
 
+    // The vertical bounding box calculations.
     const y = PIZZA.pizzaY - radius - margin;
+
+    // Height fully covers the pizza diameter plus margins.
     const height = radius * 2 + margin * 2;
 
     try {
+      // Export the specified rectangular region of the layer to a data URL.
         return this.group.toDataURL({
             x,
             y,
             width,
             height,
-            pixelRatio: 1,
+            pixelRatio: 1, // Use 1 for normal resolution; increase for higher quality.
         });
     } catch (e) {
         console.error("Error capturing pizza image:", e);
+        // Return undefined if the screenshot operation fails.
         return undefined
     }
   }

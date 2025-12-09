@@ -126,6 +126,7 @@ export class Minigame2Controller extends ScreenController {
         
         this.model.calculateTip();
         const tip = this.model.tip;
+        // Tip is added to total tips in ResultStore
         this.resultStore.addTips(tip);
 
         this.view.showSummary(this.model.getObstacleCount(), this.model.tip, this.model.review);

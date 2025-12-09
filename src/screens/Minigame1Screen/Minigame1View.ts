@@ -7,7 +7,7 @@ import { FONTS } from "../../fonts";
 import { createMenuSettingsPopup } from "../../BackButtonPopup";
 
 export class Minigame1View implements View {
-    private group: Konva.Group;
+    private group: Konva.Group; 
     private content: Konva.Group;
     private pizzaGroup = new Konva.Group();
     // map has key of strings and value of numbers
@@ -29,8 +29,11 @@ export class Minigame1View implements View {
         onBackToMenuClick: () => void,
         onInstructionsClick: () => void
         ) {
+            // Main group representing the entire screen
             this.group = new Konva.Group({ visible: false, listening: true });
-            this.drawBackground()
+            // Draw static background
+            this.drawBackground();
+            // Add pizzaGroup for screenshot rendering
             this.group.add(this.pizzaGroup);
 
             // Title
@@ -44,17 +47,18 @@ export class Minigame1View implements View {
                 fontFamily: FONTS.HEADER,
         }));
 
-        // content group for dynamic UI components
+        // content group for dynamic UI components added during each round.
         this.content = new Konva.Group({ x: 0, y: 70 });
         this.group.add(this.content);
 
-        // Button to go to Minigame 2
+        // Button to go to Minigame 2.
         const minigame2Group = new Konva.Group({
             x: STAGE_WIDTH - 140,
             y: STAGE_HEIGHT / 2 - 20,
             listening: true,
         });
 
+        // Button background 
         const minigame2Btn = new Konva.Rect({
             x: 0,
             y: 0,
@@ -66,6 +70,7 @@ export class Minigame1View implements View {
             cornerRadius: 8,
         });
 
+        // Button text
         const minigame2Text = new Konva.Text({
             x: 10,
             y: 8,
@@ -96,6 +101,7 @@ export class Minigame1View implements View {
             fontSize: 30,
             fill: "white",
         });
+        // Center text inside the button
         settingsText.offsetX(settingsText.width() / 2);
         settingsText.offsetY(settingsText.height() / 2);
 
@@ -136,12 +142,13 @@ export class Minigame1View implements View {
     getGroup(): Konva.Group {
         return this.group;
     }
-
+    // show this screen
     show(): void {
         this.group.visible(true);
         this.group.getLayer()?.batchDraw();
     }
 
+    // Hide this screen
     hide(): void {
         this.group.visible(false);
         this.group.getLayer()?.batchDraw();
@@ -149,6 +156,7 @@ export class Minigame1View implements View {
     
     // calls other functions to render the pizza bases, then render the toppings on top with their choices
     renderPair(a: OrderResult, b: OrderResult, topping: string, onChoice: (choice: "A" | "B" | "Equivalent") => void) {
+        // clear previous UI
         this.content.destroyChildren();
 
         const question = new Konva.Text({ 
@@ -164,17 +172,20 @@ export class Minigame1View implements View {
         // clear any previous pizza base
         this.pizzaGroup.destroyChildren();
 
+        // store callback so screenshots can call it when clicked
         this.onChoiceCallback = onChoice;
         
+        // If no screenshots exist -> show error message.
         if (!a.screenshotDataUrl && !b.screenshotDataUrl) {
             this.showMessage("No pizza screenshots available for this minigame.");
             this.group.getLayer()?.batchDraw();
             return;
         } 
 
+        // Render the two screenshot pizza images.
         this.renderScreenshotsPair(a.screenshotDataUrl!, b.screenshotDataUrl!);
 
-        // TODO: Tie button probably won't need to be in main game? But for testing purposes it was needed. Randy decide if it's needed or not
+        // Add 'Equivalent' button for tie choice
         const btnY = 120;
         const btnTie = this.makeButton((STAGE_WIDTH / 2) - 20, btnY, "Equivalent", () => onChoice("Equivalent"));
         this.content.add(btnTie);
@@ -182,7 +193,9 @@ export class Minigame1View implements View {
         this.group.getLayer()?.batchDraw();
     }
 
+    // Load & render two screenshot images side by side
     private renderScreenshotsPair(leftUrl: string, rightUrl: string): void {
+        // helper promise-based loader
         const loadImage = (url: string): Promise<HTMLImageElement> => {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -196,6 +209,7 @@ export class Minigame1View implements View {
         const centerY = PIZZA.pizzaY;
 
         Promise.all([loadImage(leftUrl), loadImage(rightUrl)]).then(([leftImg, rightImg]) => {
+            // Constrain images to max size
             const maxWidth = 350;
             const maxHeight = 350;
 
@@ -208,6 +222,7 @@ export class Minigame1View implements View {
             const leftScale = computeScale(leftImg);
             const rightScale = computeScale(rightImg);
 
+            // Left pizza screenshot 
             const leftNode  = new Konva.Image({
                 image: leftImg,
                 x: leftX,
@@ -222,6 +237,7 @@ export class Minigame1View implements View {
             leftNode.setAttr("minigameIndex", 0);
             leftNode.on("click", () => {
                 try {
+                    // clicking left pizza = choice A
                     if(this.onChoiceCallback) {
                         this.onChoiceCallback("A");
                     }
@@ -230,6 +246,7 @@ export class Minigame1View implements View {
             leftNode.on("mouseenter", () => document.body.style.cursor = "pointer");
             leftNode.on("mouseleave", () => document.body.style.cursor = "default");
 
+            // Right pizza screenshot
             const rightNode = new Konva.Image({
                 image: rightImg,
                 x: rightX,
@@ -244,6 +261,7 @@ export class Minigame1View implements View {
             rightNode.setAttr("minigameIndex", 1);
             rightNode.on("click", () => {
                 try {
+                    // clicking right pizza = choice B
                     if(this.onChoiceCallback) {
                         this.onChoiceCallback("B");
                     }
@@ -252,6 +270,7 @@ export class Minigame1View implements View {
             rightNode.on("mouseenter", () => document.body.style.cursor = "pointer");
             rightNode.on("mouseleave", () => document.body.style.cursor = "default");
 
+            // Add both images to container
             this.pizzaGroup.add(leftNode, rightNode);
             this.group.getLayer()?.batchDraw();
         });
@@ -260,6 +279,7 @@ export class Minigame1View implements View {
     // result screen overlay
     showResult(isCorrect: boolean, details?: string) {
         const overlay = new Konva.Rect({ x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "black", opacity: 0.4 });
+        // pop-up panel
         const panelW = 520;
         const panelH = 220;
         const panelX = (STAGE_WIDTH - panelW) / 2;
@@ -284,6 +304,7 @@ export class Minigame1View implements View {
             fontFamily: FONTS.HEADER
         });
         title.offsetX(title.width() / 2);
+        // details body text
         const body = new Konva.Text({
             x: panelX + 20,
             y: panelY + 80,
@@ -293,6 +314,7 @@ export class Minigame1View implements View {
             fontFamily: FONTS.BODY
         });
 
+        // Continue button
         const back = this.makeButton(panelX + panelW / 2 - 60, panelY + panelH - 70, "Continue", () => {
             overlay.destroy();
             panel.destroy();

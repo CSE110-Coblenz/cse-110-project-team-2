@@ -3,18 +3,31 @@ import type { OrderResult } from "./OrderResult";
 const STORAGE_KEY = "slice_by_slice_order_results";
 const SESSION_FLAG = "slice_by_slice_session_active";
 
+/**
+ * Data structure for storing results and tips in localStorage
+ */
 type StoredData = {
     results: OrderResult[];
     totalTips: number;
 };
 
+/**
+ * ResultStore manages:
+ * - All order results for the current game session
+ * - Total tips accumulated 
+ * - Saving & loading from localStorage
+ * 
+ * Ensures data is cleared when the browser tab is closed (using sessionStorage). 
+ */
 export class ResultStore {
-    // In-memory storage of results
+    // In-memory list of all saved order results.
     private results: OrderResult[] = [];
+    // Running total of tips earned during the session.
     private totalTips: number = 0;
 
     constructor() {
         if(typeof window !== "undefined") {
+
             // === Detect tab close using sessionStorage ===
             const hadSession = !!sessionStorage.getItem(SESSION_FLAG);
 
@@ -27,21 +40,27 @@ export class ResultStore {
                 }
             }
 
-            // Mark session as active
+            // Mark session as active, reloading the page does NOT reset storage
             sessionStorage.setItem(SESSION_FLAG, "1");
 
+            // === Load existing stored results (if available) ===
             const storedResults = window.localStorage.getItem(STORAGE_KEY);
             if (storedResults) {
                 try {
                     const parsed = JSON.parse(storedResults);  
+
+                    // Support both array-only and full object formats
                     if (Array.isArray(parsed)) {
+                        // old format: just an array of results
                         this.results = parsed as OrderResult[];
                         this.totalTips = 0;
                     } else {
+                        // new format: StoredData object
                         this.results = (parsed.results ??[]) as OrderResult[];
                         this.totalTips = Number(parsed.totalTips ?? 0);
                     } 
                 } catch {
+                    // if parsing fails, start fresh
                     this.results = [];
                     this.totalTips = 0;
                 }

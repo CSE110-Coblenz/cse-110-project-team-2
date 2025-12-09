@@ -89,7 +89,9 @@ export class GameScreenController extends ScreenController {
   private handleSubmit(): void {
     const order = this.currentOrder;
     if (!order) return;
-    //if the user hasn't selected pizza or slice num yet
+    
+    // if the user hasn't selected pizza or slice num yet.
+    // Show appropriate warning messages.
     if (this.model.pizzaNum === 0 || this.model.sliceNum === 0) {
       if (this.model.pizzaNum === 0 && this.model.sliceNum === 0) {
         this.view.showSelectionWarning(
@@ -107,46 +109,53 @@ export class GameScreenController extends ScreenController {
       return;
     }
 
+    // Evaluates the player's submission, includes success/failure and details.
     const evalResult = this.model.evaluateOrder(order);
 
     const { success, lines, expectedTotal, currentTotal, expectedPizzaNum } =
       evalResult;
 
-    //const pizzaCount = this.model.pizzaNum;
+    // Captures a screenshot of the pizza(s) the player made.
     const screenshotDataUrl = this.view.capturePizzaImage();
 
     // keeps track if this is the last order of the day
     const isLastOrderOfDay = this.orderNum >= ORDERS_PER_DAY;
 
+    // Records the results of the order attempt in ResultStore.
     this.resultStore.add({
       orderNumber: this.orderNum,
       success,
-      details: lines.join("\n"),
+      details: lines.join("\n"), // Explanation of what was right/wrong.
       expectedTotal,
       currentTotal,
       expectedPizzaNum,
       currentPizzaNumber: this.model.pizzaNum,
       slicesUsed: this.model.sliceNum,
-      order,
-      tipsEarned: 0,
+      order, // Store the full order details for reference.
+      tipsEarned: 0, // Tips are earned based on minigame performance.
       screenshotDataUrl,
     });
 
+    // If the player succeeded, prepare for the next order.
     if (evalResult.success) {
+      // If not the last order, increment order number for next order.
       if(!isLastOrderOfDay) {
         this.orderNum += 1;
         this.view.updateOrderNumber(this.orderNum);
       }
 
+      // Clear pizza topping visuals and reset model state for next order.
       this.clearAllToppingsVisual();
       this.model.resetAll();
       this.view.resetAfterSuccess();
     }
 
+    // Show result popup with success/failure and details message. 
     this.view.showResultPopup(
       evalResult.lines.join("\n"),
       evalResult.success,
       (success) => {
+        // If the popup is closed after a failure, stay on the order attempt.
         if (!success) {
           return;
         }
