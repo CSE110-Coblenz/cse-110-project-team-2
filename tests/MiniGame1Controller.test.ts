@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { OrderResult} from "../src/data/OrderResult";  
 
-// Konva mock 
+// Konva mock (to be able to run tests in a Node environment)
 vi.mock('konva', () => {
     class BaseNode {
         attrs: Record<string, any>;
@@ -13,6 +13,7 @@ vi.mock('konva', () => {
             this.attrs = { ...attrs };
         }
 
+        // Add children to this node; sets child's parent.
         add(...nodes: any[]) {
             for(const n of nodes) {
                 this.children.push(n);
@@ -20,16 +21,19 @@ vi.mock('konva', () => {
             }
         }
 
+        // Removes all children
         destroyChildren() {
             this.children = [];     
         }
 
+        // Remove this node from its parent
         destroy() {
             if(this.parent && this.parent.children) {
                 this.parent.children = this.parent.children.filter((c: any) => c !== this);
             }
         }
 
+        // Basic attr accessors
         setAttr(key: string, value: any) {
             this.attrs[key] = value;
         }
@@ -38,6 +42,7 @@ vi.mock('konva', () => {
             return this.attrs[key];
         }
 
+        // Event handling
         on(event: string, handler: (evt: any) => void) {
             this._handlers[event] = handler;
         }
@@ -47,6 +52,7 @@ vi.mock('konva', () => {
             if(h) h(evt);
         }
 
+        // Show/hide node
         visible(v?: boolean) {
             if(v === undefined) return this.attrs.visible ?? true;
             this.attrs.visible = v;
@@ -56,6 +62,7 @@ vi.mock('konva', () => {
             // no-op for testing
         }
 
+        // used so code can call layer.batchDraw()
         getLayer () {
             return { batchDraw: vi.fn() };
         }
@@ -63,6 +70,7 @@ vi.mock('konva', () => {
 
     class Group extends BaseNode {}
     class Rect extends BaseNode {}
+    // Simple Text mock with width/height/offset methods
     class Text extends BaseNode {
         width() {
             const text = this.attrs.text ?? "";
@@ -87,6 +95,7 @@ vi.mock('konva', () => {
         }
     }
 
+    // Simple Image mock with width/height/offset methods
     class Image extends BaseNode {
         width() {
             return this.attrs.width ?? (this.attrs.image?.width ?? 100);
@@ -110,7 +119,7 @@ vi.mock('konva', () => {
     return {default: Konva };
 });
 
-
+// Model function spies 
 import * as MiniGame1Model from "../src/screens/Minigame1Screen/Minigame1Model";
 import { Minigame1Controller } from "../src/screens/Minigame1Screen/Minigame1Controller";
 
@@ -119,8 +128,9 @@ const pickRandomPairMock = vi.spyOn(MiniGame1Model, "pickRandomPair");
 const pickRandomToppingMock = vi.spyOn(MiniGame1Model, "pickRandomTopping");
 const evaluateChoiceMock = vi.spyOn(MiniGame1Model, "evaluateChoice");
 
-
+// Global setup before each test
 beforeEach(() => {
+    // Mock global Image so Konva.Image can pretend to load images
     class HTMLImageMock {
         width = 200;
         height = 200
@@ -128,6 +138,7 @@ beforeEach(() => {
         onload: null | (() => void) = null;
 
         constructor() {
+            // Simulate async image loading
             setTimeout(() => {
                 if(this.onload) this.onload();
             }, 0);
@@ -136,10 +147,13 @@ beforeEach(() => {
     
     (global as any).Image = HTMLImageMock;
     
+    // Reset all spies/mocks between tests so they don't leak state
     vi.clearAllMocks();
 });
 
+// Helper to build controller with mocked dependencies
 function createControllerWithDep(opts: {getAllReturn?: OrderResult[] } = {}) {
+    // Fake screen switcher, audio manager, and result store
     const screenSwitcher = {
         switchToScreen: vi.fn(),
     };
@@ -153,24 +167,30 @@ function createControllerWithDep(opts: {getAllReturn?: OrderResult[] } = {}) {
         addTips: vi.fn(),
     };
 
+    // Create the controller with fakes
     const controller = new Minigame1Controller(
         screenSwitcher as any,
         audio as any,
         resultStore as any
     );
 
+    // Get the view instance 
     const view: any = controller.getView();
 
     return { controller, screenSwitcher, audio, resultStore, view };
 
-}// tests 
+}
+
+// Tests for Minigame1Controller
 describe("MiniGame1Controller", () => {
     it("constructor wires Minigame 2 button to screen switcher", () => {
         const { view, screenSwitcher} = createControllerWithDep();
 
+        // Simulate clicking the Minigame 2 button
         view.onGoToMinigame2();
         expect(screenSwitcher.switchToScreen).toHaveBeenCalledWith({ type: "minigame2" });
 
+        // Simulate clicking the back to game button
         view.onBackToGame();
         expect(screenSwitcher.switchToScreen).toHaveBeenCalledWith({ type: "game" });
     });
@@ -178,6 +198,7 @@ describe("MiniGame1Controller", () => {
     it("show() displays the view and starts music", () => {
         const { controller, audio, view } = createControllerWithDep();
 
+        // Spy on view.show()
         const showSpy = vi.spyOn(view, "show");
 
         controller.show();
@@ -187,7 +208,8 @@ describe("MiniGame1Controller", () => {
 
     it("hide() hides the view", () => {
         const { controller, view } = createControllerWithDep();
-
+        
+        // Spy on view.hide()
         const hideSpy = vi.spyOn(view, "hide");
         
         controller.hide();
@@ -195,12 +217,15 @@ describe("MiniGame1Controller", () => {
     });
 
     it("startGame shows message when fewer than 2 order results exist", () => {
+        // Fake a single order result with screenshot.
         const singleResult: OrderResult = { 
             screenshotDataUrl: "data-url-1", 
             success: true,
             order: { toppingsCounts: {} as any },
         } as any;
         
+        // Make the model function return that single result so that
+        // the controller thinks there is only one available.
         getScreenShotResultsMock.mockReturnValue([singleResult]);
 
         const { controller, resultStore, view } = createControllerWithDep({
@@ -212,13 +237,16 @@ describe("MiniGame1Controller", () => {
 
         controller.startGame();
 
+        // Controller should have pull all results from ResultStore
         expect(getAllSpy).toHaveBeenCalledTimes(1);
+        // ... then pass them to getScreenShotResults
         expect(getScreenShotResultsMock).toHaveBeenCalledWith([singleResult]);
         expect(showMessageSpy).toHaveBeenCalledWith("Not enough completed orders for today to play this minigame.");
         expect(showMessageSpy).toHaveBeenCalledTimes(1);
     });
 
     it("startGame picks two orders, render pair, and handles correct choice with tips", () => {
+        // Fake two order results with screenshots
         const orderA: OrderResult = { 
             screenshotDataUrl: "a-url", 
             success: true,
@@ -285,6 +313,7 @@ describe("MiniGame1Controller", () => {
 
         expect(typeof view.onBackToGame).toBe("function");
 
+        // clean up Math.random spy.
         randomSpy.mockRestore();
     });
 });

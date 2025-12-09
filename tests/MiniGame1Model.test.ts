@@ -3,10 +3,12 @@ import { getScreenShotResults, pickRandomPair, pickRandomTopping, evaluateChoice
 import type { OrderResult } from "../src/data/OrderResult";
 import { TOPPINGS, type ToppingType } from "../src/constants";
 
+// Reset all mocked function after each test to avoid leakage between tests
 afterEach(() => {
     vi.restoreAllMocks();
 });
 
+// Helper to create a minimal OrderResult with overrides
 function makeOrderResult(partial: Partial<OrderResult>): OrderResult {
     return {
         success: false,
