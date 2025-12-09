@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// ---------- minimal DOM / Image stub ----------
 const g: any = globalThis as any;
 g.window = g.window ?? {};
 
@@ -14,7 +13,6 @@ class FakeImage {
 g.Image = g.Image ?? FakeImage;
 g.window.Image = g.window.Image ?? FakeImage;
 
-// ---------- Same Konva mock as in GameScreenView.test.ts ----------
 vi.mock("konva", () => {
   class BaseNode {
     attrs: Record<string, any>;
@@ -86,6 +84,7 @@ vi.mock("konva", () => {
     }
 
     moveToBottom() {
+      // no-op, but exists so GameScreenView doesn't crash
       return this;
     }
 
@@ -99,6 +98,7 @@ vi.mock("konva", () => {
     }
 
     getLayer() {
+      // overridden in Group; here just return parent if it has getLayer
       if (this.parent && typeof this.parent.getLayer === "function") {
         return this.parent.getLayer();
       }
@@ -106,6 +106,7 @@ vi.mock("konva", () => {
     }
 
     toDataURL() {
+      // used by capturePizzaImage; simple stub
       return "data:image/png;base64,MOCK";
     }
   }
@@ -131,13 +132,20 @@ vi.mock("konva", () => {
     }
 
     find(_selector: string) {
+      // simple: don't actually filter, not needed for these tests
       return [];
     }
 
-    draw() {}
-    batchDraw() {}
+    draw() {
+      // no-op
+    }
+
+    batchDraw() {
+      // no-op
+    }
 
     getLayer() {
+      // treat the group itself as the layer
       return this;
     }
   }
@@ -177,6 +185,7 @@ vi.mock("konva", () => {
   };
 });
 
+// needed because GameScreenView uses Konva.Group type
 vi.mock("konva/lib/Group", () => {
   const Konva = require("konva") as any;
   return { Group: Konva.Group };
@@ -184,77 +193,63 @@ vi.mock("konva/lib/Group", () => {
 
 // ---------- imports under test ----------
 import Konva from "konva";
-import { GameScreenController } from "../src/screens/GameScreen/GameScreenController";
-import type { Order } from "../src/types";
-import { b } from "vitest/dist/suite-dWqIFb_-.js";
+import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
+import type { Order } from "../types";
 
-// simple mock of the ResultStore used by GameScreenController
-class MockResultStore {
-  add = vi.fn();
-}
-
-describe("GameScreenController (simple)", () => {
-  let switcher: { switchToScreen: ReturnType<typeof vi.fn> };
-  let store: MockResultStore;
-  let controller: GameScreenController;
+describe("GameScreenView (simple)", () => {
+  let view: GameScreenView;
+  let group: any;
 
   beforeEach(() => {
-    switcher = { switchToScreen: vi.fn() } as any;
-    store = new MockResultStore();
+    const model = new GameScreenModel();
 
-    controller = new GameScreenController(
-      switcher as any,
-      store as any
-    );
+    view = new GameScreenView(model, {
+      onBackToMenuClick: vi.fn(),
+      onInstructionsClick: vi.fn(),
+      onGoToMinigame1: vi.fn(),
+      onPizzaNumSelected: vi.fn(),
+      onSliceNumSelected: vi.fn(),
+      onToppingDragEnd: vi.fn(),
+      onTongsRemove: vi.fn(),
+      onSubmit: vi.fn(),
+    });
+
+    group = view.getGroup() as any;
   });
 
-  it("shows the game view when constructed", () => {
-    const view = controller.getView();
-    const group = view.getGroup() as any;
-
+  it("starts visible by default", () => {
     expect(group.visible()).toBe(true);
   });
 
-  it("startGame calls view.displayOrder with the given order", () => {
-    const order: Order = {
-      fractionStruct: { denominator: 4 } as any,
-      toppingsCounts: { Mushroom: 2 } as any,
-    } as any;
+  it("show() and hide() toggle visibility", () => {
+    view.show();
+    expect(group.visible()).toBe(true);
 
-    const view: any = controller.getView();
-    const spy = vi.spyOn(view, "displayOrder");
-
-    controller.startGame("proper" as any, order);
-
-    expect(spy).toHaveBeenCalledWith(order);
+    view.hide();
+    expect(group.visible()).toBe(false);
   });
 
-  it("clicking 'Back to Menu' switches to the menu screen", () => {
-    const view: any = controller.getView();
-    const group = view.getGroup() as any;
+  it("displayOrder writes a readable description of the order", () => {
+    const order: Order = {
+      // only the fields used by displayOrder matter
+      fractionStruct: { denominator: 4 } as any,
+      toppingsCounts: {
+        Mushroom: 2,
+        Pepperoni: 1,
+      } as any,
+    } as any;
+
+    view.displayOrder(order);
+
     const TextClass = (Konva as any).Text;
-    const GroupClass = (Konva as any).Group;
-
-    const isBackToMenuText = (text: string) => {
-      const lower = (text ?? "").toLowerCase();
-      return lower.includes("back") && lower.includes("menu");
-    };
-
-    // Find the group whose text child is "⚙︎  |  𝓲"
-    const settingGroup = group
+    const texts = group
       .getChildren()
-      .find((g: any) => {
-        if (!(g instanceof GroupClass)) return false;
-        return g
-          .getChildren()
-          .some(
-            (child: any) =>
-              child instanceof TextClass && child.text() === "⚙︎  |  𝓲"
-          );
-      });
+      .filter((c: any) => c instanceof TextClass) as any[];
 
-    expect(settingGroup).toBeDefined();
+    const combined = texts.map((t: any) => t.text()).join("\n");
 
-    settingGroup!.trigger("click");
+    expect(combined).toContain("2/4 Mushroom");
+    expect(combined).toContain("1/4 Pepperoni");
   });
 });

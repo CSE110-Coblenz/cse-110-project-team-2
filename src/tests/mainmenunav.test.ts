@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock AudioManager and MenuScreenView BEFORE importing the controller
-vi.mock("../src/audio/AudioManager", () => {
+vi.mock("../audio/AudioManager", () => {
   return {
     AudioManager: class {
       constructor(_src?: string, _vol?: number) {}
@@ -11,7 +11,7 @@ vi.mock("../src/audio/AudioManager", () => {
   };
 });
 
-vi.mock("../src/screens/MenuScreen/MenuScreenView", () => {
+vi.mock("../screens/MenuScreen/MenuScreenView", () => {
   return {
     MenuScreenView: class {
       public triggerStart!: () => void;
@@ -29,8 +29,8 @@ vi.mock("../src/screens/MenuScreen/MenuScreenView", () => {
 });
 
 // Now import the real modules that depend on the mocked ones
-import { MenuScreenController } from "../src/screens/MenuScreen/MenuScreenController";
-import { MenuScreenModel } from "../src/screens/MenuScreen/MenuScreenModel";
+import { MenuScreenController } from "../screens/MenuScreen/MenuScreenController";
+import { MenuScreenModel } from "../screens/MenuScreen/MenuScreenModel";
 
 describe("MenuScreenController navigation + MenuScreenModel behavior", () => {
   beforeEach(() => {

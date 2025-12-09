@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { OrderResult} from "../src/data/OrderResult";  
+import type { OrderResult} from "../data/OrderResult";  
 
 // Konva mock (to be able to run tests in a Node environment)
 vi.mock('konva', () => {
@@ -119,9 +119,9 @@ vi.mock('konva', () => {
     return {default: Konva };
 });
 
-// Model function spies 
-import * as MiniGame1Model from "../src/screens/Minigame1Screen/Minigame1Model";
-import { Minigame1Controller } from "../src/screens/Minigame1Screen/Minigame1Controller";
+
+import * as MiniGame1Model from "../screens/Minigame1Screen/Minigame1Model";
+import { Minigame1Controller } from "../screens/Minigame1Screen/Minigame1Controller";
 
 const getScreenShotResultsMock = vi.spyOn(MiniGame1Model, "getScreenShotResults");
 const pickRandomPairMock = vi.spyOn(MiniGame1Model, "pickRandomPair");
@@ -262,7 +262,7 @@ describe("MiniGame1Controller", () => {
         getScreenShotResultsMock.mockReturnValue([orderA, orderB]);
         pickRandomPairMock.mockReturnValue({ a: orderA, b: orderB });
         pickRandomToppingMock.mockReturnValue("Pepperoni");
-        evaluateChoiceMock.mockReturnValue({isCorrect: true, aCount: 3, bCount: 1, tipEarned: 2 });
+        evaluateChoiceMock.mockReturnValue({ isCorrect: true, correct: "A", aCount: 3, bCount: 1 });
 
         const { controller, resultStore, view } = createControllerWithDep({
             getAllReturn: [

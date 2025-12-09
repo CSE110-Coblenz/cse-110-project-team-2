@@ -115,7 +115,7 @@ vi.mock('konva', () => {
     return {default: Konva };
 });
 
-import { Minigame1View } from "../src/screens/Minigame1Screen/Minigame1View";
+import { Minigame1View } from "../screens/Minigame1Screen/Minigame1View";
 
 beforeEach(() => {
     class HTMLImageMock {
